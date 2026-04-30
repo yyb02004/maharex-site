@@ -1,0 +1,85 @@
+[
+  {
+    "id": "chunbo",
+    "home": "https://www.chunbochem.com",
+    "logo": null,
+    "error": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+  },
+  {
+    "id": "chunbo-advanced",
+    "home": "https://www.chunbochem.com",
+    "logo": null,
+    "error": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+  },
+  {
+    "id": "pharmacostech",
+    "home": "https://www.pctc.co.kr",
+    "logo": null,
+    "error": "certificate has expired"
+  },
+  {
+    "id": "hanseochem",
+    "home": "http://hanseochem.co.kr",
+    "logo": null
+  },
+  {
+    "id": "hanbul",
+    "home": "https://www.itshanbul.com",
+    "logo": "/customer-logos/hanbul.png"
+  },
+  {
+    "id": "duksung",
+    "home": "http://www.duksung21.com",
+    "logo": null
+  },
+  {
+    "id": "dongwoo-syntech",
+    "home": "http://www.dwst.co.kr",
+    "logo": null,
+    "error": "getaddrinfo ENOTFOUND www.dwst.co.kr"
+  },
+  {
+    "id": "estechpharma",
+    "home": "https://www.estechpharma.com",
+    "logo": null,
+    "error": "connect ECONNREFUSED 202.31.187.204:443"
+  },
+  {
+    "id": "j2hbio",
+    "home": "https://www.j2hbio.com",
+    "logo": "/customer-logos/j2hbio.ico"
+  },
+  {
+    "id": "bellenc",
+    "home": "http://www.bellenc.co.kr",
+    "logo": "/customer-logos/bellenc.gif"
+  },
+  {
+    "id": "unionchemical",
+    "home": "http://www.unionchem.co.kr",
+    "logo": "/customer-logos/unionchemical.ico"
+  },
+  {
+    "id": "msunichem",
+    "home": "https://msunichem.co.kr",
+    "logo": null,
+    "error": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+  },
+  {
+    "id": "sungilbioex",
+    "home": "http://www.bioex.co.kr",
+    "logo": null,
+    "error": "Parse Error: Invalid header token"
+  },
+  {
+    "id": "mipharma",
+    "home": "http://www.mipharma.co.kr",
+    "logo": null,
+    "error": "getaddrinfo ENOTFOUND www.mipharma.co.kr"
+  },
+  {
+    "id": "woodone",
+    "home": "http://www.woodone.co.kr",
+    "logo": "/customer-logos/woodone.ico"
+  }
+]

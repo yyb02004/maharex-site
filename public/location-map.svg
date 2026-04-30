@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#f7f8f7"/>
+  <g stroke="#d8dde0" stroke-width="20" stroke-linecap="round" fill="none">
+    <path d="M95 160 H315 V650"/>
+    <path d="M315 330 H520 L650 245 H1010"/>
+    <path d="M650 245 C720 310 780 395 830 480 L980 625"/>
+    <path d="M520 330 C585 420 615 520 615 685"/>
+    <path d="M780 110 C850 180 900 250 935 350 L1065 350"/>
+  </g>
+  <g stroke="#e34b2d" stroke-width="6" stroke-dasharray="8 13" fill="none" stroke-linecap="round">
+    <path d="M315 145 V405 C390 430 470 397 520 330 C585 420 615 520 615 685"/>
+    <path d="M315 405 C450 410 560 390 650 245 C745 285 805 405 830 480 L980 625"/>
+    <path d="M1060 120 V350 H935 C890 405 855 440 830 480"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-weight="700" fill="#1f2529">
+    <text x="60" y="70" font-size="36">마하렉스 약도</text>
+    <text x="60" y="112" font-size="20" fill="#58636d">경기도 안성시 양성면 한내로 534</text>
+    <text x="55" y="155" font-size="18">서울</text>
+    <text x="55" y="690" font-size="18">부산</text>
+    <text x="250" y="142" font-size="18">오산IC</text>
+    <text x="255" y="438" font-size="18">안성분기점</text>
+    <text x="410" y="306" font-size="18">만세터널</text>
+    <text x="625" y="222" font-size="18">양성면사무소</text>
+    <text x="742" y="128" font-size="18">양성교차로</text>
+    <text x="1030" y="110" font-size="18">서울</text>
+    <text x="1030" y="392" font-size="18">82번 국도</text>
+    <text x="792" y="512" font-size="18">392지방도</text>
+    <text x="560" y="710" font-size="18">대덕사거리</text>
+  </g>
+  <g>
+    <circle cx="315" cy="405" r="38" fill="#fff4bf" stroke="#e3b600" stroke-width="5"/>
+    <text x="315" y="412" font-family="Arial, sans-serif" font-size="18" font-weight="900" text-anchor="middle" fill="#1f2529">안성</text>
+  </g>
+  <g>
+    <circle cx="930" cy="470" r="18" fill="#ffdb00" stroke="#e34b2d" stroke-width="8"/>
+    <rect x="970" y="430" width="150" height="70" rx="4" fill="#ffffff" stroke="#c6cdd2" stroke-width="3"/>
+    <text x="1045" y="475" font-family="Arial, sans-serif" font-size="34" font-weight="900" fill="#2c9a43" text-anchor="middle">maha</text>
+    <text x="930" y="535" font-family="Arial, sans-serif" font-size="18" font-weight="800" fill="#1f2529" text-anchor="middle">마하렉스</text>
+  </g>
+  <g fill="#3b6fb6" font-family="Arial, sans-serif" font-size="18" font-weight="900">
+    <rect x="285" y="345" width="48" height="30" rx="14" fill="#3b6fb6"/>
+    <text x="309" y="367" fill="#fff" text-anchor="middle">45</text>
+    <rect x="500" y="300" width="48" height="30" rx="14" fill="#3b6fb6"/>
+    <text x="524" y="322" fill="#fff" text-anchor="middle">23</text>
+    <rect x="585" y="585" width="48" height="30" rx="14" fill="#3b6fb6"/>
+    <text x="609" y="607" fill="#fff" text-anchor="middle">38</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#58636d">
+    <text x="115" y="205">경부고속도로</text>
+    <text x="1075" y="235" transform="rotate(90 1075 235)">중부고속도로</text>
+    <text x="690" y="600">대덕면 방향</text>
+    <text x="845" y="455">양성면 진입</text>
+  </g>
+</svg>

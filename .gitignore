@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+.env*
+.npm-cache
+.tools
+*.log
+tsconfig.tsbuildinfo
