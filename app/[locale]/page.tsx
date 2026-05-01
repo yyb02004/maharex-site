@@ -10,7 +10,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <section className="relative min-h-[720px] overflow-hidden border-b border-black/10 bg-graphite text-white">
+      <section className="relative overflow-hidden border-b border-black/10 bg-graphite text-white">
         <img
           src={productImages.factoryExterior}
           alt="마하렉스 회사 전경"
@@ -18,7 +18,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         />
         <div className="absolute inset-0 bg-gradient-to-r from-graphite via-graphite/72 to-graphite/18" />
         <div className="absolute inset-0 bg-gradient-to-t from-graphite/80 via-transparent to-transparent" />
-        <div className="container relative flex min-h-[720px] items-center py-20">
+        <div className="container relative flex min-h-[620px] items-center pb-12 pt-20 md:min-h-[720px] md:py-20">
           <div className="soft-rise max-w-4xl">
             <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">MAHAREX PROCESS EQUIPMENT</p>
             <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight md:text-6xl">{c.heroTitle}</h1>
@@ -33,7 +33,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/15 bg-graphite/88 backdrop-blur">
+        <div className="relative border-t border-white/15 bg-graphite/88 backdrop-blur md:absolute md:bottom-0 md:left-0 md:right-0">
           <div className="container grid gap-px md:grid-cols-3">
             {["Reaction", "Drying", "Filtration"].map((item) => (
               <div key={item} className="process-glow border-r border-white/10 px-6 py-5 last:border-r-0">

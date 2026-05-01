@@ -102,10 +102,10 @@ export const copy = {
 };
 
 export const productImages = {
-  reactor: "/equipment/reactor.jpg",
+  reactor: "/equipment/reactor-new.jpg",
   trayVacuumDryer: "/equipment/tray-vacuum-dryer-close.jpg",
   trayVacuumDryerOpen: "/equipment/tray-vacuum-dryer-open.jpg",
-  rotaryDryer: "/equipment/rotary-dryer.jpg",
+  rotaryDryer: "/equipment/rotary-dryer-new.jpg",
   filter: "/equipment/nutsche-filter.jpg",
   mills: "/equipment/pin-mill.jpg",
   jetMill: "/equipment/jet-mill-new.jpg",
