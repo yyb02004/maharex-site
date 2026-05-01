@@ -12,8 +12,15 @@ export function generateStaticParams() {
   ];
 }
 
-export default async function AboutSubPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
-  const { slug } = await params;
+export default async function AboutSubPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+  searchParams?: Promise<{ cert?: string }>;
+}) {
+  const { locale, slug } = await params;
+  const query = searchParams ? await searchParams : {};
 
   if (slug === "vision") notFound();
 
@@ -71,6 +78,7 @@ export default async function AboutSubPage({ params }: { params: Promise<{ local
       "/certificates/pages/iso-05.png",
       "/certificates/pages/iso-06.png"
     ];
+    const activeCertificate = Number(query.cert || "1") - 1;
 
     return (
       <Section eyebrow="회사소개" title="인증 및 특허">
@@ -78,7 +86,43 @@ export default async function AboutSubPage({ params }: { params: Promise<{ local
           품질, 환경, 안전보건 경영 인증을 기반으로 안정적인 산업 장비 제작 체계를 운영합니다.
           인증서는 페이지 안에서 좌우 버튼과 썸네일로 넘겨 확인할 수 있습니다.
         </p>
-        <CertificateSlider certificates={certificates} />
+        <CertificateSlider certificates={certificates} activeIndex={activeCertificate} baseHref={`/${locale}/about/certifications`} />
+      </Section>
+    );
+  }
+
+  if (slug === "catalog") {
+    return (
+      <Section eyebrow="회사소개" title="카탈로그">
+        <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
+          <div className="overflow-hidden border border-black/10 bg-white shadow-sm">
+            <img src="/catalog-pages/page-01.png" alt="마하렉스 카탈로그 표지" className="w-full object-cover" />
+          </div>
+          <div className="border border-black/10 bg-white p-8 shadow-industrial">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-signal">PDF Download</p>
+            <h2 className="mt-4 text-2xl font-black leading-snug">마하렉스 제품 카탈로그</h2>
+            <p className="mt-5 text-sm font-semibold leading-7 text-steel">
+              반응기, 건조기, 여과기, 분쇄기 등 주요 공정 장비 정보를 PDF로 확인하실 수 있습니다.
+              설비 검토나 내부 공유가 필요할 때 다운로드해서 사용하시면 됩니다.
+            </p>
+            <div className="mt-8 grid gap-3">
+              <a
+                href="/maharex-catalog.pdf"
+                download
+                className="bg-signal px-6 py-4 text-center text-sm font-black text-white hover:bg-graphite"
+              >
+                카탈로그 다운로드
+              </a>
+              <a
+                href="/maharex-catalog.pdf"
+                target="_blank"
+                className="border border-black/15 px-6 py-4 text-center text-sm font-black text-graphite hover:border-signal hover:text-signal"
+              >
+                PDF 바로 보기
+              </a>
+            </div>
+          </div>
+        </div>
       </Section>
     );
   }

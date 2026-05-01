@@ -22,6 +22,7 @@ export const nav = {
 export const aboutMenu = [
   ["CEO 인사말", "ceo"],
   ["소개", ""],
+  ["카탈로그", "catalog"],
   ["조직도", "organization"],
   ["연혁", "history"],
   ["주요고객사", "customers"],

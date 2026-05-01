@@ -24,16 +24,23 @@ export function RfqForm({ locale }: { locale: Locale }) {
       message: String(formData.get("message") || "")
     };
 
-    const response = await fetch("/api/rfq", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    let response: Response;
+    try {
+      response = await fetch("/api/rfq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      setStatus("error");
+      setMessage("서버와 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
 
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
       setStatus("error");
-      setMessage(result.message || "접수 중 오류가 발생했습니다.");
+      setMessage(result.message || `접수 중 오류가 발생했습니다. (${response.status})`);
       return;
     }
 
