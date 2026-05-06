@@ -162,7 +162,7 @@ export function NaverRouteMap() {
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-bold leading-6 text-steel">{MAHAREX_ADDRESS}</p>
-        <a href={naverMapUrl} target="_blank" className="bg-signal px-5 py-3 text-sm font-black text-white hover:bg-graphite">
+        <a href={naverMapUrl} target="_blank" rel="noreferrer" className="bg-signal px-5 py-3 text-sm font-black text-white hover:bg-graphite">
           네이버지도에서 보기
         </a>
       </div>

@@ -19,7 +19,11 @@ const kvKey = "maharex:rfq-submissions";
 function getKvConfig() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-  return url && token ? { url, token } : null;
+  if (!url || !token) return null;
+  if (!url.startsWith("https://")) {
+    throw new Error("RFQ 저장소 URL은 https:// 주소여야 합니다.");
+  }
+  return { url, token };
 }
 
 async function kvCommand<T>(command: unknown[]): Promise<T> {

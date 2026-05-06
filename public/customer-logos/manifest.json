@@ -19,7 +19,7 @@
   },
   {
     "id": "hanseochem",
-    "home": "http://hanseochem.co.kr",
+    "home": "https://hanseochem.co.kr",
     "logo": null
   },
   {
@@ -29,12 +29,12 @@
   },
   {
     "id": "duksung",
-    "home": "http://www.duksung21.com",
+    "home": "https://www.duksung21.com",
     "logo": null
   },
   {
     "id": "dongwoo-syntech",
-    "home": "http://www.dwst.co.kr",
+    "home": "https://www.dwst.co.kr",
     "logo": null,
     "error": "getaddrinfo ENOTFOUND www.dwst.co.kr"
   },
@@ -51,12 +51,12 @@
   },
   {
     "id": "bellenc",
-    "home": "http://www.bellenc.co.kr",
+    "home": "https://www.bellenc.co.kr",
     "logo": "/customer-logos/bellenc.gif"
   },
   {
     "id": "unionchemical",
-    "home": "http://www.unionchem.co.kr",
+    "home": "https://www.unionchem.co.kr",
     "logo": "/customer-logos/unionchemical.ico"
   },
   {
@@ -67,19 +67,19 @@
   },
   {
     "id": "sungilbioex",
-    "home": "http://www.bioex.co.kr",
+    "home": "https://www.bioex.co.kr",
     "logo": null,
     "error": "Parse Error: Invalid header token"
   },
   {
     "id": "mipharma",
-    "home": "http://www.mipharma.co.kr",
+    "home": "https://www.mipharma.co.kr",
     "logo": null,
     "error": "getaddrinfo ENOTFOUND www.mipharma.co.kr"
   },
   {
     "id": "woodone",
-    "home": "http://www.woodone.co.kr",
+    "home": "https://www.woodone.co.kr",
     "logo": "/customer-logos/woodone.ico"
   }
 ]
