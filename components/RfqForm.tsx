@@ -70,6 +70,15 @@ export function RfqForm({ locale }: { locale: Locale }) {
         ))}
       </select>
       <textarea name="message" className="min-h-44 border border-black/15 p-4" placeholder={ko ? "공정 조건 및 요청 사항" : "Process conditions and request"} required />
+      <label className="flex items-start gap-3 border border-black/10 bg-[#f5f6f4] p-4 text-sm font-semibold leading-6 text-steel">
+        <input name="privacy" type="checkbox" required className="mt-1 h-4 w-4 shrink-0 accent-[#dc4b2d]" />
+        <span>
+          개인정보 수집 및 이용에 동의합니다.
+          <a href={`/${locale}/privacy`} target="_blank" className="ml-2 font-black text-graphite underline decoration-signal underline-offset-4">
+            개인정보처리방침 보기
+          </a>
+        </span>
+      </label>
       <button className="bg-signal px-6 py-4 text-sm font-black text-white hover:bg-graphite disabled:opacity-60" type="submit" disabled={status === "sending"}>
         {status === "sending" ? "접수 중..." : copy[locale].rfq}
       </button>

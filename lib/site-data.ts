@@ -126,8 +126,9 @@ export const products = [
       details:
         "반응기는 다양한 산업에서 재료의 화학 반응을 일으키기 위해 설계된 장치로, 주로 혼합, 냉각과 가열, 진공 시스템 등이 합쳐져 구성됩니다. 마하렉스의 반응기는 파일럿(PILOT) 스케일부터 생산용 스케일까지 다양한 공정에 적용 가능하며 재료, 온도, 압력, 점도, 혼합 상태, 세정 조건을 함께 검토해 안정적인 반응 환경을 구현합니다. 원료 특성에 맞는 교반 방식과 밀폐 구조, Jacket 또는 Coil을 통한 열 제어, CIP 적용 여부까지 고려하여 공정별로 최적화된 반응 결과를 제공합니다.",
       specs: [
+        "STS304 / STS316L / Hastelloy 재질 제작 가능",
         "Jacket을 통한 반응 온도 조절 가능",
-        "Mechanical Seal 및 Gland Packing을 이용한 탱크 밀폐",
+        "Mechanical Seal 및 Lip Seal을 이용한 탱크 밀폐",
         "Paddle, Turbine, Anchor Type 등 공정별 임펠러 적용",
         "내용물에 따라 R.P.M 조절 가능",
         "CIP 적용으로 간편한 세척 가능"
@@ -147,7 +148,7 @@ export const products = [
       summary: "Custom reaction vessels for viscous media, heating, cooling, vacuum, and pressure duties.",
       details:
         "Jackets, coils, agitators, seals, and nozzle layouts are engineered around reaction goals for chemical, material, and environmental plants.",
-      specs: ["SUS304 / SUS316L / special alloys", "Vacuum and pressure designs", "Anchor, paddle, and turbine agitation", "CIP/SIP options"],
+      specs: ["STS304 / STS316L / Hastelloy / special alloys", "Vacuum and pressure designs", "Anchor, paddle, and turbine agitation", "CIP/SIP options"],
       applications: ["Fine chemical reactions", "Battery materials", "Resin and polymer processing", "Environmental recycling processes"],
       engineering: ["Thermal jacket and internal coil configuration", "Agitator selection by viscosity and torque", "Optimized manhole, nozzle, and instrument locations"]
     }
@@ -162,7 +163,7 @@ export const products = [
       summary: "저온 진공 건조가 필요한 분말, 과립, 고부가 소재용 건조 설비.",
       details:
         "Tray 안에 제품을 얇게 펼쳐 넣은 후 내부는 진공을 유지하고, 외부 자켓 및 열판에는 온수를 순환시켜 제품을 건조시키는 장치입니다. 압력을 낮춰 끓는점을 감소시킴으로써 상대적으로 낮은 온도에서 용매나 수분을 증발시켜, 열에 민감한 물질을 손상 없이 건조할 수 있습니다.",
-      specs: ["저온 건조물이 품질 저하 없이 균일화 가능", "온수·증기 열원으로 제어가 간단", "손실이 적고 건조 효율이 양호"],
+      specs: ["STS304 / STS316L / Hastelloy 재질 제작 가능", "저온 건조물이 품질 저하 없이 균일화 가능", "온수·증기 열원으로 제어가 간단", "손실이 적고 건조 효율이 양호"],
       applications: ["식품분야", "제약분야", "기타분야", "화장품 분야", "화학 산업"],
       engineering: [
         "과일·야채 분말, 건강식품 원료, 정제, 과립, 분말 건조",
@@ -193,6 +194,7 @@ export const products = [
       details:
         "로터리 건조기는 수평 회전식 건조기로 구조가 간단하고 기계의 트러블 발생이 적어 다양한 제품 건조에 적합합니다. 고속 기류에 의한 열풍 건조뿐 아니라 간접 열에 의한 건조까지 가능해 슬러지 형태의 제품을 건조하고 분말화하는 데 적합합니다. 점성이 높아지거나 고형화 현상이 있는 제품 건조에도 효율적으로 사용할 수 있습니다.",
       specs: [
+        "STS304 / STS316L / Hastelloy 재질 제작 가능",
         "열풍 건조에 의한 전열 면적 최대화 가능",
         "부착성이 있는 원료의 건조 가능",
         "로터리 건조기 패들에 의한 파쇄 효과",
@@ -228,7 +230,7 @@ export const products = [
       summary: "슬러리 분리, 고액 분리, 회수 공정에 맞춘 산업용 여과 장치.",
       details:
         "필터 면적, 케이크 배출, 세정 방식, 재질 선정까지 공정 조건에 맞춰 설계해 운전 안정성을 높입니다.",
-      specs: ["고액 분리 공정", "내식 재질 선택", "케이크 배출 구조", "세정 및 점검 접근성"],
+      specs: ["STS304 / STS316L / Hastelloy 재질 제작 가능", "고액 분리 공정", "내식 재질 선택", "케이크 배출 구조", "세정 및 점검 접근성"],
       applications: ["슬러리 고액분리", "용매 회수", "케이크 세정", "폐수·환경 공정"],
       engineering: ["필터 면적과 압력손실 검토", "케이크 배출 방식 설계", "내식성과 세정성을 고려한 재질 선정"]
     },
@@ -254,6 +256,7 @@ export const products = [
       details:
         "분쇄기는 원료 특성과 목표 입도, 처리량, 세정성, 분진 관리 조건을 고려해 선정합니다. Pin Mill은 고속 회전 핀의 충격력으로 원료를 분쇄하고, Jet Mill은 압축 공기 또는 가스를 이용해 미분쇄에 대응합니다. Fitz Mill은 스크린과 회전 블레이드를 통해 조분쇄, 정립, 입도 균일화 공정에 적용합니다.",
       specs: [
+        "STS304 / STS316L / Hastelloy 접액부 제작 검토 가능",
         "Pin Mill: 고속 회전 핀 충격에 의한 균일 분쇄",
         "Jet Mill: 열 발생과 금속 오염을 줄인 미분쇄",
         "Fitz Mill: 스크린 교체로 입도 조절이 쉬운 정립·조분쇄",

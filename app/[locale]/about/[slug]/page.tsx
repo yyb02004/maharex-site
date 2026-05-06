@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { CertificateSlider } from "@/components/CertificateSlider";
+import { NaverRouteMap } from "@/components/NaverRouteMap";
 import { Section } from "@/components/Section";
 import { aboutMenu, aboutSections, productImages } from "@/lib/site-data";
 
@@ -283,36 +284,21 @@ export default async function AboutSubPage({
 
     return (
       <Section eyebrow="회사소개" title="오시는길">
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <div className="bg-graphite p-8 text-white shadow-industrial">
-              <p className="text-sm font-black uppercase tracking-[0.24em] text-white/55">Address</p>
-              <h2 className="mt-4 text-2xl font-black leading-snug md:text-3xl">{address}</h2>
-              <p className="mt-6 max-w-md text-sm leading-7 text-white/70">방문 상담 또는 설비 검토는 사전 연락 후 방문해 주세요.</p>
-              <div className="mt-5 space-y-1 text-sm font-bold text-white/78">
-                <p>Tel. 031-673-5888</p>
-                <p>Fax. 031-673-5288</p>
-              </div>
-              <a href={mapUrl} target="_blank" className="mt-8 inline-flex bg-signal px-6 py-4 text-sm font-black text-white hover:bg-white hover:text-graphite">
-                네이버 지도에서 보기
-              </a>
+        <div className="mb-8">
+          <div className="bg-graphite p-8 text-white shadow-industrial">
+            <p className="text-sm font-black uppercase tracking-[0.24em] text-white/55">Address</p>
+            <h2 className="mt-4 text-2xl font-black leading-snug md:text-3xl">{address}</h2>
+            <p className="mt-6 max-w-xl text-sm leading-7 text-white/70">방문 상담 또는 설비 검토는 사전 연락 후 방문해 주세요.</p>
+            <div className="mt-5 space-y-1 text-sm font-bold text-white/78">
+              <p>Tel. 031-673-5888</p>
+              <p>Fax. 031-673-5288</p>
             </div>
-            <div className="mt-6 grid gap-4">
-              <div className="border border-black/10 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-black">고속도로 이용</h3>
-                <p className="mt-4 text-sm font-semibold leading-7 text-steel">경부고속도로 또는 평택제천고속도로 이용 후 안성·양성 방면으로 진입합니다.</p>
-              </div>
-              <div className="border border-black/10 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-black">국도 이용</h3>
-                <p className="mt-4 text-sm font-semibold leading-7 text-steel">안성 시내 또는 용인·평택 방면에서 양성면 방향으로 이동합니다.</p>
-              </div>
-            </div>
-          </div>
-          <div className="overflow-hidden border border-black/10 bg-white p-4 shadow-sm">
-            <img src="/location-map.svg" alt="마하렉스 오시는길 약도" className="w-full object-contain" />
-            <p className="mt-4 px-2 pb-2 text-sm font-bold leading-7 text-steel">방문 전 차량 내비게이션에서 주소를 검색해 주세요.</p>
+            <a href={mapUrl} target="_blank" className="mt-8 inline-flex bg-signal px-6 py-4 text-sm font-black text-white hover:bg-white hover:text-graphite">
+              네이버지도에서 보기
+            </a>
           </div>
         </div>
+        <NaverRouteMap />
       </Section>
     );
   }

@@ -35,10 +35,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
         <div className="relative border-t border-white/15 bg-graphite/88 backdrop-blur md:absolute md:bottom-0 md:left-0 md:right-0">
           <div className="container grid gap-px md:grid-cols-3">
-            {["Reaction", "Drying", "Filtration"].map((item) => (
-              <div key={item} className="process-glow border-r border-white/10 px-6 py-5 last:border-r-0">
-                <span className="block text-xs uppercase tracking-[0.24em] text-white/50">Process</span>
-                <strong className="mt-1 block text-xl">{item}</strong>
+            {[
+              ["Reaction", "Custom Reactor Systems"],
+              ["Drying", "Vacuum Drying Solutions"],
+              ["Filtration", "Pressure & Vacuum Filtration"]
+            ].map(([title, description]) => (
+              <div key={title} className="process-glow border-r border-white/10 px-6 py-5 last:border-r-0">
+                <strong className="block text-xl font-black text-white">{title}</strong>
+                <span className="mt-2 block text-sm font-bold leading-6 text-white/62">{description}</span>
               </div>
             ))}
           </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Locale, copy, products } from "@/lib/site-data";
+import { Locale, products } from "@/lib/site-data";
 
 type Product = (typeof products)[number];
 
@@ -14,7 +14,9 @@ export function ProductCard({ product, locale }: { product: Product; locale: Loc
         <p className="text-xs font-black uppercase tracking-[0.22em] text-cobalt">{p.category}</p>
         <h3 className="mt-3 text-2xl font-black">{p.name}</h3>
         <p className="mt-3 min-h-20 text-sm leading-7 text-steel">{p.summary}</p>
-        <span className="mt-6 inline-flex border-b-2 border-signal pb-1 text-sm font-black text-graphite">{copy[locale].rfq}</span>
+        <span className="mt-6 inline-flex border-b-2 border-signal pb-1 text-sm font-black text-graphite">
+          상세 보기
+        </span>
       </div>
     </Link>
   );
