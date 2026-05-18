@@ -79,60 +79,58 @@ function RecentProjectTable({ groups }: { groups: Array<[number, ProjectItem[]]>
 
 function LegacyTimeline({ groups }: { groups: Array<[number, ProjectItem[]]> }) {
   const [expanded, setExpanded] = useState(false);
+  const visibleGroups = expanded ? groups : groups.slice(0, 3);
 
   return (
-    <section className="border border-black/10 bg-white p-5 shadow-sm md:p-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section className="mt-20 border-t border-black/10 pt-14">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">History</p>
-          <h2 className="mt-3 text-3xl font-black leading-tight text-graphite md:text-4xl">주요 연혁 / 과거 수행실적</h2>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Archive</p>
+          <h2 className="mt-3 text-3xl font-black text-graphite md:text-4xl">2012~2020 과거 수행실적</h2>
         </div>
-        <button
-          type="button"
-          onClick={() => setExpanded((value) => !value)}
-          className="border border-cobalt/20 px-5 py-3 text-sm font-black text-cobalt transition hover:bg-cobalt hover:text-white"
-        >
+        <button type="button" onClick={() => setExpanded((value) => !value)} className="border border-black/15 bg-white px-5 py-3 text-sm font-black hover:border-signal hover:text-signal">
           {expanded ? "간략히 보기" : "2012~2020 실적 보기"}
         </button>
       </div>
 
-      <div className="mt-8 space-y-6">
-        {groups.map(([year, items]) => {
-          const visibleItems = expanded ? items : items.slice(0, 2);
-
-          return (
-            <div key={year} className="grid gap-4 md:grid-cols-[110px_1fr]">
-              <div className="border-l-4 border-signal pl-4">
-                <p className="text-2xl font-black text-graphite">{year}</p>
-              </div>
-              <div className="space-y-3 border-l border-cobalt/15 pl-5">
-                {visibleItems.map((project) => (
-                  <article key={project.id} className="relative bg-[#f7f8f8] p-4 transition hover:bg-cobalt/5">
-                    <span className="absolute -left-[27px] top-5 h-3 w-3 border-2 border-white bg-cobalt" />
-                    <strong className="text-sm font-black text-cobalt">
-                      {project.month ? `${project.month}월 · ` : ""}
-                      {project.client}
-                    </strong>
-                    <h3 className="mt-2 text-base font-black leading-snug text-graphite">{project.title}</h3>
-                  </article>
-                ))}
-              </div>
+      <div className="space-y-5">
+        {visibleGroups.map(([year, items]) => (
+          <div key={year} className="grid gap-4 border-l-4 border-cobalt bg-white p-5 shadow-sm md:grid-cols-[120px_1fr]">
+            <div>
+              <span className="text-3xl font-black text-cobalt">{year}</span>
             </div>
-          );
-        })}
+            <div className="grid gap-3">
+              {items.map((project) => (
+                <div key={project.id} className="border-b border-black/10 pb-3 last:border-b-0 last:pb-0">
+                  <p className="text-sm font-black text-signal">{project.month ? `${project.month}월` : "-"}</p>
+                  <p className="mt-1 text-sm font-black text-cobalt">{project.client}</p>
+                  <p className="mt-1 text-base font-bold leading-7 text-graphite">{project.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
 export function ReferenceExplorer() {
-  const recentGroups = useMemo(() => groupByYear(projects.filter((project) => project.year >= 2021)), []);
-  const legacyGroups = useMemo(() => groupByYear(projects.filter((project) => project.year >= 2012 && project.year <= 2020)), []);
+  const recent = useMemo(() => projects.filter((project) => project.year >= 2021), []);
+  const legacy = useMemo(() => projects.filter((project) => project.year >= 2012 && project.year <= 2020), []);
 
   return (
-    <div className="space-y-16">
-      <RecentProjectTable groups={recentGroups} />
-      <LegacyTimeline groups={legacyGroups} />
+    <div>
+      <div className="mb-10 border border-black/10 bg-white p-6 shadow-sm">
+        <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Recent Project Reference</p>
+        <h2 className="mt-3 text-3xl font-black text-graphite md:text-4xl">최근 주요 납품실적</h2>
+        <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-steel">
+          2021년 이후 주요 프로젝트를 연도별 역순으로 정리했습니다.
+        </p>
+      </div>
+
+      <RecentProjectTable groups={groupByYear(recent)} />
+      <LegacyTimeline groups={groupByYear(legacy)} />
     </div>
   );
 }

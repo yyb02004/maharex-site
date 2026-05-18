@@ -8,9 +8,9 @@ export default function EngineeringPage() {
 
   const process = [
     ["01", "고객 요구 접수", "RFQ, 공정 조건, 적용 제품, 설치 현장 정보를 수집합니다."],
-    ["02", "설계 검토", "재질, 용량, 압력, 진공, 가열 방식, 세정성과 유지보수성을 검토합니다."],
+    ["02", "설계 검토", "재질, 용량, 압력, 진공, 가열 방식, 인정성과 유지보수성을 검토합니다."],
     ["03", "구매 및 제작 관리", "주요 자재와 외주 공정의 사양을 확인하고 제작 기준을 관리합니다."],
-    ["04", "공정 검사", "용접 상태, 조립 상태, 노즐 위치, 외관, 주요 치수 등을 점검합니다."],
+    ["04", "공정 검사", "용접 상태, 조립 상태, 용접 위치, 외관, 주요 치수 등을 점검합니다."],
     ["05", "최종 검사 및 출하", "완성 장비의 기능, 문서, 출하 상태를 확인합니다."],
     ["06", "사후 개선", "설치·시운전 이후 피드백을 반영해 기준을 개선합니다."]
   ];
@@ -22,9 +22,9 @@ export default function EngineeringPage() {
       <section className="bg-graphite py-24 text-white">
         <div className="container">
           <p className="text-sm font-black uppercase tracking-[0.28em] text-signal">Quality Management</p>
-          <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight md:text-6xl">품질경영 프로세스</h1>
+          <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight md:text-6xl">품질관리 프로세스</h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-white/70">
-            설계 검토부터 제작, 검사, 출하, 사후 개선까지 이어지는 품질관리 체계로 신뢰할 수 있는 산업 장비를 제작합니다.
+            설계 검토부터 제작, 검사, 출하, 사후 개선까지 이어지는 품질관리 체계로 신뢰할 수 있는 산업 설비를 제작합니다.
           </p>
         </div>
       </section>
@@ -47,7 +47,7 @@ export default function EngineeringPage() {
         <div className="container">
           <div className="mb-12">
             <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Process</p>
-            <h2 className="mt-3 text-3xl font-black md:text-4xl">품질관리 프로세스</h2>
+            <h2 className="mt-3 text-3xl font-black md:text-4xl">품질관리 흐름</h2>
           </div>
           <div className="grid gap-4 lg:grid-cols-6">
             {process.map(([number, title, text]) => (
@@ -67,7 +67,7 @@ export default function EngineeringPage() {
             <p className="text-xs font-black uppercase tracking-[0.24em] text-signal">Control Points</p>
             <h2 className="mt-3 max-w-xl text-3xl font-black leading-tight md:text-4xl">제작 품질을 확인하는 핵심 관리 항목</h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-steel md:text-lg">
-              장비별 사양과 고객 요구 문서에 따라 세부 검사항목은 달라질 수 있습니다.
+              장비별 사양과 고객 요구 문서에 따라 내부 검사항목은 달라질 수 있으며, 출하 전 주요 조건을 다시 확인합니다.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">

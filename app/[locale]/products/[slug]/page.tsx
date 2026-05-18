@@ -13,8 +13,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   const p = product.ko;
   const c = copy.ko;
-  const usageTitle = "usageTitle" in p ? p.usageTitle : "적용가능 산업";
-  const notesTitle = "notesTitle" in p ? p.notesTitle : "적용 공정";
   const gallery = "gallery" in product ? product.gallery : [];
 
   return (
@@ -25,7 +23,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">{p.category}</p>
             <h1 className="mt-4 text-4xl font-black leading-tight md:text-6xl">{p.name}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{p.summary}</p>
-            <Link href={`/ko/contact?product=${product.slug}`} className="mt-9 inline-flex bg-signal px-6 py-4 text-sm font-black text-white hover:bg-white hover:text-graphite">
+            <Link href={`/ko/contact?product=${product.slug}`} className="mt-9 inline-flex bg-signal px-6 py-4 text-sm font-black text-white transition hover:bg-white hover:text-graphite">
               {c.rfq}
             </Link>
           </div>
@@ -39,16 +37,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <div className="container">
           <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Product Overview</p>
           <h2 className="mt-3 max-w-4xl text-3xl font-black leading-tight md:text-4xl">공정에 맞춰 깊게 설계하는 제품 상세</h2>
-          <div className="mt-10 max-w-5xl">
+
+          <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <p className="text-base leading-8 text-steel md:text-lg">{p.details}</p>
-          </div>
-          <div className="mt-8 grid gap-3 lg:grid-cols-2">
-            {p.specs.map((spec) => (
-              <div key={spec} className="flex items-center justify-between border border-black/10 bg-white p-5 shadow-sm">
-                <span className="font-bold">{spec}</span>
-                <span className="ml-5 h-2 w-2 shrink-0 bg-signal" />
-              </div>
-            ))}
+            <div className="grid gap-3">
+              {p.specs.map((spec) => (
+                <div key={spec} className="flex items-center justify-between border border-black/10 bg-white p-5 shadow-sm">
+                  <span className="font-bold">{spec}</span>
+                  <span className="ml-5 h-2 w-2 shrink-0 bg-signal" />
+                </div>
+              ))}
+            </div>
           </div>
 
           {gallery.length ? (
@@ -66,7 +65,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <div className="mt-14 grid gap-6 lg:grid-cols-2">
             <div className="border border-black/10 bg-white p-8">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-cobalt">Product Usage</p>
-              <h3 className="mt-3 text-2xl font-black md:text-3xl">{usageTitle}</h3>
+              <h3 className="mt-3 text-2xl font-black md:text-3xl">적용 가능 산업</h3>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {p.applications.map((item, index) => (
                   <div key={item} className="border border-black/10 px-4 py-4">
@@ -76,9 +75,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 ))}
               </div>
             </div>
+
             <div className="border border-black/10 bg-white p-8">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-cobalt">Process Notes</p>
-              <h3 className="mt-3 text-2xl font-black md:text-3xl">{notesTitle}</h3>
+              <h3 className="mt-3 text-2xl font-black md:text-3xl">적용 공정</h3>
               <div className="mt-6 space-y-4">
                 {p.engineering.map((item, index) => (
                   <div key={item} className="flex gap-4 border-b border-black/10 pb-4 last:border-b-0">
@@ -91,7 +91,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
 
           <div className="mt-14 bg-graphite p-8 text-white">
-            <h3 className="text-2xl font-black md:text-3xl">RFQ에 필요한 정보</h3>
+            <h3 className="text-2xl font-black md:text-3xl">RFQ 검토에 필요한 정보</h3>
             <div className="mt-6 grid gap-4 md:grid-cols-4">
               {["원료명·특성", "처리량", "운전 온도·압력", "재질 및 옵션"].map((item) => (
                 <div key={item} className="border border-white/15 p-4 text-sm font-bold text-white/80">
@@ -99,7 +99,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
               ))}
             </div>
-            <Link href={`/ko/contact?product=${product.slug}`} className="mt-8 inline-flex bg-white px-6 py-4 text-sm font-black text-graphite hover:bg-signal hover:text-white">
+            <Link href={`/ko/contact?product=${product.slug}`} className="mt-8 inline-flex bg-white px-6 py-4 text-sm font-black text-graphite transition hover:bg-signal hover:text-white">
               {c.rfq}
             </Link>
           </div>

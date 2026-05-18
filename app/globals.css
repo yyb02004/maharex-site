@@ -96,6 +96,32 @@ li {
   animation: processSweep 4.8s ease-in-out infinite;
 }
 
+.dropdown-link {
+  display: block;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #141719;
+}
+
+.dropdown-link:hover {
+  background: #f4f6f6;
+  color: #dc4a2a;
+}
+
+.mobile-sub-link {
+  background: #f4f6f6;
+  padding: 0.85rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #4b5861;
+}
+
+.mobile-sub-link:hover {
+  color: #dc4a2a;
+}
+
 @keyframes heroDrift {
   from {
     transform: scale(1.03) translateY(0);
