@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     try {
       const notification = await notifyTelegramRfq(submission);
       if (!saved && notification.skipped) {
+        console.error("Telegram RFQ notification skipped because TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID are missing.");
         throw new Error("RFQ storage failed and Telegram notification is not configured.");
       }
     } catch (error) {

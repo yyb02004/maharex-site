@@ -54,10 +54,6 @@ function shouldUseKv() {
   return Boolean(getKvConfig());
 }
 
-function isVercelRuntime() {
-  return Boolean(process.env.VERCEL);
-}
-
 async function readKvSubmissions(): Promise<RfqSubmission[]> {
   const raw = await kvCommand<string | null>(["GET", kvKey]);
   if (!raw) return [];
@@ -98,10 +94,6 @@ export async function addRfqSubmission(input: Omit<RfqSubmission, "id" | "create
     return submission;
   }
 
-  if (isVercelRuntime()) {
-    throw new Error("Vercel 배포 환경에서는 Vercel KV 연결이 필요합니다.");
-  }
-
   await mkdir(dataDir, { recursive: true });
   await writeFile(dataFile, JSON.stringify(submissions, null, 2), "utf8");
   return submission;
@@ -114,10 +106,6 @@ export async function deleteRfqSubmission(id: string) {
   if (shouldUseKv()) {
     await writeKvSubmissions(next);
     return next.length !== submissions.length;
-  }
-
-  if (isVercelRuntime()) {
-    throw new Error("Vercel 배포 환경에서는 Vercel KV 연결이 필요합니다.");
   }
 
   await mkdir(dataDir, { recursive: true });
