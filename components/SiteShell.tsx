@@ -94,7 +94,7 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
 
           <div className="text-sm leading-7 text-white/68">
             <strong className="block text-white">회사 정보</strong>
-            <p className="mt-2">상호명 : (주)마하렉스</p>
+            <p className="mt-2">상호명 : ㈜마하렉스</p>
             <p>사업자등록번호 : 125-81-78072</p>
             <p>주소 : 경기도 안성시 양성면 한내로 534</p>
             <p>대표 이메일 : maharex@naver.com</p>

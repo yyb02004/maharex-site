@@ -39,7 +39,7 @@ export default function PrivacyPage() {
           <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Privacy Policy</p>
           <h1 className="mt-4 text-4xl font-black leading-tight md:text-5xl">개인정보처리방침</h1>
           <p className="mt-5 max-w-3xl text-base font-semibold leading-8 text-steel">
-            (주)마하렉스는 홈페이지 문의 및 견적 요청 과정에서 수집되는 개인정보를 안전하게 관리하고,
+            ㈜마하렉스는 홈페이지 문의 및 견적 요청 과정에서 수집되는 개인정보를 안전하게 관리하고,
             관련 법령에 따라 필요한 범위 내에서만 이용합니다.
           </p>
         </div>

@@ -70,7 +70,7 @@ export function NaverRouteMap() {
         });
       }
 
-      const infoContent = `<div style="padding:10px 14px;font-size:13px;font-weight:700;color:#111719;">(주)마하렉스<br/>${MAHAREX_ADDRESS}</div>`;
+      const infoContent = `<div style="padding:10px 14px;font-size:13px;font-weight:700;color:#111719;">㈜마하렉스<br/>${MAHAREX_ADDRESS}</div>`;
 
       if (!infoWindowRef.current) {
         infoWindowRef.current = new maps.InfoWindow({

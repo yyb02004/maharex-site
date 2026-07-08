@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CertificateSlider } from "@/components/CertificateSlider";
 import { NaverRouteMap } from "@/components/NaverRouteMap";
@@ -28,9 +28,9 @@ export default async function AboutSubPage({
           <div className="mb-14">
             <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">CEO Message</p>
             <h1 className="mt-4 max-w-4xl text-3xl font-black leading-tight md:text-5xl">
-              기술력 있는 신뢰의 기업, <span className="text-cobalt">(주)마하렉스</span>와 함께 하십시오.
+              기술력 있는 신뢰의 기업, <span className="text-cobalt">㈜마하렉스</span>와 함께 하십시오.
             </h1>
-            <p className="mt-4 inline-block bg-steel px-4 py-2 text-sm font-bold text-white">(주)마하렉스 홈페이지에 오신 것을 환영합니다.</p>
+            <p className="mt-4 inline-block bg-steel px-4 py-2 text-sm font-bold text-white">㈜마하렉스 홈페이지에 오신 것을 환영합니다.</p>
           </div>
 
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
@@ -196,35 +196,34 @@ export default async function AboutSubPage({
 
   if (slug === "customers") {
     const customers = [
-      ["(주)천보", "/Chunbo-Logo.JPG"],
-      ["(주)천보신소재", "/Chunbo-Logo.JPG"],
-      ["(주)천보비엘에스", "/Chunbo-Logo.JPG"],
-      ["(주)파마코스텍", "/Pharma-Logo.jpg"],
-      ["(주)한서켐", ""],
-      ["(주)한불화농", ""],
-      ["폴라리스AI파마", ""],
-      ["YCIA Advanced", ""],
-      ["(주)에이치에스바이오", ""],
-      ["(주)J2H Bio Tech", ""],
-      ["(주)벨이앤씨", ""],
-      ["(주)유니온케미칼", ""],
-      ["(주)MS유니켐", ""],
-      ["(주)이지켐", ""]
+      ["㈜천보", "/Chunbo-Logo.JPG"],
+      ["㈜천보신소재", "/Chunbo-Logo.JPG"],
+      ["㈜천보비엘에스", "/Chunbo-Logo.JPG"],
+      ["㈜파마코스텍", "/Pharma-Logo.jpg"],
+      ["그린생명과학㈜", ""],
+      ["동국생명과학㈜", ""],
+      ["성도이엔지", ""],
+      ["㈜위매스", ""],
+      ["인디켐㈜", ""],
+      ["㈜Bell E&C", ""],
+      ["㈜CMDL", ""],
+      ["TTT", ""],
+      ["YCI Advanced(YCI 어드밴스드)", ""]
     ];
 
     return (
       <Section eyebrow="Customers" title="주요 고객사">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {customers.map(([name, logo]) => (
-            <div key={name} className="flex min-h-28 items-center justify-center border border-black/10 bg-white p-5 text-center shadow-sm">
-              {logo ? <img src={logo} alt={name} className="max-h-12 max-w-[170px] object-contain" /> : <span className="text-lg font-black text-graphite">{name}</span>}
+            <div key={name} className="flex min-h-32 flex-col items-center justify-center gap-3 border border-black/10 bg-white p-5 text-center shadow-sm">
+              {logo ? <img src={logo} alt="" className="max-h-12 max-w-[170px] object-contain" /> : null}
+              <span className="text-lg font-black text-graphite">{name}</span>
             </div>
           ))}
         </div>
       </Section>
     );
   }
-
   if (slug === "location") {
     return (
       <Section eyebrow="Location" title="오시는길">
@@ -260,3 +259,4 @@ export default async function AboutSubPage({
     </Section>
   );
 }
+

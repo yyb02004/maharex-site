@@ -285,11 +285,11 @@ export const references = {
   ko: [
     "천보·천보신소재·천보BLS 반응·건조 설비",
     "파마코스텍 Jet Mill 및 Tray Vacuum Dryer",
-    "YCIA Advanced Nutsche Filter",
+    "YCI Advanced(YCI 어드밴스드) Nutsche Filter",
     "CMDL Nutsche Filter",
     "인디켐 Tray Vacuum Dryer 외 제작 설치"
   ],
-  en: ["Chunbo group process equipment", "Pharmacos Jet Mill and Tray Vacuum Dryer", "YCIA Advanced Nutsche Filter", "CMDL Nutsche Filter"]
+  en: ["Chunbo group process equipment", "Pharmacos Jet Mill and Tray Vacuum Dryer", "YCI Advanced(YCI Advanced) Nutsche Filter", "CMDL Nutsche Filter"]
 } as const;
 
 export const engineering = {

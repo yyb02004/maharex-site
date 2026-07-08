@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addRfqSubmission } from "@/lib/rfq-store";
+import { notifyTelegramRfq } from "@/lib/telegram";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,6 +24,12 @@ export async function POST(request: Request) {
     }
 
     const submission = await addRfqSubmission({ company, name, email, phone, product, message });
+    try {
+      await notifyTelegramRfq(submission);
+    } catch (error) {
+      console.error("Telegram RFQ notification failed", error);
+    }
+
     return NextResponse.json({ ok: true, submission });
   } catch (error) {
     console.error("RFQ submission failed", error);

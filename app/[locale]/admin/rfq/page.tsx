@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { AdminLoginForm } from "@/components/AdminLoginForm";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 import { ADMIN_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
-import { readRfqSubmissions } from "@/lib/rfq-store";
+import { readRfqSubmissions, type RfqSubmission } from "@/lib/rfq-store";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +36,14 @@ export default async function AdminRfqPage({ searchParams }: { searchParams?: Pr
     );
   }
 
-  const submissions = await readRfqSubmissions();
+  let submissions: RfqSubmission[] = [];
+  let loadError = false;
+
+  try {
+    submissions = await readRfqSubmissions();
+  } catch {
+    loadError = true;
+  }
 
   return (
     <section className="py-24">
@@ -49,6 +56,12 @@ export default async function AdminRfqPage({ searchParams }: { searchParams?: Pr
           </div>
           <AdminLogoutButton />
         </div>
+
+        {loadError ? (
+          <p className="mb-6 bg-white px-5 py-4 text-sm font-bold text-signal shadow-sm">
+            견적 요청 데이터를 불러오지 못했습니다. 저장소 설정을 확인해 주세요.
+          </p>
+        ) : null}
 
         {submissions.length ? (
           <div className="grid gap-4">
