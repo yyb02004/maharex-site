@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addRfqSubmission, getRfqStorageStatus, type RfqSubmission } from "@/lib/rfq-store";
+import { addRfqSubmission, checkRfqStorage, getRfqStorageStatus, type RfqSubmission } from "@/lib/rfq-store";
 import { getTelegramStatus, notifyTelegramRfq } from "@/lib/telegram";
 
 export const runtime = "nodejs";
@@ -13,7 +13,16 @@ function createRfqSubmission(input: Omit<RfqSubmission, "id" | "createdAt">): Rf
   };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  if (url.searchParams.get("check") === "1") {
+    return NextResponse.json({
+      ok: true,
+      rfqStorage: await checkRfqStorage(),
+      telegram: getTelegramStatus()
+    });
+  }
+
   return NextResponse.json({
     ok: true,
     rfqStorage: getRfqStorageStatus(),

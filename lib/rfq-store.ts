@@ -39,16 +39,22 @@ function getKvConfig() {
 }
 
 export function getRfqStorageStatus() {
-  const hasRestUrl = Boolean(pickEnv("KV_REST_API_URL", "UPSTASH_REDIS_REST_URL", "REDIS_REST_API_URL"));
+  const restUrl = pickEnv("KV_REST_API_URL", "UPSTASH_REDIS_REST_URL", "REDIS_REST_API_URL");
+  const hasRestUrl = Boolean(restUrl);
   const hasRestToken = Boolean(pickEnv("KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_TOKEN", "REDIS_REST_API_TOKEN"));
 
   return {
     runtime: process.env.VERCEL ? "vercel" : "local",
     kvConfigured: hasRestUrl && hasRestToken,
     kvUrlConfigured: hasRestUrl,
+    kvUrlLooksHttps: restUrl ? restUrl.startsWith("https://") : false,
     kvTokenConfigured: hasRestToken,
     fileFallbackPath: dataFile
   };
+}
+
+function safeError(error: unknown) {
+  return error instanceof Error ? error.message.slice(0, 300) : String(error).slice(0, 300);
 }
 
 async function kvCommand<T>(command: unknown[]): Promise<T> {
@@ -89,6 +95,39 @@ async function readKvSubmissions(): Promise<RfqSubmission[]> {
 
 async function writeKvSubmissions(submissions: RfqSubmission[]) {
   await kvCommand<"OK">(["SET", kvKey, JSON.stringify(submissions)]);
+}
+
+export async function checkRfqStorage() {
+  const status = getRfqStorageStatus();
+  const result = {
+    ...status,
+    readOk: false,
+    writeOk: false,
+    readError: "",
+    writeError: ""
+  };
+
+  if (!status.kvConfigured) {
+    result.readError = "KV/Redis REST URL 또는 TOKEN이 설정되어 있지 않습니다.";
+    result.writeError = result.readError;
+    return result;
+  }
+
+  try {
+    await kvCommand<string | null>(["GET", kvKey]);
+    result.readOk = true;
+  } catch (error) {
+    result.readError = safeError(error);
+  }
+
+  try {
+    await kvCommand<"OK">(["SET", `maharex:rfq-diagnostic:${Date.now()}`, "ok", "EX", 60]);
+    result.writeOk = true;
+  } catch (error) {
+    result.writeError = safeError(error);
+  }
+
+  return result;
 }
 
 export async function readRfqSubmissions(): Promise<RfqSubmission[]> {
