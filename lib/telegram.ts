@@ -13,6 +13,14 @@ function getTelegramConfig() {
   return { botToken, chatId };
 }
 
+export function getTelegramStatus() {
+  return {
+    configured: Boolean(getTelegramConfig()),
+    botTokenConfigured: Boolean(cleanEnv(process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_TOKEN)),
+    chatIdConfigured: Boolean(cleanEnv(process.env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHATID))
+  };
+}
+
 function formatTelegramMessage(submission: RfqSubmission) {
   const lines = [
     "마하렉스 홈페이지 견적문의가 접수되었습니다.",

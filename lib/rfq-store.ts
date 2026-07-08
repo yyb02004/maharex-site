@@ -16,14 +16,39 @@ const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "rfq-submissions.json");
 const kvKey = "maharex:rfq-submissions";
 
+function cleanEnv(value?: string) {
+  return value?.trim().replace(/^["']|["']$/g, "");
+}
+
+function pickEnv(...keys: string[]) {
+  for (const key of keys) {
+    const value = cleanEnv(process.env[key]);
+    if (value) return value;
+  }
+  return undefined;
+}
+
 function getKvConfig() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = pickEnv("KV_REST_API_URL", "UPSTASH_REDIS_REST_URL", "REDIS_REST_API_URL");
+  const token = pickEnv("KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_TOKEN", "REDIS_REST_API_TOKEN");
   if (!url || !token) return null;
   if (!url.startsWith("https://")) {
     throw new Error("RFQ 저장소 URL은 https:// 주소여야 합니다.");
   }
   return { url, token };
+}
+
+export function getRfqStorageStatus() {
+  const hasRestUrl = Boolean(pickEnv("KV_REST_API_URL", "UPSTASH_REDIS_REST_URL", "REDIS_REST_API_URL"));
+  const hasRestToken = Boolean(pickEnv("KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_TOKEN", "REDIS_REST_API_TOKEN"));
+
+  return {
+    runtime: process.env.VERCEL ? "vercel" : "local",
+    kvConfigured: hasRestUrl && hasRestToken,
+    kvUrlConfigured: hasRestUrl,
+    kvTokenConfigured: hasRestToken,
+    fileFallbackPath: dataFile
+  };
 }
 
 async function kvCommand<T>(command: unknown[]): Promise<T> {

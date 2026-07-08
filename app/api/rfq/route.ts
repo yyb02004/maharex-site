@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { addRfqSubmission, type RfqSubmission } from "@/lib/rfq-store";
-import { notifyTelegramRfq } from "@/lib/telegram";
+import { addRfqSubmission, getRfqStorageStatus, type RfqSubmission } from "@/lib/rfq-store";
+import { getTelegramStatus, notifyTelegramRfq } from "@/lib/telegram";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +11,14 @@ function createRfqSubmission(input: Omit<RfqSubmission, "id" | "createdAt">): Rf
     createdAt: new Date().toISOString(),
     ...input
   };
+}
+
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    rfqStorage: getRfqStorageStatus(),
+    telegram: getTelegramStatus()
+  });
 }
 
 export async function POST(request: Request) {
