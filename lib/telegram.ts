@@ -2,9 +2,13 @@ import type { RfqSubmission } from "@/lib/rfq-store";
 
 const telegramApiBase = "https://api.telegram.org";
 
+function cleanEnv(value?: string) {
+  return value?.trim().replace(/^["']|["']$/g, "");
+}
+
 function getTelegramConfig() {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const botToken = cleanEnv(process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_TOKEN);
+  const chatId = cleanEnv(process.env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHATID);
   if (!botToken || !chatId) return null;
   return { botToken, chatId };
 }
