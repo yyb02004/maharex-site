@@ -283,7 +283,7 @@ export const products = [
 
 export const references = {
   ko: [
-    "천보·천보신소재·천보BLS 반응·건조 설비",
+    "천보·천보신소재·천보비엘에스 반응·건조 설비",
     "파마코스텍 Jet Mill 및 Tray Vacuum Dryer",
     "YCI Advanced(YCI 어드밴스드) Nutsche Filter",
     "CMDL Nutsche Filter",

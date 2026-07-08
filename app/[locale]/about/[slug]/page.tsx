@@ -201,14 +201,22 @@ export default async function AboutSubPage({
       ["㈜천보비엘에스", "/Chunbo-Logo.JPG"],
       ["㈜파마코스텍", "/Pharma-Logo.jpg"],
       ["그린생명과학㈜", ""],
+      ["㈜덕성금속", ""],
       ["동국생명과학㈜", ""],
       ["성도이엔지", ""],
+      ["㈜아이티켐", ""],
+      ["㈜에이치에스바이오", ""],
       ["㈜위매스", ""],
+      ["㈜유니온케미칼", ""],
       ["인디켐㈜", ""],
+      ["폴라리스AI파마", ""],
+      ["㈜한서켐", ""],
       ["㈜Bell E&C", ""],
       ["㈜CMDL", ""],
+      ["㈜J2H Bio Tech", ""],
+      ["㈜MS유니켐", ""],
       ["TTT", ""],
-      ["YCI Advanced(YCI 어드밴스드)", ""]
+      ["YCI Advanced", "(YCI 어드밴스드)"]
     ];
 
     return (
@@ -216,8 +224,9 @@ export default async function AboutSubPage({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {customers.map(([name, logo]) => (
             <div key={name} className="flex min-h-32 flex-col items-center justify-center gap-3 border border-black/10 bg-white p-5 text-center shadow-sm">
-              {logo ? <img src={logo} alt="" className="max-h-12 max-w-[170px] object-contain" /> : null}
+              {logo && logo.startsWith("/") ? <img src={logo} alt="" className="max-h-12 max-w-[170px] object-contain" /> : null}
               <span className="text-lg font-black text-graphite">{name}</span>
+              {logo && !logo.startsWith("/") ? <span className="text-base font-black text-graphite">{logo}</span> : null}
             </div>
           ))}
         </div>
