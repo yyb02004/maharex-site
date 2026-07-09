@@ -202,7 +202,7 @@ export default async function AboutSubPage({
       ["㈜파마코스텍", "/Pharma-Logo.jpg"],
       ["그린생명과학㈜", "/customer-logos/green-life-science.png"],
       ["동국생명과학㈜", "/customer-logos/dongkook-life-science.png"],
-      ["성도이엔지", "/customer-logos/sdeng.png"],
+      ["성도이엔지", "/customer-logos/sungdo-eng.png"],
       ["㈜에이치에스바이오", "/customer-logos/hsbio.png"],
       ["㈜위매스", "/customer-logos/wimas.png"],
       ["㈜유니온케미칼", "/customer-logos/unionchemical.png"],
@@ -214,8 +214,8 @@ export default async function AboutSubPage({
       ["㈜CMDL", "/customer-logos/cmdl.png"],
       ["㈜J2H Bio Tech", "/customer-logos/j2hbio-logo.jpg"],
       ["㈜MS유니켐", "/customer-logos/msunichem-large.png"],
-      ["TTT", "/customer-logos/ttt-red.png"],
-      ["YCI Advanced", "/customer-logos/yci-advanced.png", "(YCI 어드밴스드)"]
+      ["TTT", "/customer-logos/ttt-red-panel.png"],
+      ["YCI Advanced", "/customer-logos/yci-advanced.png"]
     ];
 
     return (
