@@ -200,31 +200,34 @@ export default async function AboutSubPage({
       ["㈜천보신소재", "/Chunbo-Logo.JPG"],
       ["㈜천보비엘에스", "/Chunbo-Logo.JPG"],
       ["㈜파마코스텍", "/Pharma-Logo.jpg"],
-      ["그린생명과학㈜", ""],
-      ["동국생명과학㈜", ""],
-      ["성도이엔지", ""],
-      ["㈜에이치에스바이오", ""],
-      ["㈜위매스", ""],
-      ["㈜유니온케미칼", ""],
-      ["㈜이지켐", ""],
-      ["인디켐㈜", ""],
-      ["폴라리스AI파마", ""],
-      ["㈜한서켐", ""],
-      ["㈜Bell E&C", ""],
-      ["㈜CMDL", ""],
-      ["㈜J2H Bio Tech", ""],
-      ["㈜MS유니켐", ""],
-      ["TTT", ""],
-      ["YCI Advanced", "(YCI 어드밴스드)"]
+      ["그린생명과학㈜", "/customer-logos/green-life-science.png"],
+      ["동국생명과학㈜", "/customer-logos/dongkook-life-science.png"],
+      ["성도이엔지", "/customer-logos/sdeng.png"],
+      ["㈜에이치에스바이오", "/customer-logos/hsbio.png"],
+      ["㈜위매스", "/customer-logos/wimas.png"],
+      ["㈜유니온케미칼", "/customer-logos/unionchemical.png"],
+      ["㈜이지켐", "/customer-logos/easychem.png"],
+      ["인디켐㈜", "/customer-logos/indichem.png"],
+      ["폴라리스AI파마", "/customer-logos/polaris-ai-pharma.png"],
+      ["㈜한서켐", "/customer-logos/hanseochem.png"],
+      ["㈜Bell E&C", "/customer-logos/bellenc.gif"],
+      ["㈜CMDL", "/customer-logos/cmdl.png"],
+      ["㈜J2H Bio Tech", "/customer-logos/j2hbio-logo.jpg"],
+      ["㈜MS유니켐", "/customer-logos/msunichem-large.png"],
+      ["TTT", "/customer-logos/ttt-red.png"],
+      ["YCI Advanced", "/customer-logos/yci-advanced.png", "(YCI 어드밴스드)"]
     ];
 
     return (
       <Section eyebrow="Customers" title="주요 고객사">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {customers.map(([name, logo]) => (
+          {customers.map(([name, logo, subtitle]) => (
             <div key={name} className="flex min-h-32 flex-col items-center justify-center gap-3 border border-black/10 bg-white p-5 text-center shadow-sm">
-              {logo && logo.startsWith("/") ? <img src={logo} alt="" className="max-h-12 max-w-[170px] object-contain" /> : null}
+              <div className="flex h-14 items-center justify-center">
+                {logo && logo.startsWith("/") ? <img src={logo} alt="" className="max-h-14 max-w-[170px] object-contain" /> : null}
+              </div>
               <span className="text-lg font-black text-graphite">{name}</span>
+              {subtitle ? <span className="text-base font-black text-graphite">{subtitle}</span> : null}
               {logo && !logo.startsWith("/") ? <span className="text-base font-black text-graphite">{logo}</span> : null}
             </div>
           ))}
