@@ -4,18 +4,20 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.maharex.com"),
   title: {
-    default: "Maharex | 산업용 공정 장비",
-    template: "%s | Maharex"
+    default: "㈜마하렉스(Maharex) | 산업용 공정 장비",
+    template: "%s | ㈜마하렉스(Maharex)"
   },
-  description: "반응기, 트레이 진공 건조기, 로터리 드라이어, 필터, 분쇄기를 제작하는 한국 산업 장비 제조사.",
-  applicationName: "Maharex",
-  keywords: ["마하렉스", "Maharex", "산업용 공정 장비", "반응기", "진공 건조기", "Nutsche Filter", "Jet Mill"],
+  description:
+    "제약·화학·이차전지·화장품·식품 제조 및 가공용 화학 플랜트, 진공 건조기, 로터리 드라이어, 여과기, 분쇄기 설계·제작 전문기업입니다.",
+  applicationName: "㈜마하렉스(Maharex)",
+  keywords: ["마하렉스", "Maharex", "산업용 공정 장비", "화학 플랜트", "이차전지 장비", "진공 건조기", "로터리 드라이어", "여과기", "분쇄기"],
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    siteName: "Maharex",
-    title: "Maharex | 산업용 공정 장비",
-    description: "반응·건조·여과·분쇄 공정 장비를 설계하고 제작하는 산업 장비 제조사입니다.",
+    siteName: "㈜마하렉스(Maharex)",
+    title: "㈜마하렉스(Maharex) | 산업용 공정 장비",
+    description:
+      "제약·화학·이차전지·화장품·식품 제조 및 가공용 화학 플랜트, 진공 건조기, 로터리 드라이어, 여과기, 분쇄기 설계·제작 전문기업입니다.",
     images: [
       {
         url: "/factory-exterior.jpg",
@@ -27,8 +29,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Maharex | 산업용 공정 장비",
-    description: "반응·건조·여과·분쇄 공정 장비를 설계하고 제작하는 산업 장비 제조사입니다.",
+    title: "㈜마하렉스(Maharex) | 산업용 공정 장비",
+    description:
+      "제약·화학·이차전지·화장품·식품 제조 및 가공용 화학 플랜트, 진공 건조기, 로터리 드라이어, 여과기, 분쇄기 설계·제작 전문기업입니다.",
     images: ["/factory-exterior.jpg"]
   },
   robots: {
