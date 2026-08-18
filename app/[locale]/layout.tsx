@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { Locale, locales } from "@/lib/site-data";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }

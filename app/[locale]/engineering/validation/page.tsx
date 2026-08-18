@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Validation",
+  description: "산업용 공정 장비의 설계 적격성, 제작 검사 및 Validation 지원 체계를 확인하세요.",
+  alternates: { canonical: "/ko/engineering/validation" }
+};
+
 export default function ValidationPage() {
   const flow = [
     ["URS", "요구사항 정의", "사용자 요구사항과 공정 조건을 문서화합니다."],

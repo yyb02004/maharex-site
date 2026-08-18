@@ -157,7 +157,7 @@ const rows: Array<[number, number, string, string, boolean?]> = [
   [2024, 4, "㈜MS유니켐", "Teflon Coating Nutsche Filter 제작"],
   [2024, 6, "㈜파마코스텍", "화성공장 Jet Mill 제작 설치 공사"],
   [2024, 6, "㈜파마코스텍", "Tray Vacuum Dryer 0.8㎥ 4 Set 제작설치공사"],
-  [2024, 8, "㈜Bell E&C", "YCI Advanced(YCI 어드밴스드) Nutsche Filter 제작공사", true],
+  [2024, 8, "㈜Bell E&C", "YCI Advanced Nutsche Filter 제작공사", true],
   [2024, 8, "㈜천보비엘에스", "GLS Urea Dryer 제작설치공사", true],
   [2025, 3, "㈜TTT", "Condenser 제작설치"],
   [2025, 3, "㈜위매스", "Nutsche Filter 제작공사"],

@@ -1,14 +1,11 @@
-import { cookies } from "next/headers";
+import Image from "next/image";
 import Link from "next/link";
 import { MobileMenu } from "@/components/MobileMenu";
-import { ADMIN_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
 import { Locale, aboutMenu, copy, nav, products, qualityMenu } from "@/lib/site-data";
 
-export async function SiteShell({ locale, children }: { locale: Locale; children: React.ReactNode }) {
+export function SiteShell({ locale, children }: { locale: Locale; children: React.ReactNode }) {
   const c = copy[locale];
   const productMenu = products.map((product) => [product[locale].name, product.slug] as const);
-  const cookieStore = await cookies();
-  const isAdmin = verifyAdminSession(cookieStore.get(ADMIN_COOKIE)?.value);
 
   return (
     <div className="min-h-screen bg-[#f4f6f6] text-graphite">
@@ -16,7 +13,7 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
         <div className="container flex h-20 items-center justify-between gap-5">
           <div className="flex min-w-0 items-center gap-8">
             <Link href={`/${locale}`} className="flex shrink-0 items-center" aria-label="Maharex home">
-              <img src="/maharex-logo-transparent.png" alt="마하렉스" className="h-12 w-auto max-w-[178px] object-contain" />
+              <Image src="/maharex-logo-transparent.png" alt="마하렉스" width={178} height={94} priority sizes="178px" className="h-12 w-auto object-contain" />
             </Link>
 
             <nav className="hidden items-center gap-7 text-[15px] font-black text-graphite lg:flex">
@@ -66,11 +63,6 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
                   </Link>
                 )
               )}
-              {isAdmin ? (
-                <Link href={`/${locale}/admin/rfq`} className="py-7 text-signal transition hover:text-graphite">
-                  견적확인
-                </Link>
-              ) : null}
             </nav>
           </div>
 
@@ -78,7 +70,7 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
             <Link href={`/${locale}/contact`} className="hidden bg-signal px-5 py-3 text-sm font-black text-white transition hover:bg-graphite sm:inline-flex">
               {c.rfq}
             </Link>
-            <MobileMenu locale={locale} aboutMenu={aboutMenu} productMenu={productMenu} qualityMenu={qualityMenu} isAdmin={isAdmin} />
+            <MobileMenu locale={locale} aboutMenu={aboutMenu} productMenu={productMenu} qualityMenu={qualityMenu} />
           </div>
         </div>
       </header>
@@ -88,7 +80,7 @@ export async function SiteShell({ locale, children }: { locale: Locale; children
       <footer className="border-t border-white/10 bg-graphite py-7 text-white">
         <div className="container grid gap-6 md:grid-cols-[1fr_1.35fr_0.65fr] md:items-start">
           <div>
-            <img src="/maharex-logo-transparent.png" alt="마하렉스" className="h-10 w-auto max-w-[170px] object-contain brightness-0 invert opacity-90" />
+            <Image src="/maharex-logo-transparent.png" alt="마하렉스" width={170} height={90} sizes="170px" className="h-10 w-auto object-contain brightness-0 invert opacity-90" />
             <p className="mt-4 max-w-md text-sm leading-6 text-white/65">반응, 건조, 여과, 분쇄 공정을 위한 주문형 산업 설비 제조.</p>
           </div>
 

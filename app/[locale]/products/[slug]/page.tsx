@@ -1,6 +1,23 @@
+import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { copy, products } from "@/lib/site-data";
+
+export const dynamicParams = false;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = products.find((item) => item.slug === slug);
+
+  if (!product) return {};
+
+  return {
+    title: product.ko.name,
+    description: product.ko.summary,
+    alternates: { canonical: `/ko/products/${slug}` }
+  };
+}
 
 export function generateStaticParams() {
   return products.map((product) => ({ locale: "ko", slug: product.slug }));
@@ -27,8 +44,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {c.rfq}
             </Link>
           </div>
-          <div className="h-[430px] overflow-hidden bg-white/10">
-            <img src={product.image} alt={p.name} className="h-full w-full object-cover object-center" />
+          <div className="relative h-[430px] overflow-hidden bg-white/10">
+            <Image src={product.image} alt={p.name} fill loading="eager" sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover object-center" />
           </div>
         </div>
       </section>
@@ -38,29 +55,44 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Product Overview</p>
           <h2 className="mt-3 max-w-4xl text-3xl font-black leading-tight md:text-4xl">공정에 맞춰 깊게 설계하는 제품 상세</h2>
 
-          <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <p className="text-base leading-8 text-steel md:text-lg">{p.details}</p>
-            <div className="grid gap-3">
-              {p.specs.map((spec) => (
-                <div key={spec} className="flex items-center justify-between border border-black/10 bg-white p-5 shadow-sm">
-                  <span className="font-bold">{spec}</span>
-                  <span className="ml-5 h-2 w-2 shrink-0 bg-signal" />
-                </div>
-              ))}
+          <div className="mt-10 grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:items-start">
+            <div className="border-l-4 border-cobalt pl-5 md:pl-6">
+              <p className="text-base leading-8 text-steel md:text-lg">{p.details}</p>
             </div>
-          </div>
 
-          {gallery.length ? (
-            <div className="mt-12 grid gap-4 md:grid-cols-2">
-              {gallery.map((src, index) => (
-                <div key={src} className="overflow-hidden border border-black/10 bg-white shadow-sm">
-                  <div className="aspect-[4/3] bg-[#eef1f1]">
-                    <img src={src} alt={`${p.name} 제품 사진 ${index + 1}`} className="h-full w-full object-cover object-center" />
+            <aside className="border border-black/10 border-t-4 border-t-cobalt bg-white p-6 shadow-sm md:p-7 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-cobalt">Key Specifications</p>
+              <h3 className="mt-2 text-2xl font-black text-graphite">주요 사양</h3>
+              <div className="mt-5 border-y border-black/10">
+                {p.specs.map((spec, index) => (
+                  <div key={spec} className="grid min-h-16 grid-cols-[36px_1fr_8px] items-center gap-3 border-b border-black/10 py-4 last:border-b-0">
+                    <span className="text-xs font-black text-signal">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="font-bold leading-6 text-graphite">{spec}</span>
+                    <span className="h-2 w-2 bg-signal" />
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : null}
+                ))}
+              </div>
+            </aside>
+
+            {gallery.length ? (
+              <div className={`grid gap-4 lg:col-start-1 lg:row-start-2 ${gallery.length > 1 ? "sm:grid-cols-2" : ""}`}>
+                {gallery.map((src, index) => (
+                  <div key={src} className="overflow-hidden border border-black/10 bg-white shadow-sm">
+                    <div className="relative aspect-[4/3] bg-[#eef1f1]">
+                      <Image
+                        src={src}
+                        alt={`${p.name} 제품 사진 ${index + 1}`}
+                        fill
+                        loading={src === product.image ? "eager" : "lazy"}
+                        sizes={gallery.length > 1 ? "(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 28vw" : "(max-width: 1023px) 100vw, 55vw"}
+                        className="object-cover object-center"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
 
           <div className="mt-14 grid gap-6 lg:grid-cols-2">
             <div className="border border-black/10 bg-white p-8">

@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: ["maharex.iptime.org"],
-  typescript: {
-    ignoreBuildErrors: true
-  },
+  poweredByHeader: false,
   images: {
-    unoptimized: true
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2678400
   }
 };
 

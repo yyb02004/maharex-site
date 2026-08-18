@@ -1,6 +1,13 @@
 import { RfqForm } from "@/components/RfqForm";
 import { Section } from "@/components/Section";
+import type { Metadata } from "next";
 import { Locale, copy } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  title: "견적 문의",
+  description: "마하렉스 산업용 공정 장비 제작 및 견적을 문의하세요.",
+  alternates: { canonical: "/ko/contact" }
+};
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: localeParam } = await params;

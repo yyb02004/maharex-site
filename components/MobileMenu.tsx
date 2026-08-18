@@ -10,14 +10,12 @@ export function MobileMenu({
   locale,
   aboutMenu,
   productMenu,
-  qualityMenu,
-  isAdmin
+  qualityMenu
 }: {
   locale: Locale;
   aboutMenu: readonly MenuItem[];
   productMenu: readonly MenuItem[];
   qualityMenu: readonly MenuItem[];
-  isAdmin: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -64,12 +62,6 @@ export function MobileMenu({
                 </Link>
               ))}
             </MenuGroup>
-
-            {isAdmin ? (
-              <Link href={`/${locale}/admin/rfq`} onClick={close} className="border border-signal px-4 py-4 text-center text-base font-black text-signal">
-                견적확인
-              </Link>
-            ) : null}
 
             <Link href={`/${locale}/contact`} onClick={close} className="bg-signal px-4 py-4 text-center text-base font-black text-white">
               문의/RFQ

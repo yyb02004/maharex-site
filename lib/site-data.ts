@@ -283,13 +283,19 @@ export const products = [
 
 export const references = {
   ko: [
-    "천보·천보신소재·천보비엘에스 반응·건조 설비",
-    "파마코스텍 Jet Mill 및 Tray Vacuum Dryer",
-    "YCI Advanced(YCI 어드밴스드) Nutsche Filter",
-    "CMDL Nutsche Filter",
-    "인디켐 Tray Vacuum Dryer 외 제작 설치"
+    ["천보·천보신소재·천보비엘에스", "반응·건조 설비"],
+    ["파마코스텍", "Jet Mill 및 Tray Vacuum Dryer"],
+    ["YCI Advanced", "Nutsche Filter"],
+    ["CMDL", "Nutsche Filter"],
+    ["인디켐", "Tray Vacuum Dryer 외 제작 설치"]
   ],
-  en: ["Chunbo group process equipment", "Pharmacos Jet Mill and Tray Vacuum Dryer", "YCI Advanced(YCI Advanced) Nutsche Filter", "CMDL Nutsche Filter"]
+  en: [
+    ["Chunbo Group", "Process Equipment"],
+    ["Pharmacos", "Jet Mill and Tray Vacuum Dryer"],
+    ["YCI Advanced", "Nutsche Filter"],
+    ["CMDL", "Nutsche Filter"],
+    ["Indichem", "Tray Vacuum Dryer and Other Equipment"]
+  ]
 } as const;
 
 export const engineering = {

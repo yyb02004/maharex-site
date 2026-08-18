@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "품질관리",
+  description: "마하렉스의 설계, 제작, 검사 및 품질관리 체계를 소개합니다.",
+  alternates: { canonical: "/ko/engineering" }
+};
+
 export default function EngineeringPage() {
   const policies = [
     ["고객 요구사항 반영", "원료 특성, 운전 조건, 설치 환경, 납기 요구사항을 초기 단계에서 확인합니다."],

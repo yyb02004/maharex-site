@@ -1,4 +1,6 @@
 ﻿import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CertificateSlider } from "@/components/CertificateSlider";
 import { NaverRouteMap } from "@/components/NaverRouteMap";
@@ -7,19 +9,31 @@ import { aboutMenu, aboutSections, productImages } from "@/lib/site-data";
 
 type AboutSlug = keyof typeof aboutSections;
 
+export const dynamicParams = false;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const section = aboutSections[slug as AboutSlug];
+
+  if (!section) return {};
+
+  return {
+    title: section.title,
+    description: section.summary,
+    alternates: { canonical: `/ko/about/${slug}` }
+  };
+}
+
 export function generateStaticParams() {
   return aboutMenu.map(([, slug]) => ({ locale: "ko", slug }));
 }
 
 export default async function AboutSubPage({
-  params,
-  searchParams
+  params
 }: {
   params: Promise<{ locale: string; slug: string }>;
-  searchParams?: Promise<{ cert?: string }>;
 }) {
   const { locale, slug } = await params;
-  const query = searchParams ? await searchParams : {};
 
   if (slug === "ceo") {
     return (
@@ -36,9 +50,9 @@ export default async function AboutSubPage({
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div className="border border-black/10 bg-white p-4 shadow-sm">
               <div className="relative aspect-[4/3] overflow-hidden bg-nickel">
-                <img src={productImages.factoryExterior} alt="마하렉스 회사 전경" className="image-cover object-[center_76%]" />
+                <Image src={productImages.factoryExterior} alt="마하렉스 회사 전경" fill priority sizes="(max-width: 1023px) 100vw, 45vw" className="object-cover object-[center_76%]" />
                 <div className="absolute left-6 top-6 bg-white/90 p-4">
-                  <img src="/maharex-logo-transparent.png" alt="마하렉스" className="h-14 w-auto max-w-[180px] object-contain" />
+                  <Image src="/maharex-logo-transparent.png" alt="마하렉스" width={180} height={96} sizes="180px" className="h-14 w-auto object-contain" />
                 </div>
               </div>
             </div>
@@ -73,14 +87,12 @@ export default async function AboutSubPage({
       "/certificates/pages/iso-05.png",
       "/certificates/pages/iso-06.png"
     ];
-    const activeCertificate = Number(query.cert || "1") - 1;
-
     return (
       <Section eyebrow="회사소개" title="인증 및 특허">
         <p className="mb-10 max-w-3xl text-lg leading-8 text-steel">
           품질, 환경, 안전보건 경영 인증을 기반으로 안정적인 산업 설비 제작 체계를 운영합니다. 인증서는 페이지 안에서 좌우 버튼과 썸네일로 확인할 수 있습니다.
         </p>
-        <CertificateSlider certificates={certificates} activeIndex={activeCertificate} baseHref={`/${locale}/about/certifications`} />
+        <CertificateSlider certificates={certificates} />
       </Section>
     );
   }
@@ -89,8 +101,8 @@ export default async function AboutSubPage({
     return (
       <Section eyebrow="회사소개" title="카탈로그">
         <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
-          <div className="overflow-hidden border border-black/10 bg-white shadow-sm">
-            <img src="/catalog-pages/page-01.png" alt="마하렉스 카탈로그 표지" className="w-full object-cover" />
+          <div className="relative aspect-[1190/1683] overflow-hidden border border-black/10 bg-white shadow-sm">
+            <Image src="/catalog-pages/page-01.png" alt="마하렉스 카탈로그 표지" fill sizes="(max-width: 1023px) 100vw, 65vw" className="object-cover" />
           </div>
           <div className="border border-black/10 bg-white p-8 shadow-industrial">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-signal">PDF Download</p>
@@ -133,7 +145,9 @@ export default async function AboutSubPage({
             ))}
           </div>
           <div className="overflow-hidden border border-black/10 bg-white p-4 shadow-sm">
-            <img src={productImages.factoryExterior} alt="마하렉스 회사 전경" className="aspect-[4/3] w-full object-cover object-[center_76%]" />
+            <div className="relative aspect-[4/3] w-full">
+              <Image src={productImages.factoryExterior} alt="마하렉스 회사 전경" fill sizes="(max-width: 1023px) 100vw, 46vw" className="object-cover object-[center_76%]" />
+            </div>
           </div>
         </div>
       </Section>
@@ -223,8 +237,8 @@ export default async function AboutSubPage({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {customers.map(([name, logo, subtitle]) => (
             <div key={name} className="flex min-h-32 flex-col items-center justify-center gap-3 border border-black/10 bg-white p-5 text-center shadow-sm">
-              <div className="flex h-14 items-center justify-center">
-                {logo && logo.startsWith("/") ? <img src={logo} alt="" className="max-h-14 max-w-[170px] object-contain" /> : null}
+              <div className="relative h-14 w-[170px]">
+                {logo && logo.startsWith("/") ? <Image src={logo} alt={`${name} 로고`} fill sizes="170px" className="object-contain" /> : null}
               </div>
               <span className="text-lg font-black text-graphite">{name}</span>
               {subtitle ? <span className="text-base font-black text-graphite">{subtitle}</span> : null}

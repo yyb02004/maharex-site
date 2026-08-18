@@ -1,7 +1,13 @@
+import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { Section } from "@/components/Section";
 import { Locale, copy, industries, processSteps, productImages, products, references } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/ko" }
+};
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: localeParam } = await params;
@@ -11,10 +17,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <>
       <section className="relative overflow-hidden border-b border-black/10 bg-graphite text-white">
-        <img
+        <Image
           src={productImages.factoryExterior}
           alt="마하렉스 회사 전경"
-          className="hero-photo-animate absolute inset-0 h-full w-full object-cover object-[center_76%]"
+          fill
+          priority
+          sizes="100vw"
+          className="hero-photo-animate object-cover object-[center_76%]"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-graphite via-graphite/72 to-graphite/16" />
         <div className="absolute inset-0 bg-gradient-to-t from-graphite/82 via-transparent to-transparent" />
@@ -85,9 +94,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <Section eyebrow="납품실적" title="공정 경험으로 검증된 제품과 프로젝트">
         <div className="grid gap-4 md:grid-cols-5">
-          {references[locale].map((item) => (
-            <div key={item} className="border-l-4 border-signal bg-white p-5 text-sm font-bold leading-7 shadow-sm">
-              {item}
+          {references[locale].map(([company, equipment]) => (
+            <div key={`${company}-${equipment}`} className="border-l-4 border-signal bg-white p-5 shadow-sm">
+              <strong className="block text-base font-black leading-6 text-graphite">{company}</strong>
+              <span className="mt-2 block text-sm font-bold leading-6 text-steel">{equipment}</span>
             </div>
           ))}
         </div>

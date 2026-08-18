@@ -1,4 +1,11 @@
 import { ReferenceExplorer } from "@/components/ReferenceExplorer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "납품실적",
+  description: "마하렉스가 수행한 반응기, 건조기, 여과기, 분쇄기 및 공정 설비 납품실적입니다.",
+  alternates: { canonical: "/ko/references" }
+};
 
 export default function ReferencesPage() {
   return (

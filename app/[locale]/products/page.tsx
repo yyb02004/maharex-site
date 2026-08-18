@@ -1,5 +1,12 @@
 import { ProductCard } from "@/components/ProductCard";
+import type { Metadata } from "next";
 import { products } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  title: "제품",
+  description: "반응기, 진공 건조기, 로터리 드라이어, Nutsche Filter, 분쇄기 등 마하렉스의 주요 공정 장비를 확인하세요.",
+  alternates: { canonical: "/ko/products" }
+};
 
 export default function ProductsPage() {
   return (

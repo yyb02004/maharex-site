@@ -1,3 +1,12 @@
+import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "측정용 장비",
+  description: "마하렉스가 품질과 성능 확인에 사용하는 주요 측정 장비를 소개합니다.",
+  alternates: { canonical: "/ko/engineering/measuring-equipment" }
+};
+
 export default function MeasuringEquipmentPage() {
   const instruments = [
     "입도 분포 측정 장비",
@@ -40,7 +49,9 @@ export default function MeasuringEquipmentPage() {
             </div>
           </div>
           <div className="overflow-hidden border border-black/10 bg-white p-4 shadow-sm">
-            <img src="/quality/measuring-equipment.jpg" alt="품질관리 측정용 장비" className="w-full object-contain" />
+            <div className="relative aspect-[860/1380] w-full">
+              <Image src="/quality/measuring-equipment.jpg" alt="품질관리 측정용 장비" fill sizes="(max-width: 1023px) 100vw, 50vw" className="object-contain" />
+            </div>
           </div>
         </div>
       </section>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Locale, products } from "@/lib/site-data";
 
@@ -11,8 +12,14 @@ export function ProductCard({ product, locale }: { product: Product; locale: Loc
       href={`/${locale}/products/${product.slug}`}
       className="group flex h-full flex-col overflow-hidden border border-black/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-industrial"
     >
-      <div className="aspect-[4/3] overflow-hidden bg-[#eef1f1]">
-        <img src={product.image} alt={p.name} className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.03]" />
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#eef1f1]">
+        <Image
+          src={product.image}
+          alt={p.name}
+          fill
+          sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
+          className="object-cover object-center transition duration-500 group-hover:scale-[1.03]"
+        />
       </div>
       <div className="flex flex-1 flex-col p-6">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-cobalt">{p.category}</p>
