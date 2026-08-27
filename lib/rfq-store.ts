@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 
@@ -15,6 +16,7 @@ export type RfqSubmission = {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "rfq-submissions.json");
 const kvKey = "maharex:rfq-submissions";
+const maxStoredSubmissions = 1_000;
 
 function cleanEnv(value?: string) {
   return value?.trim().replace(/^["']|["']$/g, "");
@@ -147,19 +149,20 @@ export async function readRfqSubmissions(): Promise<RfqSubmission[]> {
 export async function addRfqSubmission(input: Omit<RfqSubmission, "id" | "createdAt">) {
   const submissions = await readRfqSubmissions();
   const submission: RfqSubmission = {
-    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id: randomUUID(),
     createdAt: new Date().toISOString(),
     ...input
   };
   submissions.unshift(submission);
+  const nextSubmissions = submissions.slice(0, maxStoredSubmissions);
 
   if (shouldUseKv()) {
-    await writeKvSubmissions(submissions);
+    await writeKvSubmissions(nextSubmissions);
     return submission;
   }
 
   await mkdir(dataDir, { recursive: true });
-  await writeFile(dataFile, JSON.stringify(submissions, null, 2), "utf8");
+  await writeFile(dataFile, JSON.stringify(nextSubmissions, null, 2), "utf8");
   return submission;
 }
 

@@ -30,6 +30,16 @@ export default async function AdminRfqPage({ searchParams }: { searchParams?: Pr
               관리자 로그인이 필요합니다.
             </p>
           ) : null}
+          {query.error === "rate" ? (
+            <p className="mx-auto mb-4 max-w-md bg-white px-5 py-4 text-sm font-bold text-signal shadow-sm">
+              로그인 시도가 너무 많습니다. 10분 후 다시 시도해 주세요.
+            </p>
+          ) : null}
+          {query.error === "config" ? (
+            <p className="mx-auto mb-4 max-w-md bg-white px-5 py-4 text-sm font-bold text-signal shadow-sm">
+              관리자 보안 설정을 확인해 주세요.
+            </p>
+          ) : null}
           <AdminLoginForm />
         </div>
       </section>

@@ -1,54 +1,61 @@
+import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
-import { addRfqSubmission, checkRfqStorage, getRfqStorageStatus, type RfqSubmission } from "@/lib/rfq-store";
-import { getTelegramStatus, notifyTelegramRfq } from "@/lib/telegram";
+import { checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { isSameOriginRequest, readJsonRequest, validateRfqBody } from "@/lib/request-security";
+import { addRfqSubmission, type RfqSubmission } from "@/lib/rfq-store";
+import { notifyTelegramRfq } from "@/lib/telegram";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function createRfqSubmission(input: Omit<RfqSubmission, "id" | "createdAt">): RfqSubmission {
   return {
-    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id: randomUUID(),
     createdAt: new Date().toISOString(),
     ...input
   };
 }
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  if (url.searchParams.get("check") === "1") {
-    return NextResponse.json({
-      ok: true,
-      rfqStorage: await checkRfqStorage(),
-      telegram: getTelegramStatus()
-    });
-  }
-
-  return NextResponse.json({
-    ok: true,
-    rfqStorage: getRfqStorageStatus(),
-    telegram: getTelegramStatus()
-  });
+export async function GET() {
+  return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null);
-    if (!body) {
-      return NextResponse.json({ message: "잘못된 요청입니다." }, { status: 400 });
+    if (!isSameOriginRequest(request)) {
+      return NextResponse.json({ message: "허용되지 않은 요청입니다." }, { status: 403 });
     }
 
-    const company = String(body.company || "").trim();
-    const name = String(body.name || "").trim();
-    const email = String(body.email || "").trim();
-    const phone = String(body.phone || "").trim();
-    const product = String(body.product || "").trim();
-    const message = String(body.message || "").trim();
-
-    if (!company || !name || !phone || !message) {
-      return NextResponse.json({ message: "회사명, 담당자, 연락처, 요청 사항을 입력해 주세요." }, { status: 400 });
+    const attemptLimit = await checkRateLimit(request, "rfq-attempt", 10, 10 * 60);
+    if (attemptLimit.limited) {
+      return NextResponse.json(
+        { message: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
+        { status: 429, headers: rateLimitHeaders(attemptLimit) }
+      );
     }
 
-    const input = { company, name, email, phone, product, message };
+    const parsed = await readJsonRequest(request);
+    if (!parsed.ok) {
+      return NextResponse.json({ message: parsed.message }, { status: parsed.status });
+    }
+
+    const validation = validateRfqBody(parsed.body);
+    if (validation.kind === "spam") {
+      return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+    }
+    if (validation.kind === "invalid") {
+      return NextResponse.json({ message: validation.message }, { status: 400 });
+    }
+
+    const acceptedLimit = await checkRateLimit(request, "rfq-accepted", 5, 60 * 60);
+    if (acceptedLimit.limited) {
+      return NextResponse.json(
+        { message: "견적 요청 접수 한도를 초과했습니다. 잠시 후 다시 시도해 주세요." },
+        { status: 429, headers: rateLimitHeaders(acceptedLimit) }
+      );
+    }
+
+    const input = validation.input;
     let submission: RfqSubmission;
     let saved = true;
 
@@ -76,7 +83,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true, submission, saved });
+    return NextResponse.json({ ok: true, saved }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("RFQ submission failed", error);
     return NextResponse.json(

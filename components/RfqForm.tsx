@@ -7,6 +7,7 @@ export function RfqForm({ locale }: { locale: Locale }) {
   const ko = locale === "ko";
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [startedAt, setStartedAt] = useState(() => Date.now());
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,7 +22,9 @@ export function RfqForm({ locale }: { locale: Locale }) {
       email: String(formData.get("email") || ""),
       phone: String(formData.get("phone") || ""),
       product: String(formData.get("product") || ""),
-      message: String(formData.get("message") || "")
+      message: String(formData.get("message") || ""),
+      website: String(formData.get("website") || ""),
+      startedAt
     };
 
     let response: Response;
@@ -45,19 +48,24 @@ export function RfqForm({ locale }: { locale: Locale }) {
     }
 
     form.reset();
+    setStartedAt(Date.now());
     setStatus("success");
     setMessage("견적 요청이 접수되었습니다. 담당자가 확인 후 연락드리겠습니다.");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 bg-white p-8 shadow-sm">
-      <div className="grid gap-4 md:grid-cols-2">
-        <input name="company" className="border border-black/15 p-4" placeholder={ko ? "회사명" : "Company"} required />
-        <input name="name" className="border border-black/15 p-4" placeholder={ko ? "담당자" : "Name"} required />
+    <form onSubmit={handleSubmit} className="relative grid gap-4 bg-white p-8 shadow-sm">
+      <div aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
+        <label htmlFor="rfq-website">Website</label>
+        <input id="rfq-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <input name="email" type="email" className="border border-black/15 p-4" placeholder="Email" />
-        <input name="phone" className="border border-black/15 p-4" placeholder={ko ? "연락처" : "Phone"} required />
+        <input name="company" maxLength={120} autoComplete="organization" className="border border-black/15 p-4" placeholder={ko ? "회사명" : "Company"} required />
+        <input name="name" maxLength={80} autoComplete="name" className="border border-black/15 p-4" placeholder={ko ? "담당자" : "Name"} required />
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <input name="email" type="email" maxLength={254} autoComplete="email" className="border border-black/15 p-4" placeholder="Email" />
+        <input name="phone" type="tel" inputMode="tel" maxLength={40} autoComplete="tel" className="border border-black/15 p-4" placeholder={ko ? "연락처" : "Phone"} required />
       </div>
       <select name="product" className="border border-black/15 p-4" defaultValue="">
         <option value="" disabled>
@@ -69,7 +77,7 @@ export function RfqForm({ locale }: { locale: Locale }) {
           </option>
         ))}
       </select>
-      <textarea name="message" className="min-h-44 border border-black/15 p-4" placeholder={ko ? "공정 조건 및 요청 사항" : "Process conditions and request"} required />
+      <textarea name="message" minLength={10} maxLength={3000} className="min-h-44 border border-black/15 p-4" placeholder={ko ? "공정 조건 및 요청 사항" : "Process conditions and request"} required />
       <label className="flex items-start gap-3 border border-black/10 bg-[#f5f6f4] p-4 text-sm font-semibold leading-6 text-steel">
         <input name="privacy" type="checkbox" required className="mt-1 h-4 w-4 shrink-0 accent-[#dc4b2d]" />
         <span>
