@@ -27,9 +27,6 @@ export default async function AdminModelsPage({ params }: PageProps) {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Admin</p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl">3D 모델 관리</h1>
-            <p className="mt-3 text-sm font-semibold leading-6 text-steel">
-              설비 세트와 구성 장비를 구분해 검토할 수 있습니다.
-            </p>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -49,7 +46,7 @@ export default async function AdminModelsPage({ params }: PageProps) {
               <h2 id="tvd-model-set" className="mt-2 text-2xl font-black">
                 TVD-2.0 트레이 진공 건조기
               </h2>
-              <p className="mt-2 text-sm font-semibold text-steel">REV.06 건조기 · REV.02 전체설비</p>
+              <p className="mt-2 text-sm font-semibold text-steel">REV.10 건조기 · REV.06 전체설비</p>
             </div>
             <span className="bg-[#e7f4ec] px-3 py-2 text-xs font-black text-[#17663a]">사용 가능</span>
           </div>
@@ -104,9 +101,6 @@ export default async function AdminModelsPage({ params }: PageProps) {
             <h2 id="planned-model-sets" className="mt-2 text-2xl font-black">
               추가 예정 장비
             </h2>
-            <p className="mt-2 text-sm font-semibold leading-6 text-steel">
-              새 모델은 장비별 전체설비와 구성 장비를 한 세트로 계속 추가합니다.
-            </p>
           </div>
           <div className="divide-y divide-black/10 border-x border-b border-black/10 bg-white">
             {plannedModelSets.map((name, index) => (

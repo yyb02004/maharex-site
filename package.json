@@ -12,6 +12,7 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@vercel/analytics": "2.0.1",
     "autoprefixer": "latest",
     "next": "latest",
     "pdf-to-img": "^6.0.0",
