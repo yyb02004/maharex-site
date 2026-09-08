@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { AdminLoginForm } from "@/components/AdminLoginForm";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 import { ADMIN_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
@@ -64,7 +65,17 @@ export default async function AdminRfqPage({ searchParams }: { searchParams?: Pr
             <h1 className="mt-4 text-4xl font-black">견적 확인</h1>
             <p className="mt-4 text-sm font-semibold text-steel">총 {submissions.length}건의 견적 요청이 접수되었습니다.</p>
           </div>
-          <AdminLogoutButton />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/ko/admin/tvd-2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-graphite px-4 py-2 text-sm font-black text-white transition hover:bg-signal"
+            >
+              TVD-2.0 3D 보기
+            </Link>
+            <AdminLogoutButton />
+          </div>
         </div>
 
         {loadError ? (

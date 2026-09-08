@@ -2,6 +2,9 @@
 const nextConfig = {
   allowedDevOrigins: ["maharex.iptime.org"],
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    "/[locale]/admin/tvd-2": ["./private/tvd/TVD-2.0_3D_viewer.html.br", "./private/tvd/TVD-2.0_3D_viewer.html.gz"]
+  },
   async headers() {
     return [
       {
