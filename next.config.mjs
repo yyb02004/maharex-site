@@ -3,7 +3,13 @@ const nextConfig = {
   allowedDevOrigins: ["maharex.iptime.org"],
   poweredByHeader: false,
   outputFileTracingIncludes: {
-    "/[locale]/admin/tvd-2": ["./private/tvd/TVD-2.0_3D_viewer.html.br", "./private/tvd/TVD-2.0_3D_viewer.html.gz"]
+    "/[locale]/admin/models/[viewer]": [
+      "./private/models/tvd-2/installation_viewer.html.br",
+      "./private/models/tvd-2/dryer_viewer.html.br",
+      "./private/models/tvd-2/condenser_viewer.html.br",
+      "./private/models/tvd-2/receiver_viewer.html.br",
+      "./private/models/tvd-2/hotwater_viewer.html.br"
+    ]
   },
   async headers() {
     return [

@@ -67,12 +67,10 @@ export default async function AdminRfqPage({ searchParams }: { searchParams?: Pr
           </div>
           <div className="flex items-center gap-3">
             <Link
-              href="/ko/admin/tvd-2"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/ko/admin/models"
               className="bg-graphite px-4 py-2 text-sm font-black text-white transition hover:bg-signal"
             >
-              TVD-2.0 3D 보기
+              3D 모델 관리
             </Link>
             <AdminLogoutButton />
           </div>
