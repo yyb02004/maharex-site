@@ -18,8 +18,8 @@ export const tvdModels: Array<{
   {
     key: "tvd-installation",
     name: "전체설비",
-    description: "건조기, 컨덴서, 리시버, 온수탱크와 연결 배관을 함께 확인합니다.",
-    partCount: "3,135개 부품",
+    description: "건조기, 컨덴서, 리시버, 온수탱크, 진공펌프와 연결 배관을 함께 확인합니다.",
+    partCount: "3,476개 부품",
     primary: true
   }
 ];

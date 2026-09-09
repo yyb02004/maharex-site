@@ -60,7 +60,16 @@ let html = source.slice(0, modelStart + modelTag.length) + "{}" + source.slice(m
 const scriptStart = html.lastIndexOf("<script>");
 const scriptEnd = html.lastIndexOf("</script>");
 if (scriptStart < 0 || scriptEnd < scriptStart) throw new Error("Viewer script is missing.");
-const viewerScript = html.slice(scriptStart + "<script>".length, scriptEnd);
+const sourceViewerScript = html.slice(scriptStart + "<script>".length, scriptEnd);
+const resizeObserver = /new ResizeObserver\(([A-Za-z_$][\w$]*)\)\.observe\(([A-Za-z_$][\w$]*)\)/g;
+if ([...sourceViewerScript.matchAll(resizeObserver)].length !== 1) {
+  throw new Error("Expected exactly one viewer resize observer.");
+}
+// Defer canvas size writes until after ResizeObserver delivers the layout change.
+const viewerScript = sourceViewerScript.replace(
+  resizeObserver,
+  (_, resize, stage) => `new ResizeObserver(() => requestAnimationFrame(${resize})).observe(${stage})`
+);
 const loader = `async function loadModelData() {
   const files = ${JSON.stringify(assets)};
   const model = { parts: [] };

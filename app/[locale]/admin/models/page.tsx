@@ -46,7 +46,7 @@ export default async function AdminModelsPage({ params }: PageProps) {
               <h2 id="tvd-model-set" className="mt-2 text-2xl font-black">
                 TVD-2.0 트레이 진공 건조기
               </h2>
-              <p className="mt-2 text-sm font-semibold text-steel">REV.10 건조기 · REV.06 전체설비</p>
+              <p className="mt-2 text-sm font-semibold text-steel">REV.11 건조기 · REV.07 전체설비</p>
             </div>
             <span className="bg-[#e7f4ec] px-3 py-2 text-xs font-black text-[#17663a]">사용 가능</span>
           </div>
@@ -70,7 +70,7 @@ export default async function AdminModelsPage({ params }: PageProps) {
                   <p className="mt-2 text-sm font-semibold leading-6 text-steel">{model.description}</p>
                   {model.primary ? (
                     <ul className="mt-4 flex flex-wrap gap-2" aria-label="전체설비 구성">
-                      {["건조기", "컨덴서", "리시버", "온수탱크", "연결 배관"].map((item) => (
+                      {["건조기", "컨덴서", "리시버", "온수탱크", "진공펌프", "연결 배관"].map((item) => (
                         <li key={item} className="border border-black/15 bg-white px-2.5 py-1.5 text-xs font-bold text-graphite">
                           {item}
                         </li>
