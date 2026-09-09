@@ -48,7 +48,7 @@ export async function GET(request: Request, { params }: RouteContext) {
   }
 
   const model = modelViewers[viewer];
-  const modelRoot = path.join(process.cwd(), "private", "models", "tvd-2");
+  const modelRoot = path.join(process.cwd(), "private", "models", model.directory);
   const asset = new URL(request.url).searchParams.get("asset");
   let fileName: string = model.fileName;
 

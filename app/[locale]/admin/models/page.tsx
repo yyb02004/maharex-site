@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 import { ADMIN_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
-import { plannedModelSets, tvdModels } from "@/lib/admin-model-catalog";
+import { modelSets, plannedModelSets } from "@/lib/admin-model-catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -39,61 +39,50 @@ export default async function AdminModelsPage({ params }: PageProps) {
           </div>
         </header>
 
-        <section className="mt-10" aria-labelledby="tvd-model-set">
-          <div className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-graphite pb-5">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-signal">Model Set 01</p>
-              <h2 id="tvd-model-set" className="mt-2 text-2xl font-black">
-                TVD-2.0 트레이 진공 건조기
-              </h2>
-              <p className="mt-2 text-sm font-semibold text-steel">REV.11 건조기 · REV.07 전체설비</p>
+        {modelSets.map((model, index) => (
+          <section key={model.key} className="mt-10" aria-labelledby={`${model.key}-set`}>
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-graphite pb-5">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-signal">
+                  Model Set {String(index + 1).padStart(2, "0")}
+                </p>
+                <h2 id={`${model.key}-set`} className="mt-2 text-2xl font-black">
+                  {model.title}
+                </h2>
+                <p className="mt-2 text-sm font-semibold text-steel">{model.revision}</p>
+              </div>
+              <span className="bg-[#e7f4ec] px-3 py-2 text-xs font-black text-[#17663a]">사용 가능</span>
             </div>
-            <span className="bg-[#e7f4ec] px-3 py-2 text-xs font-black text-[#17663a]">사용 가능</span>
-          </div>
 
-          <div className="border-x border-b border-black/10 bg-white">
-            {tvdModels.map((model) => (
-              <article
-                key={model.key}
-                className={`grid gap-5 border-b border-black/10 p-5 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6 ${
-                  model.primary ? "bg-[#f5f6f4]" : ""
-                }`}
-              >
+            <div className="border-x border-b border-black/10 bg-white">
+              <article className="grid gap-5 bg-[#f5f6f4] p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-lg font-black">{model.name}</h3>
-                    {model.primary ? (
-                      <span className="bg-signal px-2 py-1 text-[11px] font-black text-white">전체 세트</span>
-                    ) : null}
+                    <span className="bg-signal px-2 py-1 text-[11px] font-black text-white">전체 세트</span>
                     <span className="text-xs font-bold text-steel">{model.partCount}</span>
                   </div>
                   <p className="mt-2 text-sm font-semibold leading-6 text-steel">{model.description}</p>
-                  {model.primary ? (
-                    <ul className="mt-4 flex flex-wrap gap-2" aria-label="전체설비 구성">
-                      {["건조기", "컨덴서", "리시버", "온수탱크", "진공펌프", "연결 배관"].map((item) => (
-                        <li key={item} className="border border-black/15 bg-white px-2.5 py-1.5 text-xs font-bold text-graphite">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
+                  <ul className="mt-4 flex flex-wrap gap-2" aria-label={`${model.title} 구성`}>
+                    {model.components.map((item) => (
+                      <li key={item} className="border border-black/15 bg-white px-2.5 py-1.5 text-xs font-bold text-graphite">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
                 <Link
                   href={`/${safeLocale}/admin/models/${model.key}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex min-h-10 items-center justify-center px-4 py-2 text-sm font-black transition ${
-                    model.primary
-                      ? "bg-graphite text-white hover:bg-signal"
-                      : "border border-black/20 bg-white text-graphite hover:border-signal hover:text-signal"
-                  }`}
+                  className="inline-flex min-h-10 items-center justify-center bg-graphite px-4 py-2 text-sm font-black text-white transition hover:bg-signal"
                 >
                   3D 열기
                 </Link>
               </article>
-            ))}
-          </div>
-        </section>
+            </div>
+          </section>
+        ))}
 
         <section className="mt-14" aria-labelledby="planned-model-sets">
           <div className="border-b-2 border-graphite pb-5">
@@ -106,7 +95,7 @@ export default async function AdminModelsPage({ params }: PageProps) {
             {plannedModelSets.map((name, index) => (
               <div key={name} className="flex min-h-16 items-center justify-between gap-4 px-5 py-4 sm:px-6">
                 <div className="flex min-w-0 items-center gap-4">
-                  <span className="w-7 shrink-0 text-xs font-black text-steel">{String(index + 2).padStart(2, "0")}</span>
+                  <span className="w-7 shrink-0 text-xs font-black text-steel">{String(index + modelSets.length + 1).padStart(2, "0")}</span>
                   <h3 className="font-black">{name}</h3>
                 </div>
                 <span className="shrink-0 text-xs font-bold text-steel">모델 준비 중</span>

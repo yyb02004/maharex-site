@@ -6,7 +6,10 @@ const nextConfig = {
     "/[locale]/admin/models/[viewer]": [
       "./private/models/tvd-2/installation_viewer.html.br",
       "./private/models/tvd-2/installation_manifest.json",
-      "./private/models/tvd-2/installation-data-*.json.br"
+      "./private/models/tvd-2/installation-data-*.json.br",
+      "./private/models/nf-1200/nutsche_viewer.html.br",
+      "./private/models/nf-1200/nutsche_manifest.json",
+      "./private/models/nf-1200/nutsche-data-*.json.br"
     ]
   },
   async headers() {
