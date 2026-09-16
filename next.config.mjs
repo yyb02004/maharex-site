@@ -9,7 +9,19 @@ const nextConfig = {
       "./private/models/tvd-2/installation-data-*.json.br",
       "./private/models/nf-1200/nutsche_viewer.html.br",
       "./private/models/nf-1200/nutsche_manifest.json",
-      "./private/models/nf-1200/nutsche-data-*.json.br"
+      "./private/models/nf-1200/nutsche-data-*.json.br",
+      "./private/models/rs-205/reactor_fullset_viewer.html.br",
+      "./private/models/rs-205/reactor_fullset_manifest.json",
+      "./private/models/rs-205/reactor_fullset-data-*.json.br",
+      "./private/models/ejm12/jetmill_viewer.html.br",
+      "./private/models/ejm12/jetmill_manifest.json",
+      "./private/models/ejm12/jetmill-data-*.json.br",
+      "./private/models/pm12/pinmill_viewer.html.br",
+      "./private/models/pm12/pinmill_manifest.json",
+      "./private/models/pm12/pinmill-data-*.json.br",
+      "./private/models/pm12-low-hopper/pinmill_viewer.html.br",
+      "./private/models/pm12-low-hopper/pinmill_manifest.json",
+      "./private/models/pm12-low-hopper/pinmill-data-*.json.br"
     ]
   },
   async headers() {

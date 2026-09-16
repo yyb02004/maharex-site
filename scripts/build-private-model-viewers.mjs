@@ -15,6 +15,22 @@ const profiles = {
   "nf-1200": {
     directory: "nf-1200", key: "nutsche", statusId: "model-status", errorsKey: "__nutscheErrors",
     title: "MAHAREX · NF-1200 가압누체", fragmentData: true
+  },
+  "rs-205": {
+    directory: "rs-205", key: "reactor_fullset", statusId: "model-status", errorsKey: "__reactorErrors",
+    title: "MAHAREX · RS-205 반응기 전체설비", fragmentData: true
+  },
+  "ejm12": {
+    directory: "ejm12", key: "jetmill", statusId: "model-summary", errorsKey: "__jetmillErrors",
+    title: "MAHAREX · EJM12 제트밀 전체설비", fragmentData: true
+  },
+  "pm12": {
+    directory: "pm12", key: "pinmill", statusId: "model-status", errorsKey: "__pinmillErrors",
+    title: "MAHAREX · PM12 핀밀 기본형", fragmentData: true
+  },
+  "pm12-low-hopper": {
+    directory: "pm12-low-hopper", key: "pinmill", statusId: "model-status", errorsKey: "__pinmillErrors",
+    title: "MAHAREX · PM12 핀밀 낮은 호퍼형", fragmentData: true
   }
 };
 const modelKey = process.argv[3] || "tvd-installation";
@@ -84,14 +100,14 @@ const scriptStart = html.lastIndexOf("<script>");
 const scriptEnd = html.lastIndexOf("</script>");
 if (scriptStart < 0 || scriptEnd < scriptStart) throw new Error("Viewer script is missing.");
 const sourceViewerScript = html.slice(scriptStart + "<script>".length, scriptEnd);
-const resizeObserver = /new ResizeObserver\(([A-Za-z_$][\w$]*)\)\.observe\(([A-Za-z_$][\w$]*)\)/g;
+const resizeObserver = /new ResizeObserver\(([A-Za-z_$][\w$]*)\)/g;
 if ([...sourceViewerScript.matchAll(resizeObserver)].length !== 1) {
   throw new Error("Expected exactly one viewer resize observer.");
 }
 // Defer canvas size writes until after ResizeObserver delivers the layout change.
 const viewerScript = sourceViewerScript.replace(
   resizeObserver,
-  (_, resize, stage) => `new ResizeObserver(() => requestAnimationFrame(${resize})).observe(${stage})`
+  (_, resize) => `new ResizeObserver(() => requestAnimationFrame(${resize}))`
 );
 const loader = `async function loadModelData() {
   const files = ${JSON.stringify(assets)};
@@ -123,9 +139,11 @@ const loader = `async function loadModelData() {
     ${viewerScript}
     document.getElementById("model-data").remove();
   } catch (error) {
-    window[${JSON.stringify(profile.errorsKey)}].push(String(error));
+    (window[${JSON.stringify(profile.errorsKey)}] ||= []).push(String(error));
     const message = "모델을 불러오지 못했습니다. 관리자 로그인 상태를 확인하고 새로고침해 주세요.";
     document.getElementById(${JSON.stringify(profile.statusId)}).textContent = message;
+    const loading = document.getElementById("loading");
+    if (loading) loading.hidden = true;
     const panel = document.getElementById("error");
     panel.textContent = message;
     panel.style.display = "block";
@@ -134,7 +152,7 @@ const loader = `async function loadModelData() {
 
 html = html.slice(0, scriptStart + "<script>".length) + loader + html.slice(scriptEnd);
 html = html
-  .replace("</head>", '<style id="maharex-admin-viewer">.downloads,aside p:has(>a[href$=".txt"]){display:none!important}</style></head>')
+  .replace("</head>", '<style id="maharex-admin-viewer">.downloads,.downloads+p.note,aside p:has(>a[href$=".txt"]){display:none!important}</style></head>')
   .replace(/<title>[^<]*<\/title>/, `<title>${profile.title}</title>`);
 if (modelKey === "nf-1200") {
   html = html.replace("<h1>가압누체</h1>", "<h1>가압누체 NF-1200</h1>");

@@ -10,6 +10,30 @@ export const modelViewers = {
     fileName: "nutsche_viewer.html.br",
     downloadName: "NF-1200_pressure-nutsche.html",
     manifestFile: "nutsche_manifest.json"
+  },
+  "rs-205": {
+    directory: "rs-205",
+    fileName: "reactor_fullset_viewer.html.br",
+    downloadName: "RS-205_full-installation.html",
+    manifestFile: "reactor_fullset_manifest.json"
+  },
+  "ejm12": {
+    directory: "ejm12",
+    fileName: "jetmill_viewer.html.br",
+    downloadName: "EJM12_full-installation.html",
+    manifestFile: "jetmill_manifest.json"
+  },
+  "pm12": {
+    directory: "pm12",
+    fileName: "pinmill_viewer.html.br",
+    downloadName: "PM12_standard.html",
+    manifestFile: "pinmill_manifest.json"
+  },
+  "pm12-low-hopper": {
+    directory: "pm12-low-hopper",
+    fileName: "pinmill_viewer.html.br",
+    downloadName: "PM12_low-hopper.html",
+    manifestFile: "pinmill_manifest.json"
   }
 } as const;
 
@@ -41,7 +65,43 @@ export const modelSets: Array<{
     description: "상·하경판, SHELL, 타공판, 유압 승강부와 대차를 함께 확인합니다.",
     partCount: "444개 부품",
     components: ["상·하경판", "SHELL", "타공판·지지대", "유압 승강부", "대차", "WISE 연성계"]
+  },
+  {
+    key: "rs-205",
+    title: "RS-205 반응기",
+    revision: "REV.05 · 반응기 및 보조설비",
+    name: "전체설비",
+    description: "반응기, 컨덴서, 리시버, 분리기와 연결 배관을 함께 확인합니다.",
+    partCount: "1,480개 부품",
+    components: ["반응기·교반기", "컨덴서", "리시버", "분리기", "스테이지", "연결 배관"]
+  },
+  {
+    key: "ejm12",
+    title: "EJM12 제트밀",
+    revision: "REV.03 · FD12 공급기 · 공정 시연",
+    name: "전체설비",
+    description: "공급기, 분쇄실, 사이클론, 집진기와 회수통을 함께 확인합니다.",
+    partCount: "977개 부품",
+    components: ["FD12 공급기·호퍼", "분쇄실", "사이클론", "집진기", "회수통", "공정 배관"]
+  },
+  {
+    key: "pm12",
+    title: "PM12 핀밀 · 기본형",
+    revision: "REV.02 · 높은 호퍼 · 수평 스크루",
+    name: "전체설비",
+    description: "높은 호퍼와 수평 피더, 핀 분쇄부, 배출 호퍼와 수취 드럼을 함께 확인합니다.",
+    partCount: "722개 부품",
+    components: ["투입 호퍼", "수평 스크루", "핀 분쇄부", "배출 호퍼", "수취 드럼·돌리", "제어반"]
+  },
+  {
+    key: "pm12-low-hopper",
+    title: "PM12 핀밀 · 낮은 호퍼형",
+    revision: "REV.05 · 경사 스크루 · 정비 커버·힌지 드레인",
+    name: "전체설비",
+    description: "낮은 호퍼와 경사 피더, 핀 분쇄부, 탈착 커버, 힌지 드레인과 수취 드럼을 함께 확인합니다.",
+    partCount: "903개 부품",
+    components: ["낮은 호퍼", "35° 경사 스크루", "핀 분쇄부", "탈착 모터 커버", "힌지 드레인", "수취 드럼·돌리"]
   }
 ];
 
-export const plannedModelSets = ["반응기", "분쇄기", "로터리 드라이어"] as const;
+export const plannedModelSets = ["로터리 드라이어"] as const;

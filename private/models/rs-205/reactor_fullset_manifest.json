@@ -1,0 +1,15 @@
+{
+  "sourceSha256": "b13a2a24a81a2aee17192ae51beb02a2c79b37dfed888c568ebc55adfd8546bd",
+  "partCount": 1480,
+  "revision": 5,
+  "assets": [
+    "reactor_fullset-data-000.json.br",
+    "reactor_fullset-data-001.json.br",
+    "reactor_fullset-data-002.json.br",
+    "reactor_fullset-data-003.json.br",
+    "reactor_fullset-data-004.json.br",
+    "reactor_fullset-data-005.json.br",
+    "reactor_fullset-data-006.json.br",
+    "reactor_fullset-data-007.json.br"
+  ]
+}

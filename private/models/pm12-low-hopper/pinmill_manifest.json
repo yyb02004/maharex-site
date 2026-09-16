@@ -1,0 +1,10 @@
+{
+  "sourceSha256": "2587fae412db695cb9d796eb5fe8a97a007207c6a8235a41d14e2e0b54598264",
+  "partCount": 903,
+  "revision": 5,
+  "assets": [
+    "pinmill-data-000.json.br",
+    "pinmill-data-001.json.br",
+    "pinmill-data-002.json.br"
+  ]
+}

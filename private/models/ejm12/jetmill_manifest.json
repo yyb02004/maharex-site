@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "40ed128be1b2b7739cab979787f49dd32ad2fa199f5ebb8a16ccd3cfce156608",
+  "partCount": 977,
+  "revision": 3,
+  "assets": [
+    "jetmill-data-000.json.br",
+    "jetmill-data-001.json.br",
+    "jetmill-data-002.json.br",
+    "jetmill-data-003.json.br"
+  ]
+}

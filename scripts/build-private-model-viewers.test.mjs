@@ -12,7 +12,11 @@ const builder = fileURLToPath(new URL("./build-private-model-viewers.mjs", impor
 
 for (const [profile, key, directory, errorsKey, statusId] of [
   ["tvd-installation", "installation", "tvd-2", "__errors", "status"],
-  ["nf-1200", "nutsche", "nf-1200", "__nutscheErrors", "model-status"]
+  ["nf-1200", "nutsche", "nf-1200", "__nutscheErrors", "model-status"],
+  ["rs-205", "reactor_fullset", "rs-205", "__reactorErrors", "model-status"],
+  ["ejm12", "jetmill", "ejm12", "__jetmillErrors", "model-summary"],
+  ["pm12", "pinmill", "pm12", "__pinmillErrors", "model-status"],
+  ["pm12-low-hopper", "pinmill", "pm12-low-hopper", "__pinmillErrors", "model-status"]
 ]) {
   test(`${profile}: preserve model data and enforce authenticated loader responses`, async () => {
     const temp = await mkdtemp(path.join(os.tmpdir(), "maharex-model-test-"));
@@ -24,14 +28,17 @@ for (const [profile, key, directory, errorsKey, statusId] of [
         parts: [{ name: "plate", data: "0".repeat(6_000_010) }, { name: "support", position: [1, -2, 3.5] }]
       };
       const serialized = JSON.stringify(model);
+      const observer = key === "pinmill"
+        ? "const observer=new ResizeObserver(resize);observer.observe(stage);"
+        : "new ResizeObserver(resize).observe(stage);";
       await writeFile(path.join(source, `${key}_viewer.html`), `<!doctype html><html><head><title>Fixture</title></head><body>
 <script id="model-data" type="application/json">${serialized}</script>
-<script>const stage={};function resize(){}new ResizeObserver(resize).observe(stage);window.loadedModel=JSON.parse(document.getElementById("model-data").textContent);</script></body></html>`);
+<script>const stage={};function resize(){}${observer}window.loadedModel=JSON.parse(document.getElementById("model-data").textContent);</script></body></html>`);
       execFileSync(process.execPath, [builder, source, profile], { cwd: temp, stdio: "pipe" });
       const root = path.join(temp, "private", "models", directory);
       const manifest = JSON.parse(await readFile(path.join(root, `${key}_manifest.json`), "utf8"));
       assert.equal(manifest.partCount, model.parts.length);
-      if (profile === "nf-1200") assert(manifest.assets.length > 1, "Split a single oversized part");
+      if (profile !== "tvd-installation") assert(manifest.assets.length > 1, "Split a single oversized part");
       const sections = new Map();
       for (const name of manifest.assets) {
         const bytes = await readFile(path.join(root, name));
@@ -43,10 +50,10 @@ for (const [profile, key, directory, errorsKey, statusId] of [
       const script = html.slice(html.lastIndexOf("<script>") + 8, html.lastIndexOf("</script>"));
 
       for (const authorized of [true, false]) {
-        const elements = Object.fromEntries(["model-data", statusId, "error"].map(id => [id, {
+        const elements = Object.fromEntries(["model-data", statusId, "error", "loading"].map(id => [id, {
           textContent: "", style: {}, removed: false, remove() { this.removed = true; }
         }]));
-        const window = { [errorsKey]: [] };
+        const window = profile === "ejm12" ? {} : { [errorsKey]: [] };
         await vm.runInNewContext(script, {
           window, document: { getElementById: id => elements[id] },
           location: { href: `https://example.test/ko/admin/models/${profile}` },
@@ -66,11 +73,12 @@ for (const [profile, key, directory, errorsKey, statusId] of [
         if (authorized) {
           assert.deepEqual(JSON.parse(JSON.stringify(window.loadedModel)), model);
           assert.equal(elements["model-data"].removed, true);
-          assert.equal(window[errorsKey].length, 0);
+          assert.equal(window[errorsKey]?.length ?? 0, 0);
         } else {
           assert.equal(window.loadedModel, undefined);
           assert.equal(elements.error.style.display, "block");
           assert.equal(window[errorsKey].length, 1);
+          assert.equal(elements.loading.hidden, true);
         }
       }
     } finally {
