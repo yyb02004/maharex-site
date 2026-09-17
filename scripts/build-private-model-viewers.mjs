@@ -20,6 +20,16 @@ const profiles = {
     directory: "rs-205", key: "reactor_fullset", statusId: "model-status", errorsKey: "__reactorErrors",
     title: "MAHAREX · RS-205 반응기 전체설비", fragmentData: true
   },
+  "rvd-1500": {
+    directory: "rvd-1500", key: "rvd1500", statusId: "model-status", errorsKey: "__rvdErrors",
+    sourceFile: "RVD-1500_viewer.html",
+    title: "MAHAREX · RVD-1500 로타리 드라이어 전체설비", fragmentData: true
+  },
+  "rvd-501": {
+    directory: "rvd-501", key: "rvd501", statusId: "model-status", errorsKey: "__rvdErrors",
+    sourceFile: "RVD-501_viewer.html",
+    title: "MAHAREX · RVD-501 로타리 드라이어 전체설비", fragmentData: true
+  },
   "ejm12": {
     directory: "ejm12", key: "jetmill", statusId: "model-summary", errorsKey: "__jetmillErrors",
     title: "MAHAREX · EJM12 제트밀 전체설비", fragmentData: true
@@ -38,7 +48,7 @@ if (!Object.hasOwn(profiles, modelKey)) throw new Error("Unknown private model p
 const profile = profiles[modelKey];
 
 const targetRoot = path.join(process.cwd(), "private", "models", profile.directory);
-const source = await readFile(path.join(sourceRoot, `${profile.key}_viewer.html`), "utf8");
+const source = await readFile(path.join(sourceRoot, profile.sourceFile || `${profile.key}_viewer.html`), "utf8");
 const modelTag = '<script id="model-data" type="application/json">';
 const modelStart = source.indexOf(modelTag);
 const modelEnd = source.indexOf("</script>", modelStart);
@@ -163,6 +173,7 @@ await writeFile(path.join(targetRoot, `${profile.key}_manifest.json`), JSON.stri
   sourceSha256: createHash("sha256").update(source).digest("hex"),
   partCount: parts.length,
   revision: metadata.revision,
+  viewerRevision: metadata.viewerRevision,
   assets
 }, null, 2) + "\n");
 

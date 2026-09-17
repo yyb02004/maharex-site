@@ -1,0 +1,18 @@
+{
+  "sourceSha256": "73aba930c4d885b7d6d78e36bd15fb5b4ca75e256314a61025c6d8fd2ae2a4d2",
+  "partCount": 1780,
+  "revision": 3,
+  "viewerRevision": "REV03.2",
+  "assets": [
+    "rvd501-data-000.json.br",
+    "rvd501-data-001.json.br",
+    "rvd501-data-002.json.br",
+    "rvd501-data-003.json.br",
+    "rvd501-data-004.json.br",
+    "rvd501-data-005.json.br",
+    "rvd501-data-006.json.br",
+    "rvd501-data-007.json.br",
+    "rvd501-data-008.json.br",
+    "rvd501-data-009.json.br"
+  ]
+}

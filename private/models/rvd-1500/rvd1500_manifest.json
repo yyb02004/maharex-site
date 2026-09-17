@@ -1,0 +1,14 @@
+{
+  "sourceSha256": "2caa0cfc7d900c65530a391bf2393bc88687a87a85b35952a4a75ddc88bb3f68",
+  "partCount": 838,
+  "revision": 4,
+  "viewerRevision": "REV04",
+  "assets": [
+    "rvd1500-data-000.json.br",
+    "rvd1500-data-001.json.br",
+    "rvd1500-data-002.json.br",
+    "rvd1500-data-003.json.br",
+    "rvd1500-data-004.json.br",
+    "rvd1500-data-005.json.br"
+  ]
+}

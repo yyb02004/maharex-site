@@ -10,10 +10,12 @@ import test from "node:test";
 
 const builder = fileURLToPath(new URL("./build-private-model-viewers.mjs", import.meta.url));
 
-for (const [profile, key, directory, errorsKey, statusId] of [
+for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_viewer.html`] of [
   ["tvd-installation", "installation", "tvd-2", "__errors", "status"],
   ["nf-1200", "nutsche", "nf-1200", "__nutscheErrors", "model-status"],
   ["rs-205", "reactor_fullset", "rs-205", "__reactorErrors", "model-status"],
+  ["rvd-1500", "rvd1500", "rvd-1500", "__rvdErrors", "model-status", "RVD-1500_viewer.html"],
+  ["rvd-501", "rvd501", "rvd-501", "__rvdErrors", "model-status", "RVD-501_viewer.html"],
   ["ejm12", "jetmill", "ejm12", "__jetmillErrors", "model-summary"],
   ["pm12", "pinmill", "pm12", "__pinmillErrors", "model-status"],
   ["pm12-low-hopper", "pinmill", "pm12-low-hopper", "__pinmillErrors", "model-status"]
@@ -24,20 +26,21 @@ for (const [profile, key, directory, errorsKey, statusId] of [
       const source = path.join(temp, "source");
       await mkdir(source);
       const model = {
-        key, revision: 3,
+        key, revision: 3, viewerRevision: "REV03.2",
         parts: [{ name: "plate", data: "0".repeat(6_000_010) }, { name: "support", position: [1, -2, 3.5] }]
       };
       const serialized = JSON.stringify(model);
       const observer = key === "pinmill"
         ? "const observer=new ResizeObserver(resize);observer.observe(stage);"
         : "new ResizeObserver(resize).observe(stage);";
-      await writeFile(path.join(source, `${key}_viewer.html`), `<!doctype html><html><head><title>Fixture</title></head><body>
+      await writeFile(path.join(source, sourceFile), `<!doctype html><html><head><title>Fixture</title></head><body>
 <script id="model-data" type="application/json">${serialized}</script>
 <script>const stage={};function resize(){}${observer}window.loadedModel=JSON.parse(document.getElementById("model-data").textContent);</script></body></html>`);
       execFileSync(process.execPath, [builder, source, profile], { cwd: temp, stdio: "pipe" });
       const root = path.join(temp, "private", "models", directory);
       const manifest = JSON.parse(await readFile(path.join(root, `${key}_manifest.json`), "utf8"));
       assert.equal(manifest.partCount, model.parts.length);
+      assert.equal(manifest.viewerRevision, model.viewerRevision);
       if (profile !== "tvd-installation") assert(manifest.assets.length > 1, "Split a single oversized part");
       const sections = new Map();
       for (const name of manifest.assets) {
