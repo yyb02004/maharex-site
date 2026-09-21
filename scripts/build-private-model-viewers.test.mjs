@@ -12,6 +12,7 @@ const builder = fileURLToPath(new URL("./build-private-model-viewers.mjs", impor
 
 for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_viewer.html`] of [
   ["tvd-installation", "installation", "tvd-2", "__errors", "status"],
+  ["tvd-5000", "tvd5000_installation", "tvd-5000", "__errors", "status", "TVD-5000_installation.html"],
   ["nf-1200", "nutsche", "nf-1200", "__nutscheErrors", "model-status"],
   ["rs-205", "reactor_fullset", "rs-205", "__reactorErrors", "model-status"],
   ["rvd-1500", "rvd1500", "rvd-1500", "__rvdErrors", "model-status", "RVD-1500_viewer.html"],
@@ -29,17 +30,23 @@ for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_v
         key, revision: 3, viewerRevision: "REV03.2",
         parts: [{ name: "plate", data: "0".repeat(6_000_010) }, { name: "support", position: [1, -2, 3.5] }]
       };
+      if (profile === "tvd-5000") {
+        delete model.revision;
+        delete model.viewerRevision;
+      }
       const serialized = JSON.stringify(model);
       const observer = key === "pinmill"
         ? "const observer=new ResizeObserver(resize);observer.observe(stage);"
         : "new ResizeObserver(resize).observe(stage);";
       await writeFile(path.join(source, sourceFile), `<!doctype html><html><head><title>Fixture</title></head><body>
+<aside><p><a id="other-view" href="standalone.html">Detail</a></p></aside>
 <script id="model-data" type="application/json">${serialized}</script>
 <script>const stage={};function resize(){}${observer}window.loadedModel=JSON.parse(document.getElementById("model-data").textContent);</script></body></html>`);
       execFileSync(process.execPath, [builder, source, profile], { cwd: temp, stdio: "pipe" });
       const root = path.join(temp, "private", "models", directory);
       const manifest = JSON.parse(await readFile(path.join(root, `${key}_manifest.json`), "utf8"));
       assert.equal(manifest.partCount, model.parts.length);
+      assert.equal(manifest.revision, model.revision);
       assert.equal(manifest.viewerRevision, model.viewerRevision);
       if (profile !== "tvd-installation") assert(manifest.assets.length > 1, "Split a single oversized part");
       const sections = new Map();
@@ -50,6 +57,8 @@ for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_v
       }
       const html = brotliDecompressSync(await readFile(path.join(root, `${key}_viewer.html.br`))).toString();
       assert(html.includes("new ResizeObserver(() => requestAnimationFrame(resize))"));
+      assert(html.includes('id="other-view"'), "Keep the link node used by source viewer initialization");
+      assert(html.includes("aside p:has(>#other-view){display:none!important}"), "Hide the unavailable standalone viewer link");
       const script = html.slice(html.lastIndexOf("<script>") + 8, html.lastIndexOf("</script>"));
 
       for (const authorized of [true, false]) {

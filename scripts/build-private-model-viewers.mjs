@@ -12,6 +12,11 @@ const profiles = {
     directory: "tvd-2", key: "installation", statusId: "status", errorsKey: "__errors",
     title: "MAHAREX · TVD-2.0 전체설비", fragmentData: false
   },
+  "tvd-5000": {
+    directory: "tvd-5000", key: "tvd5000_installation", statusId: "status", errorsKey: "__errors",
+    sourceFile: "TVD-5000_installation.html",
+    title: "MAHAREX · TVD-5.0 전체설비", fragmentData: true
+  },
   "nf-1200": {
     directory: "nf-1200", key: "nutsche", statusId: "model-status", errorsKey: "__nutscheErrors",
     title: "MAHAREX · NF-1200 가압누체", fragmentData: true
@@ -162,7 +167,7 @@ const loader = `async function loadModelData() {
 
 html = html.slice(0, scriptStart + "<script>".length) + loader + html.slice(scriptEnd);
 html = html
-  .replace("</head>", '<style id="maharex-admin-viewer">.downloads,.downloads+p.note,aside p:has(>a[href$=".txt"]){display:none!important}</style></head>')
+  .replace("</head>", '<style id="maharex-admin-viewer">.downloads,.downloads+p.note,aside p:has(>a[href$=".txt"]),aside p:has(>#other-view){display:none!important}</style></head>')
   .replace(/<title>[^<]*<\/title>/, `<title>${profile.title}</title>`);
 if (modelKey === "nf-1200") {
   html = html.replace("<h1>가압누체</h1>", "<h1>가압누체 NF-1200</h1>");

@@ -5,6 +5,12 @@ export const modelViewers = {
     downloadName: "TVD-2.0_full-installation.html",
     manifestFile: "installation_manifest.json"
   },
+  "tvd-5000": {
+    directory: "tvd-5000",
+    fileName: "tvd5000_installation_viewer.html.br",
+    downloadName: "TVD-5.0_full-installation.html",
+    manifestFile: "tvd5000_installation_manifest.json"
+  },
   "nf-1200": {
     directory: "nf-1200",
     fileName: "nutsche_viewer.html.br",
@@ -77,6 +83,15 @@ export const modelSets: Array<{
     description: "건조기, 컨덴서, 리시버, 온수탱크, 진공펌프와 연결 배관을 함께 확인합니다.",
     partCount: "3,476개 부품",
     components: ["건조기", "컨덴서", "리시버", "온수탱크", "진공펌프", "연결 배관"]
+  },
+  {
+    key: "tvd-5000",
+    title: "TVD-5.0 트레이 진공 건조기",
+    revision: "REV.04 · 양개 도어 · 셸 고정 패킹 · 공통 환수 헤더",
+    name: "전체설비",
+    description: "5 m³급 건조기, 컨덴서, 리시버, 온수탱크, 진공펌프와 연결 배관을 함께 확인합니다.",
+    partCount: "3,433개 부품",
+    components: ["건조기·양개 도어", "열판·트레이", "컨덴서", "리시버", "온수탱크·펌프", "진공펌프", "연결 배관"]
   },
   {
     key: "rvd-1500",
