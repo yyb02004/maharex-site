@@ -17,6 +17,7 @@ for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_v
   ["rs-205", "reactor_fullset", "rs-205", "__reactorErrors", "model-status"],
   ["rvd-1500", "rvd1500", "rvd-1500", "__rvdErrors", "model-status", "RVD-1500_viewer.html"],
   ["rvd-501", "rvd501", "rvd-501", "__rvdErrors", "model-status", "RVD-501_viewer.html"],
+  ["vacuum-dryer-6280", "vacuum_dryer_6280", "vacuum-dryer-6280", "__viewerErrors", "model-status", "Vacuum-Dryer-6.28M3_viewer.html"],
   ["ejm12", "jetmill", "ejm12", "__jetmillErrors", "model-summary"],
   ["pm12", "pinmill", "pm12", "__pinmillErrors", "model-status"],
   ["pm12-low-hopper", "pinmill", "pm12-low-hopper", "__pinmillErrors", "model-status"]
@@ -63,7 +64,7 @@ for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_v
 
       for (const authorized of [true, false]) {
         const elements = Object.fromEntries(["model-data", statusId, "error", "loading"].map(id => [id, {
-          textContent: "", style: {}, removed: false, remove() { this.removed = true; }
+          textContent: "", style: {}, hidden: id === "error", removed: false, remove() { this.removed = true; }
         }]));
         const window = profile === "ejm12" ? {} : { [errorsKey]: [] };
         await vm.runInNewContext(script, {
@@ -89,6 +90,7 @@ for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_v
         } else {
           assert.equal(window.loadedModel, undefined);
           assert.equal(elements.error.style.display, "block");
+          assert.equal(elements.error.hidden, false);
           assert.equal(window[errorsKey].length, 1);
           assert.equal(elements.loading.hidden, true);
         }

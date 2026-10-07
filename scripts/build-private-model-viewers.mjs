@@ -35,6 +35,11 @@ const profiles = {
     sourceFile: "RVD-501_viewer.html",
     title: "MAHAREX · RVD-501 로타리 드라이어 전체설비", fragmentData: true
   },
+  "vacuum-dryer-6280": {
+    directory: "vacuum-dryer-6280", key: "vacuum_dryer_6280", statusId: "model-status", errorsKey: "__viewerErrors",
+    sourceFile: "Vacuum-Dryer-6.28M3_viewer.html",
+    title: "MAHAREX · 6.28m³ 진공건조기 전체설비", fragmentData: true
+  },
   "ejm12": {
     directory: "ejm12", key: "jetmill", statusId: "model-summary", errorsKey: "__jetmillErrors",
     title: "MAHAREX · EJM12 제트밀 전체설비", fragmentData: true
@@ -161,6 +166,7 @@ const loader = `async function loadModelData() {
     if (loading) loading.hidden = true;
     const panel = document.getElementById("error");
     panel.textContent = message;
+    panel.hidden = false;
     panel.style.display = "block";
   }
 })();`;

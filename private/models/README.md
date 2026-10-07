@@ -4,7 +4,7 @@ Only the authenticated admin model route serves these files. Do not copy them to
 `public/`. Each catalog entry opens the full equipment set, with detail controls
 inside its viewer.
 
-## Source snapshot (2026-09-21)
+## Source snapshot (2026-10-07)
 
 Source paths are relative to the adjacent `3D Model` workspace.
 
@@ -15,13 +15,14 @@ Source paths are relative to the adjacent `3D Model` workspace.
 | `tvd-5000` | `TVD-5000/outputs` | 4, shell-mounted packing and common return header | 3,433 |
 | `rvd-1500` | `RVD-1500/outputs` | 4, door hose connections | 838 |
 | `rvd-501` | `RVD-501/outputs` | 3.2, sight glasses and detachable door piping | 1,780 |
+| `vacuum-dryer-6280` | `Vacuum-Dryer-6.28M3/outputs` | 2, full installation, process demo and independent agitator rotation | 1,779 |
 | `nf-1200` | `CMDL-Nutsche/outputs` | 4 | 444 |
 | `pm12` | `PinMill-PM12/outputs` | 2, standard high hopper | 722 |
 | `pm12-low-hopper` | `PinMill-PM12-LowHopper-REV05/outputs` | 5, low hopper | 903 |
 | `ejm12` | `JetMill-EJM12/outputs` | 3 | 977 |
 
 Catalog order: reactor, tray vacuum dryers (TVD-2.0, TVD-5.0), rotary dryers,
-filter, pin mills, jet mill.
+6.28 m3 vacuum dryer, filter, pin mills, jet mill.
 
 PM12 standard and low-hopper are distinct configurations. Low-hopper REV03/REV04
 and backup folders are superseded snapshots, not additional equipment sets.
@@ -31,6 +32,14 @@ JSON has no revision field; REV04 is recorded in the source README and catalog,
 and its manifest identifies the exact source HTML by SHA-256. The standalone
 viewer link is hidden while keeping its DOM node for source initialization.
 RVD and TVD-5000 profiles specify source filenames separately from model keys.
+
+The 6.28 m3 REV02 import uses `Vacuum-Dryer-6.28M3_viewer.html` from the source
+delivery manifest. It includes the dryer, integrated condenser/receiver,
+hot-water tank/circulation pump, vacuum pump, and process piping. The source
+geometry, 84-second process demonstration, and independent agitator control are
+preserved. Auxiliary equipment sizing and demonstration values remain conceptual,
+not validated operating conditions. Loader failures also unhide the source error
+panel, which uses a `hidden` attribute.
 
 ## Update
 

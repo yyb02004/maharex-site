@@ -35,6 +35,12 @@ export const modelViewers = {
     downloadName: "RVD-501_full-installation.html",
     manifestFile: "rvd501_manifest.json"
   },
+  "vacuum-dryer-6280": {
+    directory: "vacuum-dryer-6280",
+    fileName: "vacuum_dryer_6280_viewer.html.br",
+    downloadName: "Vacuum-Dryer-6.28M3_full-installation.html",
+    manifestFile: "vacuum_dryer_6280_manifest.json"
+  },
   "ejm12": {
     directory: "ejm12",
     fileName: "jetmill_viewer.html.br",
@@ -110,6 +116,15 @@ export const modelSets: Array<{
     description: "건조기, 리본 교반부, 보조 백필터, 응축기, 응축액 수조와 이송 펌프를 함께 확인합니다.",
     partCount: "1,780개 부품",
     components: ["건조기·리본 교반부", "보조 백필터", "응축기", "응축액 수조", "이송 펌프", "공정 배관"]
+  },
+  {
+    key: "vacuum-dryer-6280",
+    title: "6.28m³ 진공건조기",
+    revision: "REV.02 · 리본 교반기 · 공정 시연 · 교반기 단독 회전",
+    name: "전체설비",
+    description: "6.28m³ 건조기, 일체형 컨덴서·리시버, 온수탱크·순환펌프, 진공펌프와 연결 배관을 함께 확인합니다.",
+    partCount: "1,779개 부품",
+    components: ["건조기·리본 교반기", "구동부·프레임", "컨덴서·리시버", "온수탱크·순환펌프", "진공펌프", "공정 배관"]
   },
   {
     key: "nf-1200",
