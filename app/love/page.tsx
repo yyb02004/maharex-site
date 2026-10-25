@@ -1,11 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import PhotoGallery from "./PhotoGallery";
-import BackgroundMusic from "./BackgroundMusic";
+import InvitationCover from "./InvitationCover";
+import FlowerGuide from "./FlowerGuide";
 import VenueMap from "./VenueMap";
 import GiftSection, { ContactSection } from "./ContactAndGifts";
 import { CopyAddress, Countdown, ShareInvitation } from "./InvitationTools";
+import { getWeddingStorageOrigin } from "./storage-config";
 import styles from "./love.module.css";
+
+const GuestMemories = dynamic(() => import("./GuestMemories"));
 
 const title = "상혁 그리고 은정, 결혼합니다";
 const description = "2027년 3월 6일 토요일 오전 11시 · 기흥 ICT밸리 컨벤션 A동 B1 그랑데홀. 가장 예쁜 날, 소중한 분들을 초대합니다.";
@@ -31,21 +36,13 @@ function SectionHeading({ eyebrow, children }: { eyebrow: string; children: Reac
 }
 
 export default function LovePage() {
+  const storageOrigin = getWeddingStorageOrigin();
   return (
     <div className={styles.backdrop}>
       <aside className={styles.desktopNote} aria-hidden="true"><span>A DAY TO REMEMBER</span><p>S <i>&</i> E</p><div /><small>MARCH 6, 2027</small><span>우리의 시작에 초대합니다.</span></aside>
       <main className={styles.invitation} id="top">
         <a className={styles.skipLink} href="#wedding-day">예식 안내로 바로가기</a>
-        <header className={styles.hero}>
-          <div className={styles.masthead}><div><span>THE WEDDING OF</span><span>06 MARCH 2027</span></div><BackgroundMusic /></div>
-          <p className={styles.coverTitle} aria-hidden="true"><span>SangHyeok</span><span><i>&</i> EunJung</span></p>
-          <div className={styles.heroPhoto}>
-            <Image src="/love/photos/photo-20.webp" alt="나란히 앉아 함께 웃고 있는 신랑 상혁과 신부 은정" width={1200} height={1800} priority sizes="(max-width: 480px) 92vw, 448px" />
-          </div>
-          <div className={styles.heroCaption}><h1 className={styles.names}>박상혁 <span>·</span> 최은정</h1><p>토요일, 오전 11시</p></div>
-          <div className={styles.heroInfo}><p>2027년 3월 6일</p><span>기흥 ICT밸리 컨벤션 · A동 B1 그랑데홀</span></div>
-          <nav className={styles.coverNav} aria-label="청첩장 바로가기"><a href="#invitation">초대의 글</a><a href="#gallery">사진</a><a href="#location">오시는 길</a><a href="#gifts">마음 전하기</a></nav>
-        </header>
+        <InvitationCover guestsEnabled={Boolean(storageOrigin)} />
 
         <section className={`${styles.section} ${styles.letter}`} id="invitation">
           <p className={styles.letterLead} aria-hidden="true">A lifetime,<br /><i>together.</i></p>
@@ -110,7 +107,9 @@ export default function LovePage() {
           <div className={styles.charter}><span className={styles.eyebrow}>FOR OUR GUESTS</span><h3>김해에서 함께 오시는 분들께</h3><p>신부측 하객을 위한 전세버스를 운행합니다.</p><dl><div><dt>출발</dt><dd>예식 당일 오전 5시 · 김해시청</dd></div><div><dt>차량</dt><dd>경남76바 2112</dd></div></dl><a href="tel:01028999000">기사님께 전화하기 <span aria-hidden="true">↗</span></a></div>
         </section>
 
-        <section className={`${styles.section} ${styles.giftsSection}`} id="gifts"><GiftSection /></section>
+        <section className={`${styles.section} ${styles.giftsSection}`} id="gifts"><GiftSection /><FlowerGuide /></section>
+
+        {storageOrigin ? <GuestMemories apiBaseUrl={storageOrigin} /> : null}
 
         <footer>
           <div className={styles.closingPhoto}><Image src="/love/photos/photo-08.webp" alt="꽃으로 둘러싸인 문 앞에 함께 앉은 두 사람" width={1800} height={1200} sizes="(max-width: 480px) 100vw, 480px" /><p>가장 예쁜 날,<br />소중한 분들을 초대합니다.</p></div>

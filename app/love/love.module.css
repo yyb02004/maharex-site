@@ -37,28 +37,9 @@
 .invitation :where(section[id]) { scroll-margin-top: 24px; }
 .skipLink { position: absolute; top: -90px; left: 20px; z-index: 10; background: var(--paper); padding: 10px; }
 .skipLink:focus { top: 10px; }
-.hero { padding: 26px 16px 0; }
-.masthead { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 5px; font: 8px/1.5 Arial, sans-serif; letter-spacing: .18em; color: var(--accent); }
-.masthead > div:first-child { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
-.coverTitle { margin: 29px 22px 30px; font: 400 clamp(48px, 14vw, 66px)/.88 var(--display); letter-spacing: -.045em; }
-.coverTitle > span { display: block; }
-.coverTitle > span + span { margin-top: 7px; text-align: right; }
-.coverTitle i { display: inline-block; margin-right: 11px; font-size: .67em; font-weight: 400; color: var(--accent); }
-.heroPhoto { background: #e7e9e1; overflow: hidden; }
-.heroPhoto img { display: block; width: 100%; aspect-ratio: 3 / 4; height: auto; object-fit: cover; object-position: center 33%; }
-.heroCaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 23px 5px 0; }
-.names { font-size: 17px; font-weight: 400; letter-spacing: .08em; line-height: 1.6; }
-.names span { display: inline-block; margin-inline: 8px; color: var(--accent); }
-.heroCaption > p { font-size: 11px; color: var(--muted); letter-spacing: .01em; }
-.heroInfo { padding: 10px 5px 24px; }
-.heroInfo p { font-size: 13px; letter-spacing: .03em; }
-.heroInfo > span { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
-.coverNav { display: flex; align-items: center; justify-content: space-between; padding: 0 6px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.coverNav a { min-height: 51px; display: flex; align-items: center; padding: 0 5px; font-size: 10px; color: #55604f; }
-.coverNav a:hover { color: var(--ink); }
 .eyebrow { font: 9px/1.6 Arial, sans-serif; letter-spacing: .19em; color: var(--accent); }
 .section { padding: 82px 32px; text-align: left; }
-.sectionHeading { margin-bottom: 29px; }
+.sectionHeading { margin-bottom: 29px; text-align: center; }
 .sectionHeading > p { margin-bottom: 15px; font: 9px/1.6 Arial, sans-serif; letter-spacing: .2em; color: var(--accent); }
 .sectionHeading h2 { font-family: var(--love-serif); font-size: 25px; font-weight: 400; line-height: 1.6; letter-spacing: -.045em; }
 .letter { padding-top: 91px; padding-bottom: 66px; text-align: center; }
@@ -105,7 +86,7 @@
 .countdown p { font-size: 11px; color: var(--muted); margin-top: 23px; }
 .outlineButton { min-height: 46px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 1px solid #ced3c7; padding: 10px 26px; font-size: 11px; }
 .outlineButton:hover { background: #e7eae1; }
-.sectionCaption { color: var(--muted); font-size: 12px; margin: -16px 0 28px; line-height: 1.9; }
+.sectionCaption { color: var(--muted); font-size: 12px; margin: -16px 0 28px; line-height: 1.9; text-align: center; }
 .gallerySection { padding-inline: 24px; }
 .gallerySection > .sectionHeading, .gallerySection > .sectionCaption { margin-left: 8px; margin-right: 8px; }
 .locationSection { border-top: 1px solid var(--line); }
@@ -186,13 +167,6 @@
 .desktopNote > span:last-child { display: block; margin-top: 15px; font-size: 10px; color: #77816e; }
 @media (min-width: 1100px) { .desktopNote { display: block; } }
 @media (max-width: 360px) {
-  .hero { padding-inline: 14px; }
-  .coverTitle { margin-inline: 15px; font-size: 48px; }
-  .masthead { font-size: 7px; }
-  .names { font-size: 14px; }
-  .names span { margin-inline: 5px; }
-  .heroCaption > p { font-size: 10px; }
-  .heroInfo > span { font-size: 10px; }
   .section { padding-inline: 24px; }
   .letterText { font-size: 13px; }
   .family p { font-size: 12px; gap: 4px; }

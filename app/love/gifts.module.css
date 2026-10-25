@@ -19,6 +19,7 @@
 }
 
 .eyebrow {
+  text-align: center;
   margin: 0 0 16px;
   color: #5e6c59;
   font: 10px/1.6 Arial, sans-serif;
@@ -26,6 +27,7 @@
 }
 
 .heading {
+  text-align: center;
   margin: 0;
   color: #222a26;
   font-family: var(--love-serif, "Noto Serif KR"), "AppleMyungjo", Batang, serif;
@@ -36,6 +38,7 @@
 }
 
 .description {
+  text-align: center;
   margin: 20px 0 34px;
   color: #60695e;
   font-size: 13px;

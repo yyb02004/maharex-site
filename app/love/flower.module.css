@@ -1,0 +1,155 @@
+.guide {
+  margin-top: 34px;
+  border-top: 1px solid #dfdfd7;
+  border-bottom: 1px solid #dfdfd7;
+  background: transparent;
+  color: #222a26;
+  text-align: left;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+  padding: 17px 0;
+  color: #343e33;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: -0.015em;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.summary::-webkit-details-marker { display: none; }
+.summary::marker { content: ""; }
+
+.chevron {
+  flex-shrink: 0;
+  color: #5e6c59;
+  transition: transform 180ms ease;
+}
+
+.guide[open] > .summary .chevron { transform: rotate(180deg); }
+.guide[open] > .summary { border-bottom: 1px solid #e7e7e0; }
+
+.content { padding: 22px 0 9px; }
+
+.description {
+  margin: 0 0 24px;
+  color: #60695e;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.information {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.9;
+  user-select: text;
+}
+
+.information > div {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 15px;
+  padding: 9px 0;
+}
+
+.information dt { color: #687066; }
+.information dd { margin: 0; }
+
+.phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 44px;
+  margin-block: -10px;
+  padding-block: 10px;
+  color: #5e6c59;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.phone span { text-decoration: none; }
+
+.note {
+  margin: 23px 0 21px;
+  color: #687066;
+  font-size: 11px;
+  line-height: 1.95;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 16px;
+  border: 1px solid #cdd3c6;
+  border-radius: 0;
+  background: transparent;
+  color: #4d5e45;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 180ms ease;
+}
+
+.copyButton:disabled { opacity: 0.65; cursor: wait; }
+
+.status {
+  min-height: 24px;
+  margin: 9px 0 0;
+  color: #5e6c59;
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+.manualCopy { margin: 10px 0 18px; }
+.manualCopy label { display: block; margin-bottom: 7px; color: #5e6c59; font-size: 11px; }
+
+.manualCopy textarea {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cdd3c6;
+  border-radius: 0;
+  background: #fdfcf9;
+  color: #222a26;
+  font: 16px/1.8 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  resize: vertical;
+  user-select: text;
+}
+
+.summary:focus-visible,
+.copyButton:focus-visible,
+.phone:focus-visible,
+.manualCopy textarea:focus-visible {
+  outline: 2px solid #5e6c59;
+  outline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .copyButton:hover:not(:disabled) { background: #e8ece2; }
+  .phone:hover { color: #222a26; }
+}
+
+@media (max-width: 360px) {
+  .information > div { grid-template-columns: 40px minmax(0, 1fr); gap: 11px; }
+  .information { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron, .copyButton { transition: none; }
+}

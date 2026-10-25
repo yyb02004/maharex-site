@@ -1,0 +1,21 @@
+services:
+  wedding-storage:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+    user: "${WEDDING_UID:-10001}:${WEDDING_GID:-10001}"
+    ports:
+      - "127.0.0.1:${WEDDING_PORT:-5080}:8000"
+    volumes:
+      - ./data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1g
+    pids_limit: 64

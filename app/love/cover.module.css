@@ -1,0 +1,239 @@
+.cover {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fdfcf9;
+}
+
+.scene {
+  position: relative;
+  isolation: isolate;
+  height: 100vh;
+  height: 100svh;
+  min-height: 660px;
+  max-height: 900px;
+  overflow: hidden;
+  background: #dce0d5;
+}
+
+.photo {
+  z-index: -2;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(255 255 247 / 8%) 0%, transparent 34%, rgb(23 35 24 / 10%) 47%, rgb(23 35 24 / 42%) 74%, rgb(23 35 24 / 20%) 100%);
+}
+
+.topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: max(23px, env(safe-area-inset-top)) 24px 0;
+}
+
+.eyebrow {
+  margin: 4px 0 0;
+  color: #344331;
+  font: 8px/1.8 Arial, sans-serif;
+  letter-spacing: 0.2em;
+  text-shadow: 0 1px 7px rgb(255 255 255 / 85%);
+}
+
+.eyebrow span {
+  display: block;
+  margin-top: 5px;
+  font-size: 7px;
+  letter-spacing: 0.16em;
+}
+
+.musicControl {
+  position: relative;
+  flex: 0 0 40px;
+  width: 40px;
+  z-index: 2;
+}
+
+.musicControl > div {
+  position: relative;
+  width: 40px;
+  min-height: 40px;
+}
+
+.musicControl [role="status"] {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 160px;
+  max-width: 160px;
+  padding: 8px 10px;
+  background: rgb(253 252 249 / 95%);
+  box-shadow: 0 3px 16px rgb(34 42 38 / 8%);
+}
+
+.caption {
+  position: absolute;
+  inset: auto 0 0;
+  animation: coverAppear 1100ms ease both;
+}
+
+.englishNames {
+  width: min(350px, calc(100% - 64px));
+  margin: 0 auto 35px;
+  color: #fffef8;
+  font: italic 400 clamp(55px, 14.5vw, 72px)/0.88 var(--display, Georgia, serif);
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 16px rgb(18 28 18 / 22%);
+}
+
+.englishNames > span {
+  display: block;
+  white-space: nowrap;
+}
+
+.englishNames > span + span {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.englishNames i {
+  margin-right: 7px;
+  font-size: 0.56em;
+  font-weight: 400;
+}
+
+.details {
+  padding: 25px 22px 17px;
+  background: rgb(253 252 247 / 87%);
+  color: #293328;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.koreanNames {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.1em;
+}
+
+.koreanNames > span:first-child {
+  display: inline-block;
+  margin-inline: 13px;
+  color: #6a7860;
+  font: italic 23px/1 var(--display, Georgia, serif);
+  letter-spacing: 0;
+}
+
+.hairline {
+  width: 23px;
+  height: 1px;
+  margin: 16px auto 15px;
+  background: #9da58f;
+}
+
+.date {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+}
+
+.venue {
+  margin: 6px 0 0;
+  color: #4f5b49;
+  font-size: 12px;
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+}
+
+.venue span {
+  display: block;
+  font-size: 11px;
+}
+
+.scrollLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: fit-content;
+  min-height: 44px;
+  margin: 18px auto 0;
+  padding-inline: 15px;
+  color: #5e6c59;
+}
+
+.scrollLink span {
+  font: 7px/1.5 Arial, sans-serif;
+  letter-spacing: 0.2em;
+}
+
+.navigation {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  padding: 0 10px;
+  border-bottom: 1px solid #dfdfd7;
+  background: #fdfcf9;
+}
+
+.navigation a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 5px 2px;
+  color: #5e6c59;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.navigation a:hover {
+  color: #222a26;
+}
+
+.scrollLink:focus-visible,
+.navigation a:focus-visible {
+  outline: 2px solid #5e6c59;
+  outline-offset: -3px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes coverAppear {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 360px) {
+  .topline { padding-inline: 19px; }
+  .englishNames { width: calc(100% - 48px); margin-bottom: 29px; }
+  .details { padding-inline: 16px; }
+  .koreanNames { font-size: 17px; }
+  .date, .venue { font-size: 11px; }
+  .navigation { padding-inline: 5px; }
+  .navigation a { font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caption { animation: none; }
+}
