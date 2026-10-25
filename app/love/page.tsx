@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import Image from "next/image";
 import PhotoGallery from "./PhotoGallery";
+import BackgroundMusic from "./BackgroundMusic";
+import VenueMap from "./VenueMap";
 import GiftSection, { ContactSection } from "./ContactAndGifts";
 import { CopyAddress, Countdown, ShareInvitation } from "./InvitationTools";
 import styles from "./love.module.css";
 
 const title = "상혁 그리고 은정, 결혼합니다";
 const description = "2027년 3월 6일 토요일 오전 11시 · 기흥 ICT밸리 컨벤션 A동 B1 그랑데홀. 가장 예쁜 날, 소중한 분들을 초대합니다.";
-const venueQuery = encodeURIComponent("기흥 ICT밸리 컨벤션");
-const kakaoMap = `https://map.kakao.com/link/search/${venueQuery}`;
+
+const kakaoMap = "https://map.kakao.com/link/map/641722539";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -35,8 +37,8 @@ export default function LovePage() {
       <main className={styles.invitation} id="top">
         <a className={styles.skipLink} href="#wedding-day">예식 안내로 바로가기</a>
         <header className={styles.hero}>
-          <div className={styles.masthead}><span>THE WEDDING OF</span><span>06 MARCH 2027</span></div>
-          <p className={styles.coverTitle} aria-hidden="true"><span>Sanghyeok</span><span><i>&</i> Eunjeong</span></p>
+          <div className={styles.masthead}><div><span>THE WEDDING OF</span><span>06 MARCH 2027</span></div><BackgroundMusic /></div>
+          <p className={styles.coverTitle} aria-hidden="true"><span>SangHyeok</span><span><i>&</i> EunJung</span></p>
           <div className={styles.heroPhoto}>
             <Image src="/love/photos/photo-20.webp" alt="나란히 앉아 함께 웃고 있는 신랑 상혁과 신부 은정" width={1200} height={1800} priority sizes="(max-width: 480px) 92vw, 448px" />
           </div>
@@ -94,31 +96,9 @@ export default function LovePage() {
           <p className={styles.hall}>A동 B1 그랑데홀</p>
           <p className={styles.address}>경기 용인시 기흥구 기흥로 58-1<br /><span>(구갈동 679)</span></p>
           <div className={styles.locationActions}><CopyAddress /><a className={styles.venuePhone} href="tel:0316303600">예식장 전화 <span aria-hidden="true">↗</span></a></div>
-          <a href={kakaoMap} className={styles.map} target="_blank" rel="noreferrer" aria-label="기흥 ICT밸리 컨벤션 위치를 카카오맵에서 보기">
-            <svg viewBox="0 0 400 280" role="img" aria-label="약도: 기흥역 2번 출구에서 기흥로를 따라 도보 400미터 거리에 예식장이 있습니다">
-              <rect width="400" height="280" fill="#eeefea" />
-              <path d="M288 14h89v137h-89zM20 25h80v110H20zM264 197h114v58H264z" fill="#e1e5db" />
-              <path d="M0 181H400M144 280V136L198 84V0" fill="none" stroke="#fffdfa" strokeWidth="20" />
-              <path d="M0 181H400M144 280V136L198 84V0" fill="none" stroke="#d8d2c5" strokeWidth="1" />
-              <path d="M0 224H400" stroke="#bdc9a9" strokeWidth="5" />
-              <path d="M151 209V141L204 89H261" fill="none" stroke="#5e6c59" strokeWidth="3" strokeDasharray="4 5" />
-              <circle cx="144" cy="224" r="8" fill="#8d9d77" stroke="#fffdfa" strokeWidth="3" />
-              <rect x="102" y="242" width="84" height="26" rx="13" fill="#fffdfa" />
-              <text x="144" y="260" textAnchor="middle" fontSize="13" fill="#4d5742">기흥역</text>
-              <text x="164" y="214" fontSize="11" fill="#796d66">2번 출구</text>
-              <text x="170" y="155" fontSize="11" fill="#4c5b46">도보 400m</text>
-              <text x="287" y="174" fontSize="10" fill="#928a80">신중부대로</text>
-              <text x="115" y="98" fontSize="10" fill="#928a80">기흥로</text>
-              <rect x="223" y="43" width="150" height="59" fill="#5e6c59" />
-              <path d="M252 101l9 13 9-13" fill="#5e6c59" />
-              <text x="298" y="68" textAnchor="middle" fill="#fffdfa" fontSize="13">ICT밸리 컨벤션</text>
-              <text x="298" y="88" textAnchor="middle" fill="#f0f1eb" fontSize="11">A동 B1 그랑데홀</text>
-              <text x="22" y="260" fontSize="9" fill="#958b80">위치 안내용 약도</text>
-            </svg>
-            <span>지도에서 자세히 보기 <span aria-hidden="true">↗</span></span>
-          </a>
+          <VenueMap />
           <div className={styles.mapButtons}>
-            <a href={`https://map.naver.com/p/search/${venueQuery}`} target="_blank" rel="noreferrer"><span className={styles.naverDot}>N</span> 네이버지도</a>
+            <a href="https://map.naver.com/v5/entry/place/1211919556" target="_blank" rel="noreferrer"><span className={styles.naverDot}>N</span> 네이버지도</a>
             <a href={kakaoMap} target="_blank" rel="noreferrer"><span className={styles.kakaoDot} aria-hidden="true">●</span> 카카오맵</a>
           </div>
           <div className={styles.directions}>
@@ -134,7 +114,7 @@ export default function LovePage() {
 
         <footer>
           <div className={styles.closingPhoto}><Image src="/love/photos/photo-08.webp" alt="꽃으로 둘러싸인 문 앞에 함께 앉은 두 사람" width={1800} height={1200} sizes="(max-width: 480px) 100vw, 480px" /><p>가장 예쁜 날,<br />소중한 분들을 초대합니다.</p></div>
-          <div className={styles.closing}><p className={styles.closingScript}>With love, always.</p><p>보내주시는 따뜻한 마음,<br />오래도록 간직하며 잘 살겠습니다.</p><span>상혁 <i>&</i> 은정</span><ShareInvitation /><small>SANGHYEOK & EUNJEONG · 2027. 03. 06</small></div>
+          <div className={styles.closing}><p className={styles.closingScript}>With love, always.</p><p>보내주시는 따뜻한 마음,<br />오래도록 간직하며 잘 살겠습니다.</p><span>상혁 <i>&</i> 은정</span><ShareInvitation /><small>SangHyeok & EunJung · 2027. 03. 06</small></div>
         </footer>
       </main>
     </div>

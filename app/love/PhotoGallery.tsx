@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent, TouchEvent } from "react";
+import type { KeyboardEvent, MouseEvent, TouchEvent, UIEvent } from "react";
+import photoManifest from "@/public/love/photos/manifest.json";
 import styles from "./gallery.module.css";
 
 const photoOrder = [20, 15, 19, 12, 16, 11, 4, 8, 18, 21, 17, 23, 5, 3, 2, 22, 6, 7, 9, 10, 14, 1, 13];
-const previewCount = 6;
+const photos = photoOrder.map((id) => {
+  const photo = photoManifest.find((item) => item.id === id);
+  if (!photo) throw new Error(`Wedding photograph ${id} is missing.`);
+  return photo;
+});
 
 function photoPath(photo: number, thumbnail = false) {
   return `/love/photos/${thumbnail ? "thumb" : "photo"}-${String(photo).padStart(2, "0")}.webp`;
@@ -26,8 +31,11 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
 }
 
 export default function PhotoGallery() {
-  const [expanded, setExpanded] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const slideIndexRef = useRef(0);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -37,7 +45,62 @@ export default function PhotoGallery() {
   const dialogTitleId = useId();
   const isOpen = activeIndex !== null;
   const activePhoto = activeIndex === null ? null : photoOrder[activeIndex];
-  const visiblePhotos = expanded ? photoOrder : photoOrder.slice(0, previewCount);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    // Keep the same photograph in view when orientation or layout width changes.
+    const resizeObserver = new ResizeObserver(() => {
+      track.scrollTo({ left: slideIndexRef.current * track.clientWidth, behavior: "auto" });
+    });
+    resizeObserver.observe(track);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const strip = stripRef.current;
+    const thumbnail = strip?.children[slideIndex] as HTMLButtonElement | undefined;
+    if (!strip || !thumbnail) return;
+    // Scroll only the thumbnail strip, never the surrounding invitation page.
+    strip.scrollTo({
+      left: thumbnail.offsetLeft - (strip.clientWidth - thumbnail.clientWidth) / 2,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }, [slideIndex]);
+
+  function goToSlide(index: number) {
+    const track = trackRef.current;
+    if (!track) return;
+    const nextIndex = Math.max(0, Math.min(photoOrder.length - 1, index));
+    track.scrollTo({
+      left: nextIndex * track.clientWidth,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }
+
+  function handleTrackScroll(event: UIEvent<HTMLDivElement>) {
+    const track = event.currentTarget;
+    if (!track.clientWidth) return;
+    const index = Math.max(0, Math.min(photoOrder.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+    if (index !== slideIndexRef.current && document.activeElement !== track && track.contains(document.activeElement)) {
+      track.focus({ preventScroll: true });
+    }
+    slideIndexRef.current = index;
+    setSlideIndex(index);
+  }
+
+  function handleCarouselKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault();
+      event.currentTarget.focus({ preventScroll: true });
+      goToSlide(slideIndex + (event.key === "ArrowLeft" ? -1 : 1));
+    } else if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      event.currentTarget.focus({ preventScroll: true });
+      goToSlide(event.key === "Home" ? 0 : photoOrder.length - 1);
+    }
+  }
 
   // Only opening or closing runs this effect; changing photographs preserves focus.
   useEffect(() => {
@@ -146,42 +209,79 @@ export default function PhotoGallery() {
   }
 
   return (
-    <div className={styles.gallery}>
-      <div className={styles.grid} id={galleryId}>
-        {visiblePhotos.map((photo, index) => (
-          <button
-            key={photo}
-            type="button"
-            className={styles.thumbnail}
-            aria-label={`웨딩 사진 ${photo} 크게 보기`}
-            aria-haspopup="dialog"
-            onClick={(event) => openPhoto(index, event.currentTarget)}
+    <div className={styles.gallery} role="region" aria-roledescription="캐러셀" aria-label="우리의 웨딩 사진">
+      <div
+        ref={trackRef}
+        className={styles.track}
+        id={galleryId}
+        tabIndex={0}
+        aria-label="사진 슬라이드. 좌우 방향키로 사진을 넘길 수 있습니다."
+        onScroll={handleTrackScroll}
+        onKeyDown={handleCarouselKeyDown}
+      >
+        {photos.map((photo, index) => (
+          <div
+            key={photo.id}
+            className={styles.slide}
+            role="group"
+            aria-roledescription="슬라이드"
+            aria-label={`전체 ${photos.length}장 중 ${index + 1}번째 사진`}
+            aria-hidden={index !== slideIndex}
           >
-            <img
-              src={photoPath(photo, true)}
-              alt={`웨딩 사진 ${photo}`}
-              width="360"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </button>
+            <button
+              type="button"
+              className={styles.slideButton}
+              aria-label={`${index + 1}번째 웨딩 사진 크게 보기`}
+              aria-haspopup="dialog"
+              tabIndex={index === slideIndex ? 0 : -1}
+              onClick={(event) => openPhoto(index, event.currentTarget)}
+            >
+              <img
+                src={photo.src}
+                alt={`두 사람의 웨딩 사진 ${index + 1}`}
+                width={photo.width}
+                height={photo.height}
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              />
+            </button>
+          </div>
         ))}
       </div>
 
-      <button
-        type="button"
-        className={styles.expandButton}
-        aria-expanded={expanded}
-        aria-controls={galleryId}
-        onClick={() => setExpanded((current) => !current)}
-      >
-        <span>{expanded ? "사진 접기" : "모든 사진 보기"}</span>
-        <span className={styles.photoCount} aria-label={`전체 ${photoOrder.length}장`}>{photoOrder.length}</span>
-        <svg className={styles.expandIcon} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d={expanded ? "m4 10 4-4 4 4" : "m4 6 4 4 4-4"} stroke="currentColor" strokeWidth="1" />
-        </svg>
-      </button>
+      <div className={styles.carouselControls}>
+        <button type="button" className={styles.carouselButton} aria-label="이전 슬라이드" aria-controls={galleryId} disabled={slideIndex === 0} onClick={() => goToSlide(slideIndex - 1)}>
+          <Arrow direction="left" />
+        </button>
+        <p className={styles.slideCounter} aria-live="polite" aria-atomic="true">
+          <span className={styles.srOnly}>전체 {photos.length}장 중 </span>
+          <span>{String(slideIndex + 1).padStart(2, "0")}</span>
+          <span className={styles.counterDivider} aria-hidden="true">/</span>
+          <span aria-hidden="true">{photos.length}</span>
+          <span className={styles.srOnly}>번째 사진</span>
+        </p>
+        <button type="button" className={styles.carouselButton} aria-label="다음 슬라이드" aria-controls={galleryId} disabled={slideIndex === photos.length - 1} onClick={() => goToSlide(slideIndex + 1)}>
+          <Arrow direction="right" />
+        </button>
+      </div>
+
+      <div ref={stripRef} className={styles.thumbnailStrip} aria-label="사진 선택">
+        {photos.map((photo, index) => (
+          <button
+            key={photo.id}
+            type="button"
+            className={styles.thumbnail}
+            aria-label={`${index + 1}번째 사진 보기`}
+            aria-pressed={index === slideIndex}
+            aria-controls={galleryId}
+            onClick={() => goToSlide(index)}
+          >
+            <img src={photo.thumb} alt="" width={photo.width} height={photo.height} loading="lazy" decoding="async" draggable="false" />
+          </button>
+        ))}
+      </div>
+      <p className={styles.galleryHint}>좌우로 넘겨보세요. 사진을 누르면 크게 볼 수 있어요.</p>
 
       <dialog
         ref={dialogRef}

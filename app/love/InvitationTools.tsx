@@ -12,7 +12,7 @@ export function Countdown() {
   useEffect(() => {
     const update = () => setNow(Date.now());
     update();
-    const timer = window.setInterval(update, 60_000);
+    const timer = window.setInterval(update, 1_000);
     return () => window.clearInterval(timer);
   }, []);
   const kst = now === null ? null : new Date(now + 9 * 60 * 60 * 1000);
@@ -22,7 +22,7 @@ export function Countdown() {
   return (
     <div className={styles.countdown}>
       <div className={styles.countdownNumbers} aria-label="예식까지 남은 시간">
-        {[{ label: "DAYS", value: remaining === null ? null : Math.floor(remaining / 86_400_000) }, { label: "HOURS", value: remaining === null ? null : Math.floor(remaining / 3_600_000) % 24 }, { label: "MINUTES", value: remaining === null ? null : Math.floor(remaining / 60_000) % 60 }].map(({ label, value }) => (
+        {[{ label: "DAYS", value: remaining === null ? null : Math.floor(remaining / 86_400_000) }, { label: "HOURS", value: remaining === null ? null : Math.floor(remaining / 3_600_000) % 24 }, { label: "MINUTES", value: remaining === null ? null : Math.floor(remaining / 60_000) % 60 }, { label: "SECONDS", value: remaining === null ? null : Math.floor(remaining / 1_000) % 60 }].map(({ label, value }) => (
           <div key={label}><strong>{value === null ? "—" : String(value).padStart(2, "0")}</strong><span>{label}</span></div>
         ))}
       </div>

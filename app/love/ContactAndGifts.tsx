@@ -24,7 +24,7 @@ const families: { side: string; members: FamilyMember[] }[] = [
     members: [
       { role: "신부", name: "최은정", bank: "우리은행", account: "1002-260-416770", phone: "010-4410-0070" },
       { role: "신부 아버지", name: "최준호", bank: "농협", account: "010-5614-665209", phone: "010-5614-6652" },
-      { role: "신부 어머니", name: "조은희", bank: "경남은행", account: "679210011011", phone: "010-9391-6695" },
+      { role: "신부 어머니", name: "조은희", bank: "경남은행", account: "679-210-011011", phone: "010-9391-6695" },
     ],
   },
 ];
