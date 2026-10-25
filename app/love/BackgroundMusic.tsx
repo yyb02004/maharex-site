@@ -56,11 +56,15 @@ export default function BackgroundMusic() {
     function retryFromGesture(event: Event) {
       if (!gestureRetryRef.current || !allowAutomaticPlaybackRef.current) return;
       if (event.target instanceof Node && controlRef.current?.contains(event.target)) return;
+      // Touch activation is granted on release; pointerdown activates only a mouse.
+      if (event instanceof PointerEvent && event.type === "pointerdown" && event.pointerType !== "mouse") return;
       if (event instanceof KeyboardEvent && (event.repeat || ["Shift", "Control", "Alt", "Meta", "Escape"].includes(event.key))) return;
       void startPlayback(true);
     }
 
     document.addEventListener("pointerdown", retryFromGesture, { passive: true });
+    document.addEventListener("pointerup", retryFromGesture, { passive: true });
+    document.addEventListener("touchend", retryFromGesture, { passive: true });
     document.addEventListener("keydown", retryFromGesture, { passive: true });
 
     // Deferring prevents React's development effect replay from trying twice.
@@ -77,6 +81,8 @@ export default function BackgroundMusic() {
       gestureRetryRef.current = false;
       requestRef.current += 1;
       document.removeEventListener("pointerdown", retryFromGesture);
+      document.removeEventListener("pointerup", retryFromGesture);
+      document.removeEventListener("touchend", retryFromGesture);
       document.removeEventListener("keydown", retryFromGesture);
       audio.pause();
     };
