@@ -1,0 +1,306 @@
+.section,
+.contactSection {
+  background: transparent;
+  color: #222a26;
+  text-align: left;
+}
+
+.section {
+  padding: 0;
+}
+
+.contactSection {
+  padding-top: 28px;
+}
+
+.inner {
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: #5e6c59;
+  font: 10px/1.6 Arial, sans-serif;
+  letter-spacing: 0.2em;
+}
+
+.heading {
+  margin: 0;
+  color: #222a26;
+  font-family: var(--love-serif, "Noto Serif KR"), "AppleMyungjo", Batang, serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.025em;
+}
+
+.description {
+  margin: 20px 0 34px;
+  color: #60695e;
+  font-size: 13px;
+  line-height: 1.95;
+  letter-spacing: -0.015em;
+}
+
+.accordion {
+  border-top: 1px solid #dfdfd7;
+  border-bottom: 1px solid #dfdfd7;
+  background: transparent;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+  padding: 18px 0;
+  color: #343e33;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: -0.015em;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::marker {
+  content: "";
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: #5e6c59;
+  transition: transform 180ms ease;
+}
+
+.accordion[open] > .summary {
+  border-bottom: 1px solid #e7e7e0;
+}
+
+.accordion[open] > .summary .chevron {
+  transform: rotate(180deg);
+}
+
+.contactPanel {
+  padding: 0 0 12px;
+}
+
+.familyContacts + .familyContacts {
+  border-top: 1px solid #dfdfd7;
+}
+
+.familyHeading {
+  margin: 24px 0 5px;
+  color: #5e6c59;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.055em;
+}
+
+.contactList,
+.accountList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 17px 0;
+}
+
+.contactRow + .contactRow {
+  border-top: 1px solid #e7e7e0;
+}
+
+.contactPerson {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 8px;
+  row-gap: 6px;
+  min-width: 0;
+}
+
+.role {
+  color: #666e63;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.personName {
+  color: #222a26;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.025em;
+}
+
+.phoneNumber {
+  grid-column: 1 / -1;
+  color: #60695e;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.025em;
+}
+
+.contactActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.contactLink {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  color: #5e6c59;
+  touch-action: manipulation;
+}
+
+.giftAccordions {
+  display: grid;
+  gap: 0;
+}
+
+.giftAccordions > .accordion + .accordion {
+  border-top: 0;
+}
+
+.accountCard {
+  padding: 25px 0 23px;
+  text-align: left;
+}
+
+.accountCard + .accountCard {
+  border-top: 1px solid #e7e7e0;
+}
+
+.accountPerson {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.bank {
+  margin: 14px 0 3px;
+  color: #60695e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.accountLine {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.accountNumber {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #222a26;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.copyButton {
+  flex-shrink: 0;
+  min-width: 54px;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid #dfdfd7;
+  border-radius: 0;
+  background: transparent;
+  color: #465441;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.summary:focus-visible,
+.contactLink:focus-visible,
+.copyButton:focus-visible,
+.accountNumber:focus-visible {
+  outline: 2px solid #5e6c59;
+  outline-offset: 3px;
+}
+
+.copyStatus {
+  position: fixed;
+  z-index: 100;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  width: max-content;
+  max-width: min(420px, calc(100% - 36px));
+  padding: 14px 20px;
+  background: #222a26;
+  color: #fdfcf9;
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.copyStatus[data-visible="false"] {
+  padding: 0;
+}
+
+@media (hover: hover) {
+  .summary:hover {
+    color: #222a26;
+  }
+
+  .contactLink:hover,
+  .copyButton:hover {
+    background: #eeefe9;
+  }
+}
+
+@media (max-width: 359px) {
+  .summary {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .contactRow {
+    gap: 8px;
+  }
+
+  .contactActions {
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}

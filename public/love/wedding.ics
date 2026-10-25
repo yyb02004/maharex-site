@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sanghyeok and Eunjeong//Wedding Invitation//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:sanghyeok-eunjeong-20270306@maharex.com
+DTSTAMP:20261024T160000Z
+DTSTART:20270306T020000Z
+SUMMARY:상혁 ♥ 은정 결혼식
+LOCATION:기흥 ICT밸리 컨벤션 A동 B1 그랑데홀
+DESCRIPTION:경기 용인시 기흥구 기흥로 58-1 (구갈동 679)\n기
+ 흥역 2번 출구 도보 400m\n기흥역 1번 출구 셔틀버스 15분 
+ 간격 운행\n주말 무료 주차
+URL:https://www.maharex.com/love
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:내일은 상혁과 은정의 결혼식입니다.
+END:VALARM
+END:VEVENT
+END:VCALENDAR

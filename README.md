@@ -11,6 +11,21 @@ Modern Korean-first B2B website concept for Maharex, built with Next.js, TypeScr
 - `/ko/references`
 - `/ko/engineering`
 - `/ko/contact`
+- `/love` — standalone mobile wedding invitation, with its own appearance and share metadata
+
+## Wedding invitation
+
+The invitation lives in `app/love/` and its assets in `public/love/`. It includes a 23-photo gallery, event calendar download, venue and transport information, contact links, and account-copy controls. It is excluded from the sitemap and uses `noindex` metadata.
+
+To regenerate the web-sized photographs from the original photo directory:
+
+```bash
+node scripts/prepare-love-photos.mjs "path/to/original/photos"
+```
+
+The script preserves original files, applies their orientation, and strips image metadata from the exported assets. Contact and account details are maintained in `app/love/ContactAndGifts.tsx`; event information is in `app/love/page.tsx`, `InvitationTools.tsx`, and `public/love/wedding.ics`.
+
+The invitation uses locally hosted, Latin-subset Cormorant Garamond Regular and Italic fonts. Their SIL Open Font License is included in `public/love/fonts/`.
 
 ## Run
 
