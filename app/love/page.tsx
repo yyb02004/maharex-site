@@ -8,6 +8,7 @@ import VenueMap from "./VenueMap";
 import GiftSection, { ContactSection } from "./ContactAndGifts";
 import SpringPetals from "./SpringPetals";
 import RsvpSection from "./RsvpSection";
+import GuestGuide from "./GuestGuide";
 import { CopyAddress, Countdown, ShareInvitation } from "./InvitationTools";
 import { getWeddingStorageOrigin } from "./storage-config";
 import styles from "./love.module.css";
@@ -94,7 +95,7 @@ export default function LovePage() {
         <section className={`${styles.section} ${styles.locationSection}`} id="location">
           <SectionHeading eyebrow="LOCATION">오시는 길</SectionHeading>
           <h3 className={styles.venueName}>기흥 ICT밸리 컨벤션</h3>
-          <p className={styles.hall}>A동 B1 그랑데홀</p>
+          <p className={styles.hall}>A동 B1 그랑데홀 · 단독홀</p>
           <p className={styles.address}>경기 용인시 기흥구 기흥로 58-1<br /><span>(구갈동 679)</span></p>
           <div className={styles.locationActions}><CopyAddress /><a className={styles.venuePhone} href="tel:0316303600">예식장 전화 <span aria-hidden="true">↗</span></a></div>
           <VenueMap />
@@ -107,11 +108,13 @@ export default function LovePage() {
           <div className={styles.directions}>
             <div><span className={styles.directionIcon} aria-hidden="true">01</span><div><h3>지하철</h3><p>수인분당선 · 에버라인 <strong>기흥역</strong> 하차<br />2번 출구에서 도보 400m</p></div></div>
             <div><span className={styles.directionIcon} aria-hidden="true">02</span><div><h3>셔틀버스</h3><p>기흥역 <strong>1번 출구</strong>에서 승차<br /><strong>15분 간격</strong>으로 운행합니다.</p></div></div>
-            <div><span className={styles.directionIcon} aria-hidden="true">03</span><div><h3>자가용 · 주차</h3><p>내비게이션에 ‘기흥 ICT밸리 컨벤션’ 검색<br /><strong>주말 무료 주차</strong> · 별도 주차 정산이 필요 없습니다.</p></div></div>
+            <div><span className={styles.directionIcon} aria-hidden="true">03</span><div><h3>자가용 · 주차</h3><p>내비게이션에 ‘기흥 ICT밸리 컨벤션’ 검색<br /><strong>1,300대 주차 가능</strong><br />주말에는 시간 제한 없이 무료로 이용하실 수 있어요.<br />별도 주차 등록은 필요하지 않습니다.</p></div></div>
             <details className={styles.transportDetails}><summary>버스 노선 안내 <span aria-hidden="true">＋</span></summary><div><h4>세종그랑시아 정류장 하차</h4><p>일반 690<br />마을 17, 18, 28, 28-1, 28-2, 38-1, 53, 54, 80<br />공항 8165, 8852</p><h4>기흥역 정류장 하차</h4><p>일반 10, 55, 66, 66-4, 94, 690, 820<br />직행 5000A, 5000B, 5001, 5003A, 5003B, 5005, 5600<br />시외 8326, 8342, 8343, 8366, 8543, 8839, 8862<br />마을 33, 33-2, 51, 53-1</p></div></details>
           </div>
           <div className={styles.charter}><span className={styles.eyebrow}>FOR OUR GUESTS</span><h3>김해에서 함께 오시는 분들께</h3><p>신부측 하객을 위한 전세버스를 운행합니다.</p><dl><div><dt>출발</dt><dd>예식 당일 오전 5시 · 김해시청</dd></div><div><dt>차량</dt><dd>경남76바 2112</dd></div></dl><a href="tel:01028999000">기사님께 전화하기 <span aria-hidden="true">↗</span></a></div>
         </section>
+
+        <GuestGuide />
 
         <section className={`${styles.section} ${styles.giftsSection}`} id="gifts"><GiftSection /><FlowerGuide /></section>
 
