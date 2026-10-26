@@ -2,7 +2,7 @@
 
 `maharex.com/love`의 방명록, 공개 게스트 사진과 비공개 참석 응답을 저장하는 별도 서비스입니다. 청첩장 본체는 Vercel에 유지하고 사진은 방문자 브라우저에서 NAS의 HTTPS 주소로 직접 업로드합니다.
 
-**참석 여부 기능은 NAS 업데이트 후 활성화됩니다.** [RSVP_SETUP_KO.md](RSVP_SETUP_KO.md)에 기존 앱 업데이트와 비공개 명단 확인 방법이 있습니다. `RSVP_VIEW_TOKEN`이 비어 있으면 참석 응답을 수집하지 않으며, 프런트엔드도 해당 입력란을 숨깁니다. 별도 열람 키로 명단과 CSV만 조회할 수 있고 카카오톡 자동 알림은 아직 연결하지 않았습니다.
+**참석 여부 기능은 NAS 업데이트 후 활성화됩니다.** [ADMIN_SETUP_KO.md](ADMIN_SETUP_KO.md)에 공통 관리자 비밀번호를 사용하는 최신 업데이트 방법이 있습니다. `MANAGEMENT_PASSWORD_HASH`와 `RSVP_VIEW_TOKEN`이 모두 비어 있으면 참석 응답을 수집하지 않으며, 프런트엔드도 해당 입력란을 숨깁니다. 명단과 CSV는 관리자 인증 후 조회할 수 있고 카카오톡 자동 알림은 아직 연결하지 않았습니다.
 
 **현재 운영 API는 `https://wedding-api.maharex.com`입니다.** QNAP의 기존 **`composeqnap`** 애플리케이션에서 `compose.qnap.https.yaml`을 사용합니다. 변경할 때는 [GUI_SETUP_KO.md](GUI_SETUP_KO.md)의 **Recreate** 절차를 따릅니다. [HTTPS_SETUP_KO.md](HTTPS_SETUP_KO.md)에 실제 포트와 DNS 연결이 정리되어 있습니다.
 
@@ -130,9 +130,9 @@ HEIC, GIF, 동영상, 움직이는 WebP/PNG는 지원하지 않습니다. 지원
 
 ### 관리자 사진 관리
 
-[사진 관리 화면](https://wedding-api.maharex.com/api/photo-admin)에서 원본 다운로드, 사진별 삭제, 전체 ZIP 다운로드를 제공합니다. 설치 방법은 [PHOTO_SETUP_KO.md](PHOTO_SETUP_KO.md)를 따릅니다. `compose.qnap.photos.yaml` 템플릿은 실제 키가 없는 공개용이며, 사용자에게 전달하는 ZIP에는 기존 RSVP 키와 새 사진 관리 키를 넣은 전용 설정을 사용합니다.
+[사진 관리 화면](https://wedding-api.maharex.com/api/photo-admin)에서 원본 다운로드, 사진별 삭제, 전체 ZIP 다운로드를 제공합니다. 두 관리자 화면을 같은 비밀번호로 사용하려면 [ADMIN_SETUP_KO.md](ADMIN_SETUP_KO.md)를 따릅니다. `compose.qnap.admin.yaml`은 비밀번호가 없는 공개 템플릿이며, 전용 ZIP에는 비밀번호 원문 대신 Werkzeug scrypt 검증용 해시를 설정합니다.
 
-`PHOTO_ADMIN_TOKEN`은 32자 이상 임의 문자열이며 `RSVP_VIEW_TOKEN`, `ADMIN_TOKEN`과 다른 값을 사용합니다. 사진 관리 로그인 쿠키는 HttpOnly·SameSite=Strict이며 운영 HTTPS에서 Secure를 사용하고 1시간 후 만료됩니다. 관리자 키를 URL·프런트엔드·공개 Git·로그에 넣지 않습니다. 참석 명단 키는 사진을 삭제하거나 원본을 받을 수 없습니다. 기존 `ADMIN_TOKEN` API는 별도 호환 기능이며 기본적으로 꺼져 있습니다.
+`MANAGEMENT_PASSWORD_HASH`를 설정하면 사진 관리와 참석 명단에 같은 비밀번호를 사용하고 기존 `PHOTO_ADMIN_TOKEN`, `RSVP_VIEW_TOKEN`, `ADMIN_TOKEN`은 인증에서 제외됩니다. 비밀번호 변경 시 기존 사진 관리 로그인도 만료됩니다. 해시가 없는 기존 설정에서는 32자 이상 별도 키 방식을 그대로 지원합니다. 사진 관리 로그인 쿠키는 HttpOnly·SameSite=Strict이며 운영 HTTPS에서 Secure를 사용하고 1시간 후 만료됩니다. 관리자 비밀번호·해시·키를 URL·프런트엔드·공개 Git·로그에 넣지 않습니다. 참석 명단 화면에서는 새로고침하거나 탭을 닫으면 다시 로그인합니다.
 
 관리 API는 `/api/photo-admin/session` 로그인/로그아웃, `/api/photo-admin/photos` 목록, `/api/photo-admin/photos/:id/download` 개별 다운로드, `DELETE /api/photo-admin/photos/:id` 삭제, `/api/photo-admin/download` 전체 ZIP입니다. 원본은 `/media`에서 접근할 수 없습니다. ZIP은 파일 내용을 메모리나 임시 디스크에 통째로 모으지 않고 순서대로 전송합니다. 기존 축소본과 원본을 구별하고 목록을 함께 제공합니다.
 

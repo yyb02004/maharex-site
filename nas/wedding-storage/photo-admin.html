@@ -17,10 +17,10 @@
 <p class="intro">하객들이 남겨 준 순간을 한곳에 모았어요.<br>원본은 따로 간직하고, 공개할 사진도 여기서 관리해 주세요.</p>
 <nav class="header-links" aria-label="관련 화면"><a href="https://www.maharex.com/love#guest-snaps" target="_blank" rel="noopener noreferrer">청첩장에서 보기 ↗</a><a href="/api/rsvp-admin" target="_blank" rel="noopener noreferrer">참석 명단 열기 ↗</a></nav>
 <form id="login" class="card login-card" autocomplete="off">
-<label for="photo-key">사진 관리 접속 키</label>
-<input id="photo-key" type="password" required minlength="32" maxlength="512" autocomplete="off" spellcheck="false" autocapitalize="off" aria-describedby="key-note">
+<label for="photo-key">관리자 비밀번호</label>
+<input id="photo-key" type="password" required maxlength="128" autocomplete="off" spellcheck="false" autocapitalize="off" aria-describedby="key-note">
 <div class="actions"><button type="submit" id="login-button" class="primary">사진 관리 시작하기</button></div>
-<small id="key-note">따로 전달드린 사진 관리 접속 키를 입력해 주세요. 참석 명단 열람 키와는 다릅니다. 접속은 1시간 동안 유지되며, 다 보신 뒤에는 로그아웃해 주세요.</small>
+<small id="key-note">설정한 관리자 비밀번호를 입력해 주세요. 접속은 1시간 동안 유지되며, 다 보신 뒤에는 로그아웃해 주세요.</small>
 </form>
 <p id="status" role="status" aria-live="polite"></p>
 <section id="records" hidden aria-label="비공개 하객 사진 관리">
@@ -165,7 +165,7 @@
     if (busy) return;
     lock(true); if (!quiet) message('함께 담아 준 사진을 불러오고 있어요.');
     try { await updateList(reset); message(total ? '사진 ' + photos.size.toLocaleString('ko-KR') + '장을 불러왔어요. 전체 보관 사진은 ' + total.toLocaleString('ko-KR') + '장이에요.' : '아직 올라온 사진이 없어요.'); }
-    catch (error) { if (!quiet || authenticated) message(failure(error)); else message('사진 관리 접속 키를 입력해 주세요.'); }
+    catch (error) { if (!quiet || authenticated) message(failure(error)); else message('관리자 비밀번호를 입력해 주세요.'); }
     finally { lock(false); }
   }
   async function deletePhotos(ids) {

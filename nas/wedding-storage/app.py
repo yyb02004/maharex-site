@@ -38,6 +38,7 @@ ORIGINAL_PATTERN = re.compile(r"^[a-f0-9]{32}\.(?:jpg|png|webp)$")
 IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
 PHOTO_COOKIE = "wedding_photo_admin"
 PHOTO_SESSION_SECONDS = 3600
+MANAGEMENT_HASH_PATTERN = re.compile(r"^scrypt:32768:8:1\$[A-Za-z0-9]{8,64}\$[a-f0-9]{128}$")
 
 
 class StreamingZipSink:
@@ -107,6 +108,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         ADMIN_TOKEN=os.getenv("ADMIN_TOKEN", ""),
         RSVP_VIEW_TOKEN=os.getenv("RSVP_VIEW_TOKEN", ""),
         PHOTO_ADMIN_TOKEN=os.getenv("PHOTO_ADMIN_TOKEN", ""),
+        MANAGEMENT_PASSWORD_HASH=os.getenv("MANAGEMENT_PASSWORD_HASH", ""),
         TRUST_PROXY_HOPS=positive_int("TRUST_PROXY_HOPS", 0, 0),
         MAX_UPLOAD_BYTES=positive_int("MAX_UPLOAD_BYTES", 15 * 1024 * 1024),
         MAX_IMAGE_PIXELS=positive_int("MAX_IMAGE_PIXELS", 40_000_000),
@@ -129,14 +131,19 @@ def create_app(test_config: dict | None = None) -> Flask:
     if not origins or not all(origin_is_valid(origin) for origin in origins):
         raise ValueError("ALLOWED_ORIGINS must contain exact HTTPS origins (HTTP loopback is allowed for development)")
     app.config["ALLOWED_ORIGINS"] = origins
-    if app.config["ADMIN_TOKEN"] and len(app.config["ADMIN_TOKEN"]) < 32:
-        raise ValueError("ADMIN_TOKEN must be empty or at least 32 characters")
-    if app.config["RSVP_VIEW_TOKEN"] and len(app.config["RSVP_VIEW_TOKEN"]) < 32:
-        raise ValueError("RSVP_VIEW_TOKEN must be empty or at least 32 characters")
+    management_hash = app.config["MANAGEMENT_PASSWORD_HASH"]
+    if not isinstance(management_hash, str) or (management_hash and not MANAGEMENT_HASH_PATTERN.fullmatch(management_hash)):
+        raise ValueError("MANAGEMENT_PASSWORD_HASH must be empty or a valid Werkzeug scrypt:32768:8:1 hash")
     photo_token = app.config["PHOTO_ADMIN_TOKEN"]
-    if photo_token and (len(photo_token) < 32 or photo_token in {app.config["RSVP_VIEW_TOKEN"], app.config["ADMIN_TOKEN"]}):
-        raise ValueError("PHOTO_ADMIN_TOKEN must be empty or a separate key of at least 32 characters")
-    photo_signer = URLSafeTimedSerializer(hashlib.sha256(photo_token.encode()).digest(), salt="photo-admin-session-v1")
+    if not management_hash:
+        if app.config["ADMIN_TOKEN"] and len(app.config["ADMIN_TOKEN"]) < 32:
+            raise ValueError("ADMIN_TOKEN must be empty or at least 32 characters")
+        if app.config["RSVP_VIEW_TOKEN"] and len(app.config["RSVP_VIEW_TOKEN"]) < 32:
+            raise ValueError("RSVP_VIEW_TOKEN must be empty or at least 32 characters")
+        if photo_token and (len(photo_token) < 32 or photo_token in {app.config["RSVP_VIEW_TOKEN"], app.config["ADMIN_TOKEN"]}):
+            raise ValueError("PHOTO_ADMIN_TOKEN must be empty or a separate key of at least 32 characters")
+    photo_signing_material = "management-password:" + management_hash if management_hash else photo_token
+    photo_signer = URLSafeTimedSerializer(hashlib.sha256(photo_signing_material.encode()).digest(), salt="photo-admin-session-v1")
     app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_UPLOAD_BYTES"] + 64 * 1024
     proxy_hops = app.config["TRUST_PROXY_HOPS"]
     if proxy_hops:
@@ -227,6 +234,11 @@ def create_app(test_config: dict | None = None) -> Flask:
 
     image_slot = threading.BoundedSemaphore(1)
     archive_slot = threading.BoundedSemaphore(1)
+    management_verification_slot = threading.BoundedSemaphore(1)
+    management_cache_lock = threading.Lock()
+    management_cache_key = secrets.token_bytes(32)
+    management_cache_fingerprint = None
+    management_cache_expires = 0.0
 
     def db() -> sqlite3.Connection:
         if "db" not in g:
@@ -273,16 +285,50 @@ def create_app(test_config: dict | None = None) -> Flask:
         return data
 
     def is_admin() -> bool:
+        if management_hash:
+            # The common password authorizes only the dedicated photo and RSVP interfaces.
+            # Previously issued broad administrator keys stop working in password mode.
+            return False
         token = app.config["ADMIN_TOKEN"]
         provided = request.headers.get("Authorization", "")
         return bool(token and hmac.compare_digest(provided.encode(), f"Bearer {token}".encode()))
 
+    def management_password_valid() -> bool:
+        nonlocal management_cache_fingerprint, management_cache_expires
+        provided = request.headers.get("Authorization", "")
+        if not management_hash or not provided.startswith("Bearer "):
+            return False
+        password = provided[7:]
+        if not 1 <= len(password) <= 128 or any(ord(c) < 32 or ord(c) == 127 for c in password):
+            return False
+        fingerprint = hmac.new(management_cache_key, password.encode(), hashlib.sha256).digest()
+        with management_cache_lock:
+            if (management_cache_fingerprint is not None and management_cache_expires > time.monotonic()
+                    and hmac.compare_digest(fingerprint, management_cache_fingerprint)):
+                return True
+        # Wrong passwords can never use the cache. Limit guesses before expensive scrypt,
+        # shared across both admin screens and kept across application restarts in SQLite.
+        rate_limit("management_auth", 30)
+        if not management_verification_slot.acquire(blocking=False):
+            raise ApiError("로그인을 확인하고 있어요. 잠시 후 다시 시도해 주세요.", 429, 3)
+        try:
+            valid = check_password_hash(management_hash, password)
+            if valid:
+                with management_cache_lock:
+                    management_cache_fingerprint = fingerprint
+                    management_cache_expires = time.monotonic() + PHOTO_SESSION_SECONDS
+            return valid
+        finally:
+            management_verification_slot.release()
+
     def photo_bearer_valid() -> bool:
+        if management_hash:
+            return management_password_valid()
         provided = request.headers.get("Authorization", "")
         return bool(photo_token and hmac.compare_digest(provided.encode(), f"Bearer {photo_token}".encode()))
 
     def photo_session_id() -> str | None:
-        if not photo_token:
+        if not (management_hash or photo_token):
             return None
         try:
             value = photo_signer.loads(request.cookies.get(PHOTO_COOKIE, ""), max_age=PHOTO_SESSION_SECONDS)
@@ -298,7 +344,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         # A supplied but incorrect header must not silently fall back to a cookie.
         if (photo_bearer_valid() if "Authorization" in request.headers else bool(photo_session_id())):
             return
-        raise ApiError("사진 관리 키로 로그인해 주세요.", 401)
+        raise ApiError("관리자 비밀번호로 로그인해 주세요." if management_hash else "사진 관리 키로 로그인해 주세요.", 401)
 
     def secure_photo_cookie() -> bool:
         return request.is_secure or urlsplit(request.host_url).hostname not in {"localhost", "127.0.0.1", "::1"}
@@ -337,6 +383,10 @@ def create_app(test_config: dict | None = None) -> Flask:
         return path, download_name, legacy
 
     def require_rsvp_viewer():
+        if management_hash:
+            if not management_password_valid():
+                raise ApiError("관리자 비밀번호를 확인해 주세요.", 401)
+            return
         token = app.config["RSVP_VIEW_TOKEN"]
         provided = request.headers.get("Authorization", "")
         if not token or not hmac.compare_digest(provided.encode(), f"Bearer {token}".encode()):
@@ -434,7 +484,8 @@ def create_app(test_config: dict | None = None) -> Flask:
     def health():
         db().execute("SELECT 1").fetchone()
         return jsonify(ok=True, features={
-            "rsvp": bool(app.config["RSVP_VIEW_TOKEN"]), "originalPhotos": True, "photoAdmin": bool(photo_token),
+            "rsvp": bool(management_hash or app.config["RSVP_VIEW_TOKEN"]), "originalPhotos": True,
+            "photoAdmin": bool(management_hash or photo_token), "managementPassword": bool(management_hash),
         }, limits={
             "maxUploadBytes": app.config["MAX_UPLOAD_BYTES"], "maxFilesPerBatch": 10,
             "maxPhotoCount": app.config["MAX_PHOTO_COUNT"], "maxStorageBytes": app.config["MAX_STORAGE_BYTES"],
@@ -445,7 +496,7 @@ def create_app(test_config: dict | None = None) -> Flask:
     @app.post("/api/rsvp")
     def add_rsvp():
         # Do not collect responses until the couple has a private retrieval key.
-        if not app.config["RSVP_VIEW_TOKEN"]:
+        if not (management_hash or app.config["RSVP_VIEW_TOKEN"]):
             raise ApiError("참석 여부 전달을 준비하고 있어요. 잠시 후 다시 찾아와 주세요.", 503)
         rate_limit("rsvp", app.config["RSVP_RATE_PER_HOUR"])
         data = json_body()
@@ -737,7 +788,7 @@ def create_app(test_config: dict | None = None) -> Flask:
     def photo_admin_login():
         rate_limit("photo_admin_login", 30)
         if not photo_bearer_valid():
-            raise ApiError("사진 관리 키를 확인해 주세요.", 401)
+            raise ApiError("관리자 비밀번호를 확인해 주세요." if management_hash else "사진 관리 키를 확인해 주세요.", 401)
         nonce = secrets.token_hex(32)
         conn = db()
         conn.execute("DELETE FROM photo_admin_sessions WHERE expires_at <= ?", (int(time.time()),))

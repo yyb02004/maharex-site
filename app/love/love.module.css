@@ -50,12 +50,13 @@
 .letter .sectionHeading h2 { font-size: 22px; }
 .letterText { font-size: 14px; line-height: 2.4; letter-spacing: -.02em; color: #4f584e; }
 .letterText p + p { margin-top: 26px; }
-.family { margin-top: 39px; padding-top: 5px; }
-.family p { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin: 9px 0; font-size: 13px; white-space: nowrap; }
-.family p > span:first-child { text-align: center; }
+.family { display: table; width: max-content; max-width: 100%; margin: 39px auto 0; padding-top: 5px; }
+.family p { display: table-row; font-size: 13px; white-space: nowrap; }
+.family p > span, .familyName { display: table-cell; vertical-align: baseline; padding-block: 4px; }
+.familyParents { text-align: right; }
 .family small { font-size: 9px; margin-right: 3px; }
-.family .relation { font-size: 11px; color: var(--muted); }
-.family strong { margin-left: 9px; font-size: 17px; font-weight: 400; letter-spacing: .09em; }
+.family .relation { padding-inline: 5px 14px; font-size: 11px; color: var(--muted); }
+.familyName { text-align: right; font-size: 17px; font-weight: 400; letter-spacing: .09em; }
 .storyPhoto { margin: 0 32px 74px; }
 .storyPhoto img { display: block; width: 100%; height: auto; }
 .storyPhoto figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 16px; }
@@ -180,9 +181,9 @@
 @media (max-width: 360px) {
   .section { padding-inline: 24px; }
   .letterText { font-size: 13px; }
-  .family p { font-size: 12px; gap: 4px; }
-  .family .relation { font-size: 10px; }
-  .family strong { font-size: 16px; margin-left: 5px; }
+  .family p { font-size: 12px; }
+  .family .relation { font-size: 10px; padding-inline: 4px 9px; }
+  .familyName { font-size: 16px; }
   .storyPhoto { margin-inline: 24px; }
   .storyPhoto figcaption { flex-direction: column; gap: 5px; }
   .sectionHeading h2 { font-size: 23px; }

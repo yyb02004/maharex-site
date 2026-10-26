@@ -56,8 +56,8 @@ export default function LovePage() {
             <p>꽃이 피기 시작하는 3월,<br />저희의 첫 봄날에 함께해 주세요.<br />반가운 얼굴로 마주할 그날을<br />설레는 마음으로 기다릴게요.</p>
           </div>
           <div className={styles.family}>
-            <p><span><small>故</small> 박종신 · 김명순</span><span className={styles.relation}>의 장남</span><strong>상혁</strong></p>
-            <p><span>최준호 · 조은희</span><span className={styles.relation}>의 차녀</span><strong>은정</strong></p>
+            <p><span className={styles.familyParents}><small>故</small> 박종신 · 김명순</span><span className={styles.relation}>의 장남</span><strong className={styles.familyName}>상혁</strong></p>
+            <p><span className={styles.familyParents}>최준호 · 조은희</span><span className={styles.relation}>의 차녀</span><strong className={styles.familyName}>은정</strong></p>
           </div>
           <ContactSection />
         </section>

@@ -1,0 +1,71 @@
+# Template only: use the privately prepared copy for QNAP GUI import.
+# Replace the YAML of the EXISTING composeqnap application with this file.
+# Do not run a second backend against its SQLite volume. Do not delete volumes.
+# QNAP: set Memory Limit = 1024 MB in Advanced Settings, not in this YAML.
+services:
+  wedding-storage:
+    image: maharex-wedding-storage:20261026-admin-password
+    build:
+      context: /share/main/wedding
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+      ALLOWED_ORIGINS: "https://maharex.com,https://www.maharex.com,https://wedding-api.maharex.com"
+      TRUST_PROXY_HOPS: "1"
+      MANAGEMENT_PASSWORD_HASH: "${MANAGEMENT_PASSWORD_HASH:?Configure a private management password hash}"
+      MAX_RSVP_COUNT: "5000"
+      RSVP_RATE_PER_HOUR: "20"
+      MAX_UPLOAD_BYTES: "15728640"
+      MAX_IMAGE_PIXELS: "40000000"
+      MAX_PHOTO_COUNT: "5000"
+      MAX_STORAGE_BYTES: "10737418240"
+      MIN_FREE_DISK_BYTES: "536870912"
+      MAX_GUESTBOOK_COUNT: "5000"
+      GUESTBOOK_RATE_PER_HOUR: "20"
+      PHOTO_RATE_PER_HOUR: "60"
+      DELETE_RATE_PER_TEN_MINUTES: "10"
+    user: "10001:10001"
+    # Only the proxy can reach this service through the application's network.
+    # No host port 5080 or 8000 is published.
+    volumes:
+      - wedding-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+
+  wedding-proxy:
+    image: maharex-wedding-proxy:2.11.7-20261026-photos
+    build:
+      context: /share/main/wedding
+      dockerfile: proxy/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - wedding-storage
+    user: "10001:10001"
+    ports:
+      - "8443:8443/tcp"
+    volumes:
+      # Private certificates and ACME account; retain across every recreation.
+      - wedding-tls-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /config:size=4m,mode=0700,uid=10001,gid=10001
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+
+volumes:
+  wedding-data:
+    external: true
+    name: maharex-wedding-data
+  wedding-tls-data:
+    name: maharex-wedding-tls-data
