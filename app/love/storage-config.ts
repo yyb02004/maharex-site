@@ -1,7 +1,10 @@
 // This is a public API origin, never a NAS login address or an access token.
 // The invitation remains available before storage is connected.
 export function getWeddingStorageOrigin(): string | null {
-  const value = process.env.LOVE_STORAGE_API_URL?.trim();
+  const value = (
+    process.env.LOVE_STORAGE_API_URL ??
+    (process.env.VERCEL_ENV === "production" ? "https://wedding-api.maharex.com" : "")
+  ).trim();
   if (!value) return null;
 
   try {

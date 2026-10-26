@@ -1,0 +1,47 @@
+{
+	admin off
+	persist_config off
+	https_port 8443
+	auto_https disable_redirects
+	servers {
+		protocols h1 h2
+		timeouts {
+			read_header 15s
+			read_body 5m
+			write 5m
+			idle 2m
+		}
+	}
+}
+
+wedding-api.maharex.com {
+	tls {
+		issuer acme https://acme-v02.api.letsencrypt.org/directory {
+			disable_http_challenge
+			alt_tlsalpn_port 8443
+		}
+	}
+
+	# No access logging. CORS and OPTIONS remain the application's responsibility.
+	@wedding path /api/* /media/*
+	handle @wedding {
+		request_body {
+			max_size 16MiB
+		}
+		reverse_proxy wedding-storage:8000 {
+			# Exactly one trusted proxy; discard caller-supplied forwarding values.
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto https
+			header_up -Forwarded
+			transport http {
+				dial_timeout 5s
+				response_header_timeout 180s
+				read_timeout 5m
+				write_timeout 5m
+			}
+		}
+	}
+	handle {
+		respond "Not found" 404
+	}
+}

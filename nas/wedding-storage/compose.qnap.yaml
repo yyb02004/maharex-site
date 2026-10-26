@@ -1,0 +1,46 @@
+# Container Station 3: Applications > Create > paste this YAML.
+# First confirm that this exact directory contains Dockerfile, app.py and schema.sql.
+# /share/main is a QNAP shared-folder alias inferred from the observed share name;
+# replace context with the verified actual NAS path if that alias is unavailable.
+# Before Create: Advanced Settings > Resources > Memory Limit = 1 GB (1024 MB).
+# Container Station rejects mem_limit in application YAML; set it in the GUI.
+services:
+  wedding-storage:
+    # A new image tag ensures Recreate does not select the previous broken image.
+    image: maharex-wedding-storage:20261026-permissions
+    build:
+      context: /share/main/wedding
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+      ALLOWED_ORIGINS: "https://maharex.com,https://www.maharex.com"
+      TRUST_PROXY_HOPS: "0"
+      MAX_UPLOAD_BYTES: "15728640"
+      MAX_IMAGE_PIXELS: "40000000"
+      MAX_PHOTO_COUNT: "5000"
+      MAX_STORAGE_BYTES: "10737418240"
+      MIN_FREE_DISK_BYTES: "536870912"
+      MAX_GUESTBOOK_COUNT: "5000"
+      GUESTBOOK_RATE_PER_HOUR: "20"
+      PHOTO_RATE_PER_HOUR: "60"
+      DELETE_RATE_PER_TEN_MINUTES: "10"
+    user: "10001:10001"
+    ports:
+      - "127.0.0.1:5080:8000"
+    volumes:
+      # Default empty-volume copy-up preserves /data ownership from the image.
+      # Do not add nocopy, replace this with a company share, or change its name.
+      - wedding-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+
+volumes:
+  wedding-data:
+    name: maharex-wedding-data

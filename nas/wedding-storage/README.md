@@ -1,26 +1,43 @@
 # 청첩장 NAS 저장 서버
 
-`maharex.com/love`의 방명록과 공개 게스트 사진만 저장하는 별도 서비스입니다. 청첩장 본체는 Vercel에 유지하고 사진은 방문자 브라우저에서 NAS의 HTTPS 주소로 직접 업로드합니다. 이 폴더를 만들거나 테스트하는 것만으로 NAS에 연결되거나 배포되지는 않습니다.
+`maharex.com/love`의 방명록과 공개 게스트 사진만 저장하는 별도 서비스입니다. 청첩장 본체는 Vercel에 유지하고 사진은 방문자 브라우저에서 NAS의 HTTPS 주소로 직접 업로드합니다.
+
+**현재 운영 API는 `https://wedding-api.maharex.com`입니다.** QNAP의 기존 **`composeqnap`** 애플리케이션에서 `compose.qnap.https.yaml`을 사용합니다. 변경할 때는 [GUI_SETUP_KO.md](GUI_SETUP_KO.md)의 **Recreate** 절차를 따릅니다. [HTTPS_SETUP_KO.md](HTTPS_SETUP_KO.md)에 실제 포트와 DNS 연결이 정리되어 있습니다.
+
+2026-10-26에 두 컨테이너 실행, 공유기 포트 연결, Let's Encrypt 인증서와 TLS 1.3, 외부 `/api/health`의 HTTP 200 응답을 확인했습니다. 사진 목록과 CORS 사전 요청, 잘못된 사진의 415 응답도 확인했습니다. **실제 사진 업로드와 재시작 후 보존은 아직 검증하지 않았으며**, 청첩장 프런트엔드의 최신 Vercel 배포 확인도 별도로 필요합니다.
+
+```text
+https://wedding-api.maharex.com:443
+  → 공유기 외부 TCP 443 → NAS 192.168.0.12:8443
+  → wedding-proxy(Caddy) → wedding-storage:8000
+  → maharex-wedding-data
+```
+
+GUI 운영 구성은 `.env` 없이 실행합니다. 기존 `maharex-wedding-data` 볼륨에 DB와 사진을, `maharex-wedding-tls-data` 볼륨에 인증서와 ACME 계정을 보관합니다. 아래의 `compose.yaml`/`.env`/호스트 `data` 폴더 설명은 **별도 터미널 설치용 대안**이며 현재 앱에 추가로 실행하지 않습니다.
 
 ## 먼저 확인할 사항
 
-- NAS 모델과 Container Station에서 Linux 컨테이너 및 Compose 프로젝트 실행을 지원하는지 확인합니다. 실제 NAS에서 Docker 이미지를 빌드·실행하는 검증은 아직 필요합니다.
-- NAS에 **청첩장 전용 폴더와 전용 실행 사용자**를 준비합니다. 회사 공유 폴더 전체, `/share`, 홈 폴더, Docker 소켓 등을 컨테이너에 연결하지 않습니다. Compose는 현재 폴더의 `data`만 `/data`에 연결합니다.
-- 유효한 인증서가 있는 별도 HTTPS API 주소가 필요합니다. 예를 들어 `https://wedding-api.example.com`이며 실제 사용할 소유 도메인으로 바꿉니다. HTTPS 청첩장에서 HTTP NAS 주소를 직접 사용하면 브라우저가 차단합니다.
-- NAS 관리 화면 주소나 관리 포트는 API 주소가 아닙니다. 관리 화면·SMB 포트를 인터넷에 새로 열지 않습니다. 외부 HTTPS 역방향 프록시가 **이 서비스의 5080 포트만** 연결하도록 구성합니다.
-- 현재 설정은 NAS 자체에서 실행하는 역방향 프록시가 `127.0.0.1:5080`으로 접근하는 구성을 전제로 합니다. 프록시가 다른 컨테이너에 있다면 그 컨테이너의 `127.0.0.1`은 NAS를 뜻하지 않습니다. 그 경우 전용 컨테이너 네트워크에서 서비스 이름과 8000 포트로 연결하고 공개 포트 없이 운영하도록 별도로 구성해야 합니다.
+- 현재 NAS에서 Linux 이미지 빌드와 두 컨테이너 실행을 확인했습니다. 업데이트 후에도 `wedding-storage`의 `healthy` 상태와 HTTPS 응답을 확인합니다.
+- `/share/main/wedding`에는 프로그램 소스만 둡니다. 회사 공유 폴더 전체, `/share`, 홈 폴더, Docker 소켓 등을 실행 중인 컨테이너에 연결하지 않습니다.
+- 청첩장에는 위의 HTTPS API 주소를 사용합니다. HTTPS 청첩장에서 HTTP NAS 주소를 직접 사용하면 브라우저가 차단합니다.
+- NAS 관리 화면 주소와 관리 포트는 API 주소가 아닙니다. 현재 외부 TCP 443은 전용 Caddy의 NAS 포트 **8443**으로 연결됩니다. 관리 화면의 443 또는 5888로 바꾸지 않습니다.
+- 현재 백엔드는 호스트의 5080/8000 포트를 공개하지 않습니다. 같은 애플리케이션 네트워크에서 Caddy가 `wedding-storage:8000`으로 연결합니다.
 
 ## 설치
 
 ### 확인된 NAS 모델
 
-현재 대상은 **QNAP TS-453D / QTS 5.2.7.3297**입니다. [QNAP 공식 사양](https://www.qnap.com/en-us/product/ts-453d/specs/hardware)의 Intel Celeron J4125, 64비트 x86, Container Station/Docker 지원에 맞는 Linux 컨테이너 구성입니다. 실제 설치된 RAM 용량, 사용 중인 메모리, Container Station 버전과 포트 사용 여부는 NAS에서 확인해야 합니다. 기본 컨테이너 메모리 한도 1GiB는 현재 NAS에서 여유 공간이 확인되었다는 뜻은 아닙니다.
+현재 대상은 **QNAP TS-453D / QTS 5.2.7.3297 / Container Station 3.1.2.1742**입니다. [QNAP 공식 사양](https://www.qnap.com/en-us/product/ts-453d/specs/hardware)의 Intel Celeron J4125, 64비트 x86, Container Station/Docker 지원에 맞는 구성입니다. QNAP 화면의 메모리 한도는 1024 MB로 설정하며, NAS의 실제 여유 메모리는 운영 중에도 확인합니다.
+
+현재 앱을 업데이트할 때는 `/share/main/wedding`의 소스를 갱신하고 **Applications → `composeqnap` → Edit 옆 화살표 → Recreate**에서 `compose.qnap.https.yaml` 전체를 적용합니다. `maharex-wedding-data`는 이미 존재하는 외부 볼륨으로 참조하므로 이름과 데이터를 유지해야 합니다. 같은 볼륨을 쓰는 두 번째 앱을 만들지 않습니다.
+
+### 별도 터미널 설치 대안 — 현재 운영 앱에는 실행하지 않음
 
 압축파일은 새 전용 폴더에 풀어 `wedding-storage/compose.yaml`과 `Dockerfile`이 같은 위치에 있도록 둡니다. 예를 들어 **청첩장만을 위한 공유 폴더 안의 `wedding-storage`**가 설치 위치가 될 수 있습니다. NAS의 실제 공유 폴더 경로는 확인 후 사용하며, 기존 회사 공유 폴더 전체를 마운트하지 않습니다.
 
 이 Compose 파일은 해당 프로젝트 폴더에서 실행하는 구성을 전제로 합니다. [Container Station의 애플리케이션 생성 화면](https://www.qnap.com/en-us/how-to/tutorial/article/how-to-use-container-station-3)에 YAML만 붙여 넣는 경우에는 `build: .`, `env_file: .env`, `./data`의 상대 경로 기준이 달라질 수 있습니다. UI에서 배포한다면 `build.context`, `env_file`, 데이터 폴더 마운트를 **확인된 이 프로젝트의 NAS 절대 경로**로 지정하고 `.env` 변수도 해당 실행 방식에 맞게 전달해야 합니다. 소스 ZIP은 컨테이너 이미지 자체가 아니며, NAS에서 이미지를 빌드하려면 Docker Hub와 PyPI에 연결할 수 있어야 합니다.
 
-[QTS 5.2 역방향 프록시 문서](https://docs.qnap.com/operating-system/qts/5.2.x/en-us/configuring-reverse-proxy-rule-settings-0CE50167.html)의 HTTPS 원본 주소와 HTTP 대상 `127.0.0.1:5080` 구성을 사용할 수 있습니다. 기본 서비스 포트는 NAS 루프백에만 바인딩하므로 다른 PC에서 `NAS의 내부 IP:5080`으로 직접 접속할 수 없습니다. 정상 여부는 NAS 내부 검사 또는 설정한 HTTPS 프록시를 통해 확인합니다.
+터미널 대안인 `compose.yaml`만 NAS 루프백의 `127.0.0.1:5080`을 사용합니다. 이 대안을 별도로 설치한다면 유효한 HTTPS 프록시도 별도로 구성해야 합니다. **현재 운영 중인 `compose.qnap.https.yaml`의 Caddy 구성에는 이 5080 경로를 사용하지 않습니다.**
 
 아래 명령은 NAS의 **새 청첩장 전용 폴더**에서 실행하는 예시입니다. 기존 회사 데이터 폴더에 실행하지 않습니다. NAS 환경에 따라 관리자에게 폴더 소유권 설정을 요청해야 합니다.
 
@@ -45,19 +62,21 @@ HTTPS 역방향 프록시에는 16MiB 이상의 요청 본문 허용 크기와 �
 
 ### 프록시와 요청 제한
 
-`TRUST_PROXY_HOPS=0`은 요청의 전달 IP 헤더를 신뢰하지 않는 기본값입니다. 이 상태로 프록시를 거치면 모든 방문자가 프록시 한 개의 IP로 보이므로 요청 제한도 공유합니다.
+현재 HTTPS 구성은 Caddy가 외부 `X-Forwarded-For`를 덮어쓰고 백엔드에 한 번 전달하므로 `TRUST_PROXY_HOPS=1`을 사용합니다. 백엔드 호스트 포트는 공개하지 않습니다. 터미널 대안의 `TRUST_PROXY_HOPS=0`은 전달 IP 헤더를 신뢰하지 않는 기본값이며, 이 상태로 프록시를 거치면 방문자들이 요청 제한을 공유합니다.
 
 외부 요청이 정확히 한 개의 신뢰된 프록시를 거치고, 직접 서비스 접근은 차단되어 있으며, 프록시가 외부에서 받은 `X-Forwarded-For`를 덮어쓰거나 신뢰할 수 있는 마지막 홉을 추가하는 것을 확인한 후 `TRUST_PROXY_HOPS=1`로 설정합니다. 여러 프록시가 있다면 실제 신뢰된 홉 수를 확인해야 합니다. 임의로 숫자를 늘리면 IP 기반 제한을 우회할 수 있습니다. 같은 Wi-Fi에 연결된 하객은 실제 공인 IP가 같을 수 있습니다.
 
 ## 청첩장 연결
 
-NAS HTTPS 주소에서 `/api/health`가 정상 응답하는 것을 확인한 다음 Vercel 프로젝트의 서버 환경 변수에 다음을 설정하고 **다시 배포**합니다.
+NAS HTTPS 주소의 `/api/health`는 정상 응답을 확인했습니다. Vercel 프로젝트에서 서버 환경 변수를 설정할 수 있다면 다음 값을 사용하고 **다시 배포**합니다.
 
 ```text
-LOVE_STORAGE_API_URL=https://실제-API-도메인
+LOVE_STORAGE_API_URL=https://wedding-api.maharex.com
 ```
 
-주소에는 `/api` 또는 다른 경로, 쿼리, 사용자 이름/비밀번호를 넣지 않습니다. 이 값이 없으면 청첩장에 방명록과 게스트 사진 영역이 표시되지 않습니다. 관리자 토큰은 Vercel이나 프런트엔드 환경 변수에 넣지 않습니다. 로컬 개발에서만 `http://localhost:포트` 또는 `http://127.0.0.1:포트`를 사용할 수 있습니다.
+현재 Vercel 환경 변수 쓰기 권한이 거절되어, 코드에는 **`VERCEL_ENV=production`이고 위 변수가 없을 때만** `https://wedding-api.maharex.com`을 사용하는 기본값을 준비했습니다. GitHub 자동 배포가 완료된 뒤 실제 청첩장에서 적용 여부를 확인해야 합니다. 미리보기·로컬 환경에서는 이 기본값을 쓰지 않으며, `LOVE_STORAGE_API_URL`을 명시적으로 빈 값으로 설정하면 기능을 끌 수 있습니다.
+
+주소에는 `/api` 또는 다른 경로, 쿼리, 사용자 이름/비밀번호를 넣지 않습니다. 유효한 주소가 없으면 방명록과 게스트 사진 영역이 표시되지 않습니다. 관리자 토큰은 Vercel이나 프런트엔드 환경 변수에 넣지 않습니다. 로컬 개발에서만 `http://localhost:포트` 또는 `http://127.0.0.1:포트`를 사용할 수 있습니다.
 
 NAS의 `ALLOWED_ORIGINS`에는 실제 청첩장 출처를 쉼표로 구분해 정확히 등록합니다. 기본값은 `https://maharex.com,https://www.maharex.com`입니다. 개발/미리보기 주소가 필요한 경우 그 출처만 명시적으로 추가합니다. 와일드카드를 사용하지 않으며, URL 끝에 `/`를 붙이지 않습니다. POST/DELETE는 허용된 `Origin`이 있어야 하고 쿠키는 사용하지 않습니다. CORS/Origin 검사는 로그인 기능이 아니므로 공개 사진을 비공개로 만들지는 않습니다.
 
@@ -80,7 +99,7 @@ HEIC, GIF, 동영상, 움직이는 WebP/PNG는 지원하지 않습니다. 지원
 
 사진 총량은 **저장본과 썸네일**의 실제 바이트 합계입니다. SQLite, 로그, 백업 등의 용량은 별도입니다. NAS의 다른 작업이 동시에 디스크를 사용하면 여유 공간이 달라질 수 있으므로 NAS 관리자에게 전용 폴더/볼륨 용량 제한도 설정하도록 요청하는 것이 좋습니다. 사진의 실제 용량은 구도와 화질에 따라 달라지며 5,000장을 반드시 보관할 수 있다는 뜻은 아닙니다.
 
-제한은 `.env`에서 변경하고 `docker compose up -d`로 적용합니다. IP 기반 요청 제한은 DB에 저장되어 서버를 재시작해도 이어집니다. DB에는 원본 IP 대신 서버 고유 비밀값으로 만든 해시를 저장하며 요청 제한 기록은 오래되면 정리합니다.
+현재 GUI 구성의 제한은 `compose.qnap.https.yaml`의 `environment`에서 변경한 뒤 기존 앱의 Recreate로 적용합니다. 터미널 대안은 `.env`를 변경하고 `docker compose up -d`로 적용합니다. IP 기반 요청 제한은 DB에 저장되어 서버를 재시작해도 이어집니다. DB에는 원본 IP 대신 서버 고유 비밀값으로 만든 해시를 저장하며 요청 제한 기록은 오래되면 정리합니다.
 
 ### 공개 안내
 
@@ -109,15 +128,17 @@ HEIC, GIF, 동영상, 움직이는 WebP/PNG는 지원하지 않습니다. 지원
 
 ### 관리자 삭제
 
-선택 기능인 `ADMIN_TOKEN`을 NAS의 `.env`에만 설정합니다. 32자 이상 임의 문자열을 사용하고 로그·브라우저 코드·저장소에 노출하지 않습니다. 예를 들어 Python의 `secrets.token_urlsafe(32)`로 생성할 수 있습니다. 빈 값이면 관리자 삭제는 비활성화됩니다.
+현재 GUI 운영 구성의 관리자 삭제 기능은 꺼져 있습니다. 필요할 때만 `ADMIN_TOKEN`을 NAS 실행 환경에 별도로 설정합니다. 터미널 대안에서는 NAS의 `.env`를 사용합니다. 32자 이상 임의 문자열을 사용하고 로그·브라우저 코드·공개 YAML·저장소에 노출하지 않습니다. 예를 들어 Python의 `secrets.token_urlsafe(32)`로 생성할 수 있습니다. 빈 값이면 관리자 삭제는 비활성화됩니다.
 
 허용된 `Origin`과 `Authorization: Bearer <관리자 토큰>` 헤더를 포함하면 사진 또는 방명록을 삭제할 수 있습니다. 방명록은 관리자 토큰 없이도 작성자의 삭제 비밀번호로 삭제할 수 있습니다. 별도 관리자 웹 화면은 포함하지 않습니다.
 
 ## 데이터·백업·복구
 
-`data/wedding.sqlite3`에 방명록/사진 메타데이터/요청 제한 기록이, `data/media`에 변환 사진이 보관됩니다. 원본 파일명은 보관하지 않습니다. 파일 이름은 서버가 만든 임의 값이며 경로를 직접 입력해 회사 파일을 읽을 수 있는 API는 없습니다.
+현재 운영 앱은 `maharex-wedding-data` 볼륨의 `/data/wedding.sqlite3`에 방명록/사진 메타데이터/요청 제한 기록을, `/data/media`에 변환 사진을 보관합니다. `/share/main/wedding` 소스 폴더를 복사하는 것만으로는 이 데이터가 백업되지 않습니다. 원본 파일명은 보관하지 않습니다. 파일 이름은 서버가 만든 임의 값이며 경로를 직접 입력해 회사 파일을 읽을 수 있는 API는 없습니다.
 
-간단한 일관성 있는 백업 절차는 서비스를 잠시 중지한 뒤 **전용 `data` 폴더 전체**를 NAS의 별도 백업 위치로 복사하고 다시 시작하는 것입니다.
+현재 앱의 일관성 있는 백업은 앱을 잠시 중지한 뒤 **`maharex-wedding-data` 볼륨 전체**를 별도 위치에 복사하고 다시 시작하는 절차로 준비합니다. 인증서와 ACME 계정을 담은 **`maharex-wedding-tls-data`**도 별도로 보존합니다. 재생성·정리 작업에서 두 볼륨을 삭제하지 않습니다.
+
+아래 명령은 이름 있는 볼륨을 쓰는 현재 GUI 앱이 아닌, `compose.yaml` 터미널 대안의 `data` 폴더 백업 예시입니다.
 
 ```sh
 docker compose stop wedding-storage
@@ -142,6 +163,6 @@ pip install -r requirements.txt
 python -m unittest discover -s tests -v
 ```
 
-테스트는 개인 사진을 사용하지 않고 임시 폴더에 생성한 이미지와 DB만 사용합니다. Origin/CORS, 입력·삭제 비밀번호, 실제 이미지·메타데이터 제거, 큰 multipart 업로드, 경로 접근, 저장 실패 롤백, 디스크 여유·수량·용량 한도, 동시 저장, 재시작 후 데이터/요청 제한 보존을 확인합니다. 실제 QNAP Docker/HTTPS/외부 업로드 동작은 배포 환경에서 추가 확인해야 합니다.
+테스트는 개인 사진을 사용하지 않고 임시 폴더에 생성한 이미지와 DB만 사용합니다. Origin/CORS, 입력·삭제 비밀번호, 실제 이미지·메타데이터 제거, 큰 multipart 업로드, 경로 접근, 저장 실패 롤백, 디스크 여유·수량·용량 한도, 동시 저장, 재시작 후 데이터/요청 제한 보존을 확인합니다. 현재 QNAP의 컨테이너 실행과 외부 HTTPS 응답은 확인했지만, 실제 공개 사진 업로드와 NAS 재시작 후 데이터 보존은 별도로 확인해야 합니다. 관리자 삭제가 꺼져 있으므로 테스트 사진을 임의로 공개 업로드하지 않습니다.
 
 의존성 정보: [Flask](https://pypi.org/project/Flask/), [Pillow](https://pypi.org/project/pillow/), [Gunicorn](https://pypi.org/project/gunicorn/). 고정 버전은 `requirements.txt`에 있으며, 운영 중 보안 업데이트를 확인해 테스트 후 갱신합니다.
