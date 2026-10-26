@@ -20,9 +20,12 @@ from datetime import datetime, timezone
 from urllib.parse import urlsplit
 import uuid
 import warnings
+import zipfile
+from collections import deque
 from contextlib import closing
 
-from flask import Flask, g, jsonify, request, send_file
+from flask import Flask, Response, g, jsonify, request, send_file
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from PIL import Image, ImageOps, UnidentifiedImageError
 from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -31,7 +34,36 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 ID_PATTERN = re.compile(r"^[a-f0-9]{32}$")
 MEDIA_PATTERN = re.compile(r"^[a-f0-9]{32}(?:-thumb)?\.jpg$")
+ORIGINAL_PATTERN = re.compile(r"^[a-f0-9]{32}\.(?:jpg|png|webp)$")
 IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
+PHOTO_COOKIE = "wedding_photo_admin"
+PHOTO_SESSION_SECONDS = 3600
+
+
+class StreamingZipSink:
+    """An unseekable ZIP output drained after each small input chunk."""
+    def __init__(self):
+        self.chunks = deque()
+        self.offset = 0
+
+    def write(self, data):
+        if data:
+            self.chunks.append(bytes(data))
+            self.offset += len(data)
+        return len(data)
+
+    def tell(self):
+        return self.offset
+
+    def seek(self, *_args):
+        raise io.UnsupportedOperation("ZIP streaming is not seekable")
+
+    def flush(self):
+        pass
+
+    def drain(self):
+        while self.chunks:
+            yield self.chunks.popleft()
 
 
 class ApiError(Exception):
@@ -74,6 +106,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         ALLOWED_ORIGINS=os.getenv("ALLOWED_ORIGINS", "https://maharex.com,https://www.maharex.com"),
         ADMIN_TOKEN=os.getenv("ADMIN_TOKEN", ""),
         RSVP_VIEW_TOKEN=os.getenv("RSVP_VIEW_TOKEN", ""),
+        PHOTO_ADMIN_TOKEN=os.getenv("PHOTO_ADMIN_TOKEN", ""),
         TRUST_PROXY_HOPS=positive_int("TRUST_PROXY_HOPS", 0, 0),
         MAX_UPLOAD_BYTES=positive_int("MAX_UPLOAD_BYTES", 15 * 1024 * 1024),
         MAX_IMAGE_PIXELS=positive_int("MAX_IMAGE_PIXELS", 40_000_000),
@@ -100,6 +133,10 @@ def create_app(test_config: dict | None = None) -> Flask:
         raise ValueError("ADMIN_TOKEN must be empty or at least 32 characters")
     if app.config["RSVP_VIEW_TOKEN"] and len(app.config["RSVP_VIEW_TOKEN"]) < 32:
         raise ValueError("RSVP_VIEW_TOKEN must be empty or at least 32 characters")
+    photo_token = app.config["PHOTO_ADMIN_TOKEN"]
+    if photo_token and (len(photo_token) < 32 or photo_token in {app.config["RSVP_VIEW_TOKEN"], app.config["ADMIN_TOKEN"]}):
+        raise ValueError("PHOTO_ADMIN_TOKEN must be empty or a separate key of at least 32 characters")
+    photo_signer = URLSafeTimedSerializer(hashlib.sha256(photo_token.encode()).digest(), salt="photo-admin-session-v1")
     app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_UPLOAD_BYTES"] + 64 * 1024
     proxy_hops = app.config["TRUST_PROXY_HOPS"]
     if proxy_hops:
@@ -107,9 +144,13 @@ def create_app(test_config: dict | None = None) -> Flask:
 
     data_dir = Path(app.config["DATA_DIR"]).resolve()
     media_dir = data_dir / "media"
+    originals_dir = data_dir / "originals"
     media_dir.mkdir(parents=True, exist_ok=True)
+    originals_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     db_path = data_dir / "wedding.sqlite3"
-    existing_media = any(MEDIA_PATTERN.fullmatch(path.name) for path in media_dir.iterdir())
+    existing_media = any(MEDIA_PATTERN.fullmatch(path.name) for path in media_dir.iterdir()) or any(
+        ORIGINAL_PATTERN.fullmatch(path.name) for path in originals_dir.iterdir()
+    )
     missing_database_message = (
         "Guest photo files exist without an initialized matching database. "
         "Restore the matching database backup or use a new empty data folder."
@@ -119,6 +160,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         raise RuntimeError(missing_database_message)
     app.config["DATABASE"] = str(db_path)
     app.config["MEDIA_DIR"] = str(media_dir)
+    app.config["ORIGINALS_DIR"] = str(originals_dir)
 
     def remove_media(row):
         for filename in (row["stored_name"], row["thumbnail_name"]):
@@ -127,6 +169,13 @@ def create_app(test_config: dict | None = None) -> Flask:
             path = media_dir / filename
             if path.is_symlink():
                 raise RuntimeError("Media symlinks are not supported")
+            path.unlink(missing_ok=True)
+        if row["original_name"]:
+            if not ORIGINAL_PATTERN.fullmatch(row["original_name"]):
+                raise RuntimeError("Invalid original filename")
+            path = originals_dir / row["original_name"]
+            if path.is_symlink():
+                raise RuntimeError("Original symlinks are not supported")
             path.unlink(missing_ok=True)
 
     def connect() -> sqlite3.Connection:
@@ -141,15 +190,21 @@ def create_app(test_config: dict | None = None) -> Flask:
         photo_table_exists = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='photos'").fetchone() is not None
         if existing_media and (version == 0 or not photo_table_exists):
             raise RuntimeError(missing_database_message)
-        if version not in (0, 1):
+        if version not in (0, 1, 2):
             raise RuntimeError("Unsupported database schema version; restore the matching application version")
         conn.execute("PRAGMA journal_mode = WAL")
-        conn.executescript((Path(__file__).parent / "schema.sql").read_text(encoding="utf-8"))
-        conn.execute("INSERT OR IGNORE INTO settings (key,value) VALUES ('rate_secret',?)", (secrets.token_hex(32),))
-        rate_secret = conn.execute("SELECT value FROM settings WHERE key='rate_secret'").fetchone()[0].encode()
         # Uploads create files inside the same write lock. Recovery cannot race another writer.
-        conn.execute("BEGIN IMMEDIATE")
         try:
+            conn.executescript("BEGIN IMMEDIATE;\n" + (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8"))
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(photos)")}
+            for name, definition in (
+                ("original_name", "TEXT"), ("original_filename", "TEXT"),
+                ("original_bytes", "INTEGER NOT NULL DEFAULT 0"), ("original_sha256", "TEXT"),
+            ):
+                if name not in columns:
+                    conn.execute(f"ALTER TABLE photos ADD COLUMN {name} {definition}")
+            conn.execute("INSERT OR IGNORE INTO settings (key,value) VALUES ('rate_secret',?)", (secrets.token_hex(32),))
+            rate_secret = conn.execute("SELECT value FROM settings WHERE key='rate_secret'").fetchone()[0].encode()
             for row in conn.execute("SELECT * FROM photos WHERE deleted=1").fetchall():
                 remove_media(row)
                 conn.execute("DELETE FROM photos WHERE id=?", (row["id"],))
@@ -160,12 +215,18 @@ def create_app(test_config: dict | None = None) -> Flask:
             for path in media_dir.iterdir():
                 if MEDIA_PATTERN.fullmatch(path.name) and path.name not in referenced and not path.is_symlink():
                     path.unlink(missing_ok=True)
+            original_references = {row[0] for row in conn.execute("SELECT original_name FROM photos WHERE original_name IS NOT NULL")}
+            for path in originals_dir.iterdir():
+                if ORIGINAL_PATTERN.fullmatch(path.name) and path.name not in original_references and not path.is_symlink():
+                    path.unlink(missing_ok=True)
+            conn.execute("PRAGMA user_version = 2")
             conn.commit()
         except Exception:
             conn.rollback()
             raise
 
     image_slot = threading.BoundedSemaphore(1)
+    archive_slot = threading.BoundedSemaphore(1)
 
     def db() -> sqlite3.Connection:
         if "db" not in g:
@@ -215,6 +276,65 @@ def create_app(test_config: dict | None = None) -> Flask:
         token = app.config["ADMIN_TOKEN"]
         provided = request.headers.get("Authorization", "")
         return bool(token and hmac.compare_digest(provided.encode(), f"Bearer {token}".encode()))
+
+    def photo_bearer_valid() -> bool:
+        provided = request.headers.get("Authorization", "")
+        return bool(photo_token and hmac.compare_digest(provided.encode(), f"Bearer {photo_token}".encode()))
+
+    def photo_session_id() -> str | None:
+        if not photo_token:
+            return None
+        try:
+            value = photo_signer.loads(request.cookies.get(PHOTO_COOKIE, ""), max_age=PHOTO_SESSION_SECONDS)
+        except (BadSignature, SignatureExpired):
+            return None
+        if not isinstance(value, str) or not re.fullmatch(r"[a-f0-9]{64}", value):
+            return None
+        session_hash = hashlib.sha256(value.encode()).hexdigest()
+        row = db().execute("SELECT expires_at FROM photo_admin_sessions WHERE id_hash=?", (session_hash,)).fetchone()
+        return session_hash if row and row[0] > time.time() else None
+
+    def require_photo_admin():
+        # A supplied but incorrect header must not silently fall back to a cookie.
+        if (photo_bearer_valid() if "Authorization" in request.headers else bool(photo_session_id())):
+            return
+        raise ApiError("사진 관리 키로 로그인해 주세요.", 401)
+
+    def secure_photo_cookie() -> bool:
+        return request.is_secure or urlsplit(request.host_url).hostname not in {"localhost", "127.0.0.1", "::1"}
+
+    def private_photo(row) -> dict:
+        return {
+            **public_photo(row), "originalAvailable": bool(row["original_name"]),
+            "originalFilename": row["original_filename"], "originalBytes": row["original_bytes"],
+            "storedBytes": row["stored_bytes"],
+            "downloadUrl": f"/api/photo-admin/photos/{row['id']}/download",
+        }
+
+    def photo_row(entry_id):
+        if not ID_PATTERN.fullmatch(entry_id):
+            raise ApiError("사진을 찾을 수 없습니다.", 404)
+        row = db().execute("SELECT * FROM photos WHERE id=? AND deleted=0", (entry_id,)).fetchone()
+        if row is None:
+            raise ApiError("사진을 찾을 수 없습니다.", 404)
+        return row
+
+    def original_download(row):
+        if row["original_name"]:
+            if not ORIGINAL_PATTERN.fullmatch(row["original_name"]):
+                raise ApiError("보관 파일을 확인할 수 없습니다.", 503)
+            path = originals_dir / row["original_name"]
+            download_name = row["original_filename"] or row["original_name"]
+            legacy = False
+        else:
+            if not MEDIA_PATTERN.fullmatch(row["stored_name"]):
+                raise ApiError("보관 파일을 확인할 수 없습니다.", 503)
+            path = media_dir / row["stored_name"]
+            download_name = f"legacy-preview-{row['id']}.jpg"
+            legacy = True
+        if path.is_symlink() or not path.is_file():
+            raise ApiError("보관 파일을 찾지 못했어요. NAS 저장소를 확인해 주세요.", 503)
+        return path, download_name, legacy
 
     def require_rsvp_viewer():
         token = app.config["RSVP_VIEW_TOKEN"]
@@ -313,7 +433,9 @@ def create_app(test_config: dict | None = None) -> Flask:
     @app.get("/api/health")
     def health():
         db().execute("SELECT 1").fetchone()
-        return jsonify(ok=True, features={"rsvp": bool(app.config["RSVP_VIEW_TOKEN"])}, limits={
+        return jsonify(ok=True, features={
+            "rsvp": bool(app.config["RSVP_VIEW_TOKEN"]), "originalPhotos": True, "photoAdmin": bool(photo_token),
+        }, limits={
             "maxUploadBytes": app.config["MAX_UPLOAD_BYTES"], "maxFilesPerBatch": 10,
             "maxPhotoCount": app.config["MAX_PHOTO_COUNT"], "maxStorageBytes": app.config["MAX_STORAGE_BYTES"],
             "maxImagePixels": app.config["MAX_IMAGE_PIXELS"], "maxNameLength": 40,
@@ -460,6 +582,7 @@ def create_app(test_config: dict | None = None) -> Flask:
                 with Image.open(io.BytesIO(raw), formats=list(IMAGE_FORMATS)) as probe:
                     if probe.format not in IMAGE_FORMATS:
                         raise ApiError("JPEG, PNG, WebP 사진만 올릴 수 있습니다.", 415)
+                    original_format = probe.format
                     if probe.width * probe.height > app.config["MAX_IMAGE_PIXELS"]:
                         raise ApiError("사진 해상도가 너무 큽니다. 크기를 줄여 주세요.", 413)
                     if getattr(probe, "n_frames", 1) != 1:
@@ -482,7 +605,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             photo.thumbnail((600, 600), Image.Resampling.LANCZOS)
             thumbnail = io.BytesIO()
             photo.save(thumbnail, "JPEG", quality=82, optimize=True)
-            return full.getvalue(), thumbnail.getvalue(), width, height
+            return full.getvalue(), thumbnail.getvalue(), width, height, original_format
         except (UnidentifiedImageError, OSError, SyntaxError, ValueError) as error:
             raise ApiError("사진을 읽을 수 없습니다. 정상적인 JPEG, PNG, WebP 파일을 선택해 주세요.", 415) from error
         except (Image.DecompressionBombError, Image.DecompressionBombWarning) as error:
@@ -503,6 +626,8 @@ def create_app(test_config: dict | None = None) -> Flask:
             raise ApiError("사진은 한 번에 한 장씩 전송해 주세요.")
         if request.form.get("consent") != "true":
             raise ApiError("사진이 방문자에게 공개되는 데 동의해 주세요.")
+        if request.form.get("originalConsent") != "true":
+            raise ApiError("원본 보관 안내가 바뀌었어요. 청첩장을 새로고침한 뒤 원본 보관에 동의해 주세요.")
         name = text_field(request.form, "name", 40, 1)
         caption = text_field(request.form, "caption", 200)
         raw = files[0].stream.read(app.config["MAX_UPLOAD_BYTES"] + 1)
@@ -511,12 +636,22 @@ def create_app(test_config: dict | None = None) -> Flask:
         if not image_slot.acquire(blocking=False):
             raise ApiError("다른 사진을 처리하고 있어요. 잠시 후 다시 올려 주세요.", 429, 3)
         try:
-            full, thumb, width, height = normalized_images(raw)
+            full, thumb, width, height, original_format = normalized_images(raw)
         finally:
             image_slot.release()
         entry_id, created = uuid.uuid4().hex, timestamp()
         full_name, thumb_name = f"{entry_id}.jpg", f"{entry_id}-thumb.jpg"
-        total_bytes = len(full) + len(thumb)
+        extension = {"JPEG": "jpg", "PNG": "png", "WEBP": "webp"}[original_format]
+        original_name = f"{entry_id}.{extension}"
+        # Retain a human filename without accepting paths, control characters or Windows-reserved names.
+        filename = (files[0].filename or "photo").replace("\\", "/").split("/")[-1]
+        filename = "".join(c for c in filename if ord(c) >= 32 and ord(c) != 127 and c not in '<>:"|?*').strip(" .")[:160]
+        filename = filename or "photo"
+        if filename.split(".")[0].upper() in {"CON", "PRN", "AUX", "NUL", *(f"{prefix}{i}" for prefix in ("COM", "LPT") for i in range(1, 10))}:
+            filename = "photo-" + filename
+        if not filename.lower().endswith((".jpg", ".jpeg") if original_format == "JPEG" else ("." + extension,)):
+            filename += "." + extension
+        total_bytes = len(raw) + len(full) + len(thumb)
         conn = db()
         written = []
         conn.execute("BEGIN IMMEDIATE")
@@ -526,16 +661,17 @@ def create_app(test_config: dict | None = None) -> Flask:
                 raise ApiError("사진 보관함이 가득 찼습니다. 신랑 신부에게 알려 주세요.", 507)
             if shutil.disk_usage(data_dir).free < total_bytes + app.config["MIN_FREE_DISK_BYTES"]:
                 raise ApiError("저장 공간이 부족합니다. 신랑 신부에게 알려 주세요.", 507)
-            for filename, content in ((full_name, full), (thumb_name, thumb)):
-                path = media_dir / filename
+            for path, content in ((media_dir / full_name, full), (media_dir / thumb_name, thumb), (originals_dir / original_name, raw)):
                 with path.open("xb") as file:
                     written.append(path)
                     file.write(content)
                     file.flush()
                     os.fsync(file.fileno())
             conn.execute(
-                "INSERT INTO photos(id,name,caption,stored_name,thumbnail_name,width,height,stored_bytes,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-                (entry_id, name, caption, full_name, thumb_name, width, height, total_bytes, created),
+                "INSERT INTO photos(id,name,caption,stored_name,thumbnail_name,width,height,stored_bytes,created_at,"
+                "original_name,original_filename,original_bytes,original_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (entry_id, name, caption, full_name, thumb_name, width, height, total_bytes, created,
+                 original_name, filename, len(raw), hashlib.sha256(raw).hexdigest()),
             )
             conn.commit()
         except Exception:
@@ -556,11 +692,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             raise ApiError("사진을 찾을 수 없습니다.", 404)
         return send_file(path, mimetype="image/jpeg", conditional=True, max_age=3600)
 
-    @app.delete("/api/photos/<entry_id>")
-    def delete_photo(entry_id):
-        rate_limit("delete", app.config["DELETE_RATE_PER_TEN_MINUTES"], 600)
-        if not is_admin():
-            raise ApiError("사진 삭제는 관리자만 할 수 있습니다.", 403)
+    def remove_photo(entry_id):
         if not ID_PATTERN.fullmatch(entry_id):
             raise ApiError("사진을 찾을 수 없습니다.", 404)
         conn = db()
@@ -574,9 +706,151 @@ def create_app(test_config: dict | None = None) -> Flask:
         except Exception:
             conn.rollback()
             raise
-        # Keep the hidden record and its quota until both files are removed successfully.
+        # Keep the hidden record and its quota until originals and previews are removed successfully.
         remove_media(row)
         conn.execute("DELETE FROM photos WHERE id=?", (entry_id,))
+
+    @app.delete("/api/photos/<entry_id>")
+    def delete_photo(entry_id):
+        rate_limit("delete", app.config["DELETE_RATE_PER_TEN_MINUTES"], 600)
+        if not is_admin():
+            raise ApiError("사진 삭제는 관리자만 할 수 있습니다.", 403)
+        remove_photo(entry_id)
         return "", 204
+
+    @app.get("/api/photo-admin")
+    def photo_admin_page():
+        html = (Path(__file__).parent / "photo-admin.html").read_text(encoding="utf-8")
+        sources = {}
+        for tag in ("script", "style"):
+            sources[tag] = " ".join("'sha256-" + base64.b64encode(hashlib.sha256(value.encode()).digest()).decode() + "'" for value in re.findall(f"<{tag}>(.*?)</{tag}>", html, re.S))
+        response = app.make_response(html)
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; connect-src 'self'; img-src 'self'; base-uri 'none'; "
+            "form-action 'none'; frame-ancestors 'none'; "
+            f"script-src {sources['script']}; style-src {sources['style']}"
+        )
+        response.headers["X-Frame-Options"] = "DENY"
+        return response
+
+    @app.post("/api/photo-admin/session")
+    def photo_admin_login():
+        rate_limit("photo_admin_login", 30)
+        if not photo_bearer_valid():
+            raise ApiError("사진 관리 키를 확인해 주세요.", 401)
+        nonce = secrets.token_hex(32)
+        conn = db()
+        conn.execute("DELETE FROM photo_admin_sessions WHERE expires_at <= ?", (int(time.time()),))
+        previous = photo_session_id()
+        if previous:
+            conn.execute("DELETE FROM photo_admin_sessions WHERE id_hash=?", (previous,))
+        conn.execute("INSERT INTO photo_admin_sessions(id_hash,expires_at) VALUES (?,?)", (
+            hashlib.sha256(nonce.encode()).hexdigest(), int(time.time()) + PHOTO_SESSION_SECONDS,
+        ))
+        response = jsonify(ok=True)
+        response.set_cookie(PHOTO_COOKIE, photo_signer.dumps(nonce), max_age=PHOTO_SESSION_SECONDS,
+                            httponly=True, secure=secure_photo_cookie(), samesite="Strict", path="/api/photo-admin")
+        return response
+
+    @app.delete("/api/photo-admin/session")
+    def photo_admin_logout():
+        session_hash = photo_session_id()
+        if session_hash:
+            db().execute("DELETE FROM photo_admin_sessions WHERE id_hash=?", (session_hash,))
+        response = jsonify(ok=True)
+        response.delete_cookie(PHOTO_COOKIE, path="/api/photo-admin", secure=secure_photo_cookie(), httponly=True, samesite="Strict")
+        return response
+
+    @app.get("/api/photo-admin/photos")
+    def photo_admin_list():
+        require_photo_admin()
+        rows, cursor = page_rows("photos", 24, "deleted=0")
+        totals = db().execute(
+            "SELECT COUNT(*) AS total, COALESCE(SUM(stored_bytes),0) AS totalBytes, "
+            "COALESCE(SUM(original_name IS NOT NULL),0) AS originalCount, "
+            "COALESCE(SUM(original_name IS NULL),0) AS legacyCount FROM photos WHERE deleted=0"
+        ).fetchone()
+        return jsonify(items=[private_photo(row) for row in rows], nextCursor=cursor, **dict(totals))
+
+    @app.get("/api/photo-admin/photos/<entry_id>/download")
+    def photo_admin_download(entry_id):
+        require_photo_admin()
+        path, filename, _legacy = original_download(photo_row(entry_id))
+        return send_file(path, mimetype="application/octet-stream", as_attachment=True, download_name=filename,
+                         conditional=True, etag=False, max_age=0)
+
+    @app.delete("/api/photo-admin/photos/<entry_id>")
+    def photo_admin_delete(entry_id):
+        require_photo_admin()
+        rate_limit("photo_admin_delete", 600)
+        remove_photo(entry_id)
+        return jsonify(ok=True)
+
+    @app.get("/api/photo-admin/download")
+    def photo_admin_download_all():
+        require_photo_admin()
+        rows = db().execute("SELECT * FROM photos WHERE deleted=0 ORDER BY seq").fetchall()
+        if not rows:
+            raise ApiError("아직 내려받을 사진이 없어요.", 404)
+        if not archive_slot.acquire(blocking=False):
+            raise ApiError("전체 사진을 내려받고 있어요. 다운로드가 끝난 뒤 다시 시도해 주세요.", 429, 10)
+        released = False
+        release_lock = threading.Lock()
+
+        def release_slot():
+            nonlocal released
+            with release_lock:
+                if not released:
+                    released = True
+                    archive_slot.release()
+
+        def archive():
+            sink = StreamingZipSink()
+            manifest = []
+            try:
+                with zipfile.ZipFile(sink, "w", compression=zipfile.ZIP_STORED, allowZip64=True) as bundle:
+                    bundle.writestr("README.txt", (
+                        "하객 사진 보관함\n\noriginals/ : 업로드한 원본 파일입니다. 메타데이터가 포함될 수 있습니다.\n"
+                        "legacy-previews/ : 원본 보관 기능 추가 전에 올라온 사진입니다. 축소 JPG만 남아 있습니다.\n"
+                        "manifest.json : 사진 설명, 원래 파일명, 보관 상태를 담은 목록입니다.\n"
+                        "다운로드 중 새로 올라온 사진은 다음 다운로드에 포함됩니다.\n"
+                        "다운로드 도중 삭제되거나 없어진 파일은 목록에 missing으로 표시됩니다.\n"
+                    ).encode("utf-8-sig"))
+                    yield from sink.drain()
+                    for row in rows:
+                        record = {
+                            "id": row["id"], "name": row["name"], "caption": row["caption"],
+                            "createdAt": row["created_at"], "originalFilename": row["original_filename"],
+                            "originalSha256": row["original_sha256"], "originalBytes": row["original_bytes"],
+                            "kind": "original" if row["original_name"] else "legacy-preview",
+                        }
+                        # Open before writing the member header: a concurrent deletion can then be
+                        # reported without leaving a misleading empty image in the archive.
+                        try:
+                            path, filename, legacy = original_download(row)
+                            source = path.open("rb")
+                        except (ApiError, FileNotFoundError):
+                            record["status"] = "missing"
+                            manifest.append(record)
+                            continue
+                        member = ("legacy-previews/" if legacy else "originals/") + row["id"] + "-" + filename
+                        with source, bundle.open(member, "w", force_zip64=True) as destination:
+                            yield from sink.drain()
+                            while chunk := source.read(64 * 1024):
+                                destination.write(chunk)
+                                yield from sink.drain()
+                        yield from sink.drain()
+                        record.update(status="included", archivePath=member)
+                        manifest.append(record)
+                    bundle.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"))
+                    yield from sink.drain()
+                yield from sink.drain()
+            finally:
+                release_slot()
+
+        response = Response(archive(), mimetype="application/zip")
+        response.headers["Content-Disposition"] = 'attachment; filename="wedding-guest-photos.zip"'
+        response.call_on_close(release_slot)
+        return response
 
     return app

@@ -21,7 +21,11 @@ CREATE TABLE IF NOT EXISTS photos (
     height INTEGER NOT NULL,
     stored_bytes INTEGER NOT NULL,
     created_at TEXT NOT NULL,
-    deleted INTEGER NOT NULL DEFAULT 0
+    deleted INTEGER NOT NULL DEFAULT 0,
+    original_name TEXT,
+    original_filename TEXT,
+    original_bytes INTEGER NOT NULL DEFAULT 0,
+    original_sha256 TEXT
 );
 CREATE TABLE IF NOT EXISTS rate_limits (
     scope TEXT NOT NULL,
@@ -41,4 +45,7 @@ CREATE TABLE IF NOT EXISTS rsvps (
     meal TEXT NOT NULL CHECK(meal IN ('yes', 'no', 'undecided')),
     created_at TEXT NOT NULL
 );
-PRAGMA user_version = 1;
+CREATE TABLE IF NOT EXISTS photo_admin_sessions (
+    id_hash TEXT PRIMARY KEY,
+    expires_at INTEGER NOT NULL
+);

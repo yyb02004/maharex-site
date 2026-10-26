@@ -159,6 +159,7 @@ export default function GuestMemories({ apiBaseUrl }: { apiBaseUrl: string }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
   const [limits, setLimits] = useState<UploadLimits | null>(null);
+  const [originalPhotos, setOriginalPhotos] = useState(false);
   const [healthError, setHealthError] = useState("");
   const [healthLoading, setHealthLoading] = useState(false);
   const book = useRemoteList(apiBaseUrl, "/api/guestbook", 6, parseEntry, active);
@@ -211,6 +212,7 @@ export default function GuestMemories({ apiBaseUrl }: { apiBaseUrl: string }) {
       const keys = ["maxUploadBytes", "maxFilesPerBatch", "maxPhotoCount", "maxStorageBytes", "maxImagePixels"] as const;
       if (data.ok !== true || keys.some((key) => typeof values[key] !== "number" || !Number.isFinite(values[key]) || (values[key] as number) <= 0)) throw new Error("Invalid response");
       setLimits(values as UploadLimits);
+      setOriginalPhotos(!!data.features && record(data.features).originalPhotos === true);
     } catch (error) {
       if (!signal?.aborted) { setLimits(null); setHealthError(failureMessage(error)); }
     } finally { if (!signal?.aborted) setHealthLoading(false); }
@@ -284,6 +286,7 @@ export default function GuestMemories({ apiBaseUrl }: { apiBaseUrl: string }) {
       for (const entry of pending) {
         const body = new FormData();
         body.set("file", entry.file); body.set("name", name); body.set("caption", caption); body.set("consent", "true");
+        if (originalPhotos) body.set("originalConsent", "true");
         const result = record(await request(apiBaseUrl, "/api/photos", { method: "POST", body }));
         photos.prepend(parsePhoto(result.item));
         setQueue((current) => current.filter((item) => item.key !== entry.key));
@@ -351,8 +354,8 @@ export default function GuestMemories({ apiBaseUrl }: { apiBaseUrl: string }) {
               <input ref={fileInput} id={`${prefix}-photo-files`} className={styles.fileInput} type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple disabled={!limits || healthLoading} aria-describedby={`${prefix}-photo-note`} onChange={(event) => { selectFiles(event.currentTarget.files); event.currentTarget.value = ""; }} />
               <p id={`${prefix}-photo-note`} className={styles.note}>JPG · PNG · WebP / 한 번에 최대 {maxBatch}장 / 한 장 {maxMegabytes}MB 이하</p>
               {queue.length ? <ul className={styles.fileList}>{queue.map((item) => <li key={item.key}><span>{item.file.name}</span><button type="button" onClick={() => setQueue((current) => current.filter((entry) => entry.key !== item.key))} aria-label={`${item.file.name} 선택 취소`}>빼기</button></li>)}</ul> : null}
-              <label className={styles.consent} htmlFor={`${prefix}-consent`}><input id={`${prefix}-consent`} name="consent" type="checkbox" value="true" required /><span>올린 사진과 이름이 모든 하객에게 공개되는 데 동의합니다.</span></label>
-              <p className={styles.note}>등록한 사진과 이야기는 바로 공개됩니다.<br />사진은 위치 등 부가정보를 제거하고, 보기 좋은 크기의 JPG로 저장해요. 원본 사진은 따로 간직해 주세요.</p>
+              <label className={styles.consent} htmlFor={`${prefix}-consent`}><input id={`${prefix}-consent`} name="consent" type="checkbox" value="true" required /><span>{originalPhotos ? "사진과 이름의 하객 공개 및 신랑·신부의 원본 보관에 동의합니다." : "올린 사진과 이름이 모든 하객에게 공개되는 데 동의합니다."}</span></label>
+              <p className={styles.note}>{originalPhotos ? <>함께 보는 사진은 위치 등 부가정보를 지운 미리보기로 공개해요.<br />원본 파일과 그 안의 촬영 정보는 두 사람이 따로 간직합니다.</> : <>등록한 사진과 이야기는 바로 공개됩니다.<br />사진은 위치 등 부가정보를 제거하고, 보기 좋은 크기의 JPG로 저장해요. 원본 사진은 따로 간직해 주세요.</>}</p>
               <button className={styles.primaryButton} type="submit" disabled={!limits || healthLoading || !queue.length || uploading || photos.loading}>{uploading ? uploadProgress?.done === uploadProgress?.total ? "등록 마무리 중…" : `${(uploadProgress?.done ?? 0) + 1}번째 사진 올리는 중…` : queue.length ? `${queue.length}장 사진 등록` : "사진을 선택해 주세요"}</button>
             </fieldset>
           </form>

@@ -54,7 +54,7 @@ class StorageTests(unittest.TestCase):
 
     def post_photo(self, client=None, raw=None, **fields):
         return (client or self.client).post("/api/photos", headers=HEADERS, data={
-            "name": "하객", "caption": "함께한 날", "consent": "true",
+            "name": "하객", "caption": "함께한 날", "consent": "true", "originalConsent": "true",
             "file": (io.BytesIO(raw if raw is not None else picture()), "untrusted-name.png"), **fields,
         })
 
