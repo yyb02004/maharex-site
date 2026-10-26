@@ -128,11 +128,19 @@ HEIC, GIF, 동영상, 움직이는 WebP/PNG는 지원하지 않습니다. 지원
 
 사진과 방명록 등록에는 자동 중복 제거 키가 없습니다. 서버가 저장한 뒤 네트워크 응답만 유실되면 다시 등록할 때 중복될 수 있습니다. 프런트엔드는 응답 확인에 실패한 경우 목록 새로고침으로 확인하도록 안내하고 자동 재전송하지 않습니다.
 
-### 관리자 사진 관리
+### 통합 관리자 화면과 NAS 사진 폴더
+
+현재 업데이트 절차는 [MANAGEMENT_SETUP_KO.md](MANAGEMENT_SETUP_KO.md)입니다. `compose.qnap.manage.yaml` 공개 템플릿을 바탕으로 비공개 배포 설정을 준비합니다. [통합 관리 화면](https://wedding-api.maharex.com/api/admin)은 한 번의 비밀번호 로그인으로 사진·참석 응답·축하 메시지를 관리하며 각 항목의 개별·선택 삭제, 사진 ZIP, 참석 명단 CSV 다운로드를 지원합니다. 기존 관리 주소는 해당 탭으로 이동합니다.
+
+`/api/admin/session`의 POST/DELETE는 로그인/로그아웃입니다. 목록은 `/api/admin/photos`, `/api/admin/rsvps`, `/api/admin/guestbook`이며 각 `/:id`의 DELETE는 정확히 그 항목만 삭제합니다. 사진 다운로드는 `/api/admin/photos/:id/download`, 전체 ZIP은 `/api/admin/photos/download`, 명단 CSV는 `/api/admin/rsvps/export`입니다. 모든 관리 자료와 삭제에는 인증이 필요하며 쿠키는 HttpOnly·SameSite=Strict·운영 HTTPS Secure, 유효기간 1시간입니다. 변경 요청은 관리자 사이트와 같은 출처에서만 허용합니다. 통합 로그인과 인증된 로그아웃은 이전 사진 전용 세션도 폐기합니다.
+
+`PHOTO_EXPORT_DIR`를 설정하면 기존 원본 저장소와 별도로 하객 사진을 그 폴더에 자동 복사합니다. QNAP 구성은 `/share/main/wedding/하객사진`만 연결합니다. 일회성 초기화 작업은 이 폴더 자체의 권한만 준비하며 부모 공유 폴더나 기존 파일은 변경하지 않습니다. 백그라운드 작업은 신규·누락 사진 복사, 원본 기능 전 JPG의 `기존사진/` 분리, 관리자 삭제 뒤 복사본 정리를 수행합니다. 원본 바이트는 그대로 유지하며 직접 변경되거나 관계없는 파일은 덮어쓰거나 삭제하지 않습니다. `/api/admin/storage`는 복사 완료·대기·실패 상태를 관리자에게 제공합니다. 디스크 여유 공간을 보호하고 장애 시 다시 시도합니다. 이 폴더는 편리하게 읽기 위한 복사본이며 기본 데이터 볼륨을 대체하지 않습니다.
+
+### 기존 관리자 API 호환
 
 [사진 관리 화면](https://wedding-api.maharex.com/api/photo-admin)에서 원본 다운로드, 사진별 삭제, 전체 ZIP 다운로드를 제공합니다. 두 관리자 화면을 같은 비밀번호로 사용하려면 [ADMIN_SETUP_KO.md](ADMIN_SETUP_KO.md)를 따릅니다. `compose.qnap.admin.yaml`은 비밀번호가 없는 공개 템플릿이며, 전용 ZIP에는 비밀번호 원문 대신 Werkzeug scrypt 검증용 해시를 설정합니다.
 
-`MANAGEMENT_PASSWORD_HASH`를 설정하면 사진 관리와 참석 명단에 같은 비밀번호를 사용하고 기존 `PHOTO_ADMIN_TOKEN`, `RSVP_VIEW_TOKEN`, `ADMIN_TOKEN`은 인증에서 제외됩니다. 비밀번호 변경 시 기존 사진 관리 로그인도 만료됩니다. 해시가 없는 기존 설정에서는 32자 이상 별도 키 방식을 그대로 지원합니다. 사진 관리 로그인 쿠키는 HttpOnly·SameSite=Strict이며 운영 HTTPS에서 Secure를 사용하고 1시간 후 만료됩니다. 관리자 비밀번호·해시·키를 URL·프런트엔드·공개 Git·로그에 넣지 않습니다. 참석 명단 화면에서는 새로고침하거나 탭을 닫으면 다시 로그인합니다.
+`MANAGEMENT_PASSWORD_HASH`를 설정하면 사진 관리와 참석 명단에 같은 비밀번호를 사용하고 기존 `PHOTO_ADMIN_TOKEN`, `RSVP_VIEW_TOKEN`, `ADMIN_TOKEN`은 인증에서 제외됩니다. 비밀번호 변경 시 기존 사진 관리 로그인도 만료됩니다. 해시가 없는 기존 설정에서는 32자 이상 별도 키 방식을 그대로 지원합니다. 관리자 비밀번호·해시·키를 URL·프런트엔드·공개 Git·로그에 넣지 않습니다. 이전 API의 Bearer 방식은 호환을 위해 유지되며 새 관리 화면은 통합 세션을 사용합니다.
 
 관리 API는 `/api/photo-admin/session` 로그인/로그아웃, `/api/photo-admin/photos` 목록, `/api/photo-admin/photos/:id/download` 개별 다운로드, `DELETE /api/photo-admin/photos/:id` 삭제, `/api/photo-admin/download` 전체 ZIP입니다. 원본은 `/media`에서 접근할 수 없습니다. ZIP은 파일 내용을 메모리나 임시 디스크에 통째로 모으지 않고 순서대로 전송합니다. 기존 축소본과 원본을 구별하고 목록을 함께 제공합니다.
 

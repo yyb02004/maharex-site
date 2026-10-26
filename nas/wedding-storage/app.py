@@ -24,12 +24,13 @@ import zipfile
 from collections import deque
 from contextlib import closing
 
-from flask import Flask, Response, g, jsonify, request, send_file
+from flask import Flask, Response, g, jsonify, redirect, request, send_file
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from PIL import Image, ImageOps, UnidentifiedImageError
 from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
+from photo_mirror import MIRROR_SCHEMA, PhotoMirror
 
 
 ID_PATTERN = re.compile(r"^[a-f0-9]{32}$")
@@ -37,6 +38,7 @@ MEDIA_PATTERN = re.compile(r"^[a-f0-9]{32}(?:-thumb)?\.jpg$")
 ORIGINAL_PATTERN = re.compile(r"^[a-f0-9]{32}\.(?:jpg|png|webp)$")
 IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
 PHOTO_COOKIE = "wedding_photo_admin"
+ADMIN_COOKIE = "wedding_management_admin"
 PHOTO_SESSION_SECONDS = 3600
 MANAGEMENT_HASH_PATTERN = re.compile(r"^scrypt:32768:8:1\$[A-Za-z0-9]{8,64}\$[a-f0-9]{128}$")
 
@@ -109,6 +111,8 @@ def create_app(test_config: dict | None = None) -> Flask:
         RSVP_VIEW_TOKEN=os.getenv("RSVP_VIEW_TOKEN", ""),
         PHOTO_ADMIN_TOKEN=os.getenv("PHOTO_ADMIN_TOKEN", ""),
         MANAGEMENT_PASSWORD_HASH=os.getenv("MANAGEMENT_PASSWORD_HASH", ""),
+        PHOTO_EXPORT_DIR=os.getenv("PHOTO_EXPORT_DIR", ""),
+        PHOTO_EXPORT_DISPLAY_PATH=os.getenv("PHOTO_EXPORT_DISPLAY_PATH", "main/wedding/하객사진"),
         TRUST_PROXY_HOPS=positive_int("TRUST_PROXY_HOPS", 0, 0),
         MAX_UPLOAD_BYTES=positive_int("MAX_UPLOAD_BYTES", 15 * 1024 * 1024),
         MAX_IMAGE_PIXELS=positive_int("MAX_IMAGE_PIXELS", 40_000_000),
@@ -144,6 +148,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             raise ValueError("PHOTO_ADMIN_TOKEN must be empty or a separate key of at least 32 characters")
     photo_signing_material = "management-password:" + management_hash if management_hash else photo_token
     photo_signer = URLSafeTimedSerializer(hashlib.sha256(photo_signing_material.encode()).digest(), salt="photo-admin-session-v1")
+    admin_signer = URLSafeTimedSerializer(hashlib.sha256(("unified-admin:" + management_hash).encode()).digest(), salt="management-admin-session-v1")
     app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_UPLOAD_BYTES"] + 64 * 1024
     proxy_hops = app.config["TRUST_PROXY_HOPS"]
     if proxy_hops:
@@ -202,7 +207,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         conn.execute("PRAGMA journal_mode = WAL")
         # Uploads create files inside the same write lock. Recovery cannot race another writer.
         try:
-            conn.executescript("BEGIN IMMEDIATE;\n" + (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8"))
+            conn.executescript("BEGIN IMMEDIATE;\n" + (Path(__file__).parent / "schema.sql").read_text(encoding="utf-8") + MIRROR_SCHEMA)
             columns = {row[1] for row in conn.execute("PRAGMA table_info(photos)")}
             for name, definition in (
                 ("original_name", "TEXT"), ("original_filename", "TEXT"),
@@ -232,6 +237,11 @@ def create_app(test_config: dict | None = None) -> Flask:
             conn.rollback()
             raise
 
+    photo_mirror = None
+    if app.config["PHOTO_EXPORT_DIR"]:
+        photo_mirror = PhotoMirror(db_path, media_dir, originals_dir, app.config["PHOTO_EXPORT_DIR"],
+                                   min_free_bytes=app.config["MIN_FREE_DISK_BYTES"])
+    app.extensions["photo_mirror"] = photo_mirror
     image_slot = threading.BoundedSemaphore(1)
     archive_slot = threading.BoundedSemaphore(1)
     management_verification_slot = threading.BoundedSemaphore(1)
@@ -341,10 +351,31 @@ def create_app(test_config: dict | None = None) -> Flask:
         return session_hash if row and row[0] > time.time() else None
 
     def require_photo_admin():
+        if request.path.startswith("/api/admin/"):
+            require_management_admin()
+            return
         # A supplied but incorrect header must not silently fall back to a cookie.
         if (photo_bearer_valid() if "Authorization" in request.headers else bool(photo_session_id())):
             return
         raise ApiError("관리자 비밀번호로 로그인해 주세요." if management_hash else "사진 관리 키로 로그인해 주세요.", 401)
+
+    def admin_session_id():
+        if not management_hash:
+            return None
+        try:
+            nonce = admin_signer.loads(request.cookies.get(ADMIN_COOKIE, ""), max_age=PHOTO_SESSION_SECONDS)
+        except (BadSignature, SignatureExpired):
+            return None
+        if not isinstance(nonce, str) or not re.fullmatch(r"[a-f0-9]{64}", nonce):
+            return None
+        key = hashlib.sha256(nonce.encode()).hexdigest()
+        row = db().execute("SELECT expires_at FROM admin_sessions WHERE id_hash=?", (key,)).fetchone()
+        return key if row and row[0] > time.time() else None
+
+    def require_management_admin():
+        if management_hash and (management_password_valid() if "Authorization" in request.headers else bool(admin_session_id())):
+            return
+        raise ApiError("관리자 비밀번호로 로그인해 주세요.", 401)
 
     def secure_photo_cookie() -> bool:
         return request.is_secure or urlsplit(request.host_url).hostname not in {"localhost", "127.0.0.1", "::1"}
@@ -354,7 +385,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             **public_photo(row), "originalAvailable": bool(row["original_name"]),
             "originalFilename": row["original_filename"], "originalBytes": row["original_bytes"],
             "storedBytes": row["stored_bytes"],
-            "downloadUrl": f"/api/photo-admin/photos/{row['id']}/download",
+            "downloadUrl": f"/api/admin/photos/{row['id']}/download" if request.path.startswith("/api/admin/") else f"/api/photo-admin/photos/{row['id']}/download",
         }
 
     def photo_row(entry_id):
@@ -383,6 +414,9 @@ def create_app(test_config: dict | None = None) -> Flask:
         return path, download_name, legacy
 
     def require_rsvp_viewer():
+        if request.path.startswith("/api/admin/"):
+            require_management_admin()
+            return
         if management_hash:
             if not management_password_valid():
                 raise ApiError("관리자 비밀번호를 확인해 주세요.", 401)
@@ -439,6 +473,8 @@ def create_app(test_config: dict | None = None) -> Flask:
         if request.method in {"POST", "DELETE", "PUT", "PATCH", "OPTIONS"}:
             if request.headers.get("Origin") not in origins:
                 raise ApiError("허용된 청첩장 페이지에서 다시 시도해 주세요.", 403)
+            if request.path.startswith("/api/admin/") and request.headers.get("Origin") != request.host_url.rstrip("/"):
+                raise ApiError("관리자 화면에서 다시 시도해 주세요.", 403)
         if request.method == "OPTIONS":
             return "", 204
 
@@ -480,12 +516,110 @@ def create_app(test_config: dict | None = None) -> Flask:
         app.logger.error("Storage operation failed (%s)", type(error).__name__)
         return jsonify(error="저장소에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요."), 503
 
+    @app.get("/api/admin")
+    def management_page():
+        if not management_hash:
+            raise ApiError("관리자 화면을 준비하고 있어요.", 503)
+        html = (Path(__file__).parent / "admin.html").read_text(encoding="utf-8")
+        sources = {}
+        for tag in ("script", "style"):
+            sources[tag] = " ".join("'sha256-" + base64.b64encode(hashlib.sha256(value.encode()).digest()).decode() + "'" for value in re.findall(f"<{tag}>(.*?)</{tag}>", html, re.S))
+        response = app.make_response(html)
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; connect-src 'self'; img-src 'self'; base-uri 'none'; "
+            "form-action 'none'; frame-ancestors 'none'; "
+            f"script-src {sources['script']}; style-src {sources['style']}"
+        )
+        response.headers["X-Frame-Options"] = "DENY"
+        return response
+
+    @app.post("/api/admin/session")
+    def management_login():
+        rate_limit("management_login", 30)
+        if not management_password_valid():
+            raise ApiError("관리자 비밀번호를 확인해 주세요.", 401)
+        conn = db()
+        conn.execute("DELETE FROM admin_sessions WHERE expires_at <= ?", (int(time.time()),))
+        # Migrate this shared administrator away from the older photo-only sessions.
+        conn.execute("DELETE FROM photo_admin_sessions")
+        previous = admin_session_id()
+        if previous:
+            conn.execute("DELETE FROM admin_sessions WHERE id_hash=?", (previous,))
+        nonce = secrets.token_hex(32)
+        conn.execute("INSERT INTO admin_sessions(id_hash,expires_at) VALUES (?,?)", (
+            hashlib.sha256(nonce.encode()).hexdigest(), int(time.time()) + PHOTO_SESSION_SECONDS,
+        ))
+        response = jsonify(ok=True)
+        response.set_cookie(ADMIN_COOKIE, admin_signer.dumps(nonce), max_age=PHOTO_SESSION_SECONDS,
+                            httponly=True, secure=secure_photo_cookie(), samesite="Strict", path="/api/admin")
+        response.delete_cookie(PHOTO_COOKIE, path="/api/photo-admin", secure=secure_photo_cookie(), httponly=True, samesite="Strict")
+        return response
+
+    @app.delete("/api/admin/session")
+    def management_logout():
+        session_id = admin_session_id()
+        if session_id:
+            db().execute("DELETE FROM admin_sessions WHERE id_hash=?", (session_id,))
+            db().execute("DELETE FROM photo_admin_sessions")
+        response = jsonify(ok=True)
+        response.delete_cookie(ADMIN_COOKIE, path="/api/admin", secure=secure_photo_cookie(), httponly=True, samesite="Strict")
+        response.delete_cookie(PHOTO_COOKIE, path="/api/photo-admin", secure=secure_photo_cookie(), httponly=True, samesite="Strict")
+        return response
+
+    @app.get("/api/admin/guestbook")
+    def management_guestbook():
+        require_management_admin()
+        rows, cursor = page_rows("guestbook", 50)
+        total = db().execute("SELECT COUNT(*) FROM guestbook").fetchone()[0]
+        return jsonify(items=[public_guest(row) for row in rows], nextCursor=cursor, total=total)
+
+    @app.get("/api/admin/storage")
+    def management_storage():
+        require_management_admin()
+        state = photo_mirror.status() if photo_mirror else {}
+        errors = {
+            "permission_denied": "하객사진 폴더에 저장할 수 없어요. NAS 폴더 권한을 확인해 주세요.",
+            "file_or_directory_missing": "하객사진 폴더 또는 보관 파일을 찾지 못했어요. NAS 연결을 확인해 주세요.",
+            "disk_full": "NAS 저장 공간이 부족해요. 공간을 확보하면 다시 복사합니다.",
+            "insufficient_disk_space": "NAS의 남은 공간을 보호하기 위해 복사를 기다리고 있어요. 공간을 확보하면 다시 시도합니다.",
+            "database_unavailable": "사진 목록을 확인하지 못했어요. 잠시 후 자동으로 다시 시도합니다.",
+            "interrupted": "사진 복사가 중단되어 다시 시도하고 있어요.",
+        }
+        error = state.get("lastError")
+        return jsonify(
+            enabled=bool(photo_mirror), pending=state.get("pending", 0), failed=state.get("failed", 0),
+            copied=state.get("copied", 0), running=state.get("running", False),
+            lastSyncAt=state.get("lastRun"),
+            lastError=errors.get(error, "폴더의 복사본을 확인해 주세요. 원본은 별도 저장소에 보관되어 있어요.") if error else None,
+            displayPath=app.config["PHOTO_EXPORT_DISPLAY_PATH"] if photo_mirror else "",
+        )
+
+    def delete_management_record(table, entry_id):
+        require_management_admin()
+        if not ID_PATTERN.fullmatch(entry_id):
+            raise ApiError("삭제할 항목을 찾을 수 없어요.", 404)
+        rate_limit("management_delete", 600)
+        cursor = db().execute(f"DELETE FROM {table} WHERE id=?", (entry_id,))
+        if cursor.rowcount != 1:
+            raise ApiError("이미 삭제됐거나 찾을 수 없는 항목이에요.", 404)
+        return jsonify(ok=True)
+
+    @app.delete("/api/admin/guestbook/<entry_id>")
+    def management_guestbook_delete(entry_id):
+        return delete_management_record("guestbook", entry_id)
+
+    @app.delete("/api/admin/rsvps/<entry_id>")
+    def management_rsvp_delete(entry_id):
+        return delete_management_record("rsvps", entry_id)
+
     @app.get("/api/health")
     def health():
         db().execute("SELECT 1").fetchone()
         return jsonify(ok=True, features={
             "rsvp": bool(management_hash or app.config["RSVP_VIEW_TOKEN"]), "originalPhotos": True,
             "photoAdmin": bool(management_hash or photo_token), "managementPassword": bool(management_hash),
+            "unifiedAdmin": bool(management_hash),
+            "photoFolderCopy": bool(photo_mirror),
         }, limits={
             "maxUploadBytes": app.config["MAX_UPLOAD_BYTES"], "maxFilesPerBatch": 10,
             "maxPhotoCount": app.config["MAX_PHOTO_COUNT"], "maxStorageBytes": app.config["MAX_STORAGE_BYTES"],
@@ -544,6 +678,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             raise
         return jsonify(ok=True, id=entry_id, createdAt=created), 200 if repeated else 201
 
+    @app.get("/api/admin/rsvps")
     @app.get("/api/rsvp")
     def list_rsvps():
         require_rsvp_viewer()
@@ -555,6 +690,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         ).fetchone()
         return jsonify(items=[private_rsvp(row) for row in rows], nextCursor=cursor, summary=dict(totals))
 
+    @app.get("/api/admin/rsvps/export")
     @app.get("/api/rsvp/export")
     def export_rsvps():
         require_rsvp_viewer()
@@ -572,6 +708,8 @@ def create_app(test_config: dict | None = None) -> Flask:
 
     @app.get("/api/rsvp-admin")
     def rsvp_admin():
+        if management_hash:
+            return redirect("/api/admin#rsvps", code=302)
         html = (Path(__file__).parent / "rsvp-admin.html").read_text(encoding="utf-8")
         # The page holds the view key only in this tab's memory and makes same-origin requests.
         sources = {}
@@ -731,6 +869,8 @@ def create_app(test_config: dict | None = None) -> Flask:
                 path.unlink(missing_ok=True)
             raise
         row = conn.execute("SELECT * FROM photos WHERE id=?", (entry_id,)).fetchone()
+        if photo_mirror:
+            photo_mirror.wake()
         return jsonify(item=public_photo(row)), 201
 
     @app.get("/media/<filename>")
@@ -760,6 +900,8 @@ def create_app(test_config: dict | None = None) -> Flask:
         # Keep the hidden record and its quota until originals and previews are removed successfully.
         remove_media(row)
         conn.execute("DELETE FROM photos WHERE id=?", (entry_id,))
+        if photo_mirror:
+            photo_mirror.wake()
 
     @app.delete("/api/photos/<entry_id>")
     def delete_photo(entry_id):
@@ -771,6 +913,8 @@ def create_app(test_config: dict | None = None) -> Flask:
 
     @app.get("/api/photo-admin")
     def photo_admin_page():
+        if management_hash:
+            return redirect("/api/admin#photos", code=302)
         html = (Path(__file__).parent / "photo-admin.html").read_text(encoding="utf-8")
         sources = {}
         for tag in ("script", "style"):
@@ -812,6 +956,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         response.delete_cookie(PHOTO_COOKIE, path="/api/photo-admin", secure=secure_photo_cookie(), httponly=True, samesite="Strict")
         return response
 
+    @app.get("/api/admin/photos")
     @app.get("/api/photo-admin/photos")
     def photo_admin_list():
         require_photo_admin()
@@ -823,6 +968,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         ).fetchone()
         return jsonify(items=[private_photo(row) for row in rows], nextCursor=cursor, **dict(totals))
 
+    @app.get("/api/admin/photos/<entry_id>/download")
     @app.get("/api/photo-admin/photos/<entry_id>/download")
     def photo_admin_download(entry_id):
         require_photo_admin()
@@ -830,6 +976,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         return send_file(path, mimetype="application/octet-stream", as_attachment=True, download_name=filename,
                          conditional=True, etag=False, max_age=0)
 
+    @app.delete("/api/admin/photos/<entry_id>")
     @app.delete("/api/photo-admin/photos/<entry_id>")
     def photo_admin_delete(entry_id):
         require_photo_admin()
@@ -837,6 +984,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         remove_photo(entry_id)
         return jsonify(ok=True)
 
+    @app.get("/api/admin/photos/download")
     @app.get("/api/photo-admin/download")
     def photo_admin_download_all():
         require_photo_admin()
@@ -904,4 +1052,6 @@ def create_app(test_config: dict | None = None) -> Flask:
         response.call_on_close(release_slot)
         return response
 
+    if photo_mirror and not app.testing:
+        photo_mirror.start()
     return app

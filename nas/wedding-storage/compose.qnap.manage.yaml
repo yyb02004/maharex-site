@@ -1,0 +1,171 @@
+# Template only: use the privately prepared copy for QNAP GUI import.
+# Replace the YAML of the EXISTING composeqnap application; keep both data volumes.
+# QNAP: set Memory Limit = 1024 MB in Advanced Settings, not in this YAML.
+# Expected after setup: storage + proxy Running, photo-folder-init Exited (0).
+services:
+  wedding-photo-folder-init:
+    # Reuse the confirmed installed Python image; no download or image build.
+    image: maharex-wedding-storage:20261026-admin-password
+    pull_policy: never
+    restart: "no"
+    network_mode: none
+    user: "0:0"
+    read_only: true
+    healthcheck:
+      disable: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 16
+    volumes:
+      # Docker creates this exact directory when absent. No parent share is mounted.
+      - "/share/main/wedding/하객사진:/photo-export"
+    entrypoint: ["python", "-c"]
+    command:
+      - |
+        import os, stat
+        folder = '/photo-export'
+        if not os.path.isdir(folder) or os.path.islink(folder):
+            raise RuntimeError('The guest-photo export mount must be a directory')
+        fd = os.open(folder, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            if not stat.S_ISDIR(os.fstat(fd).st_mode):
+                raise RuntimeError('Invalid guest-photo export mount')
+            for name in os.listxattr(fd):
+                if name in ('system.posix_acl_access', 'system.posix_acl_default'):
+                    os.removexattr(fd, name)
+            os.fchown(fd, 10001, 10001)
+            os.fchmod(fd, 0o755)
+            info = os.fstat(fd)
+            if (info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)) != (10001, 10001, 0o755):
+                raise RuntimeError('Guest-photo export folder permissions could not be prepared')
+        finally:
+            os.close(fd)
+        print('Guest-photo export folder ready. Existing files and parent folders were not changed.')
+
+  wedding-storage:
+    image: maharex-wedding-storage:20261026-management
+    build:
+      context: /share/main/wedding
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      wedding-photo-folder-init:
+        condition: service_completed_successfully
+    environment:
+      DATA_DIR: /data
+      ALLOWED_ORIGINS: "https://maharex.com,https://www.maharex.com,https://wedding-api.maharex.com"
+      TRUST_PROXY_HOPS: "1"
+      MANAGEMENT_PASSWORD_HASH: "${MANAGEMENT_PASSWORD_HASH:?Configure a private management password hash}"
+      PHOTO_EXPORT_DIR: /photo-export
+      PHOTO_EXPORT_DISPLAY_PATH: main/wedding/하객사진
+      MAX_RSVP_COUNT: "5000"
+      RSVP_RATE_PER_HOUR: "20"
+      MAX_UPLOAD_BYTES: "15728640"
+      MAX_IMAGE_PIXELS: "40000000"
+      MAX_PHOTO_COUNT: "5000"
+      MAX_STORAGE_BYTES: "10737418240"
+      MIN_FREE_DISK_BYTES: "536870912"
+      MAX_GUESTBOOK_COUNT: "5000"
+      GUESTBOOK_RATE_PER_HOUR: "20"
+      PHOTO_RATE_PER_HOUR: "60"
+      DELETE_RATE_PER_TEN_MINUTES: "10"
+    user: "10001:10001"
+    # Only the proxy reaches the app; do not publish host port 5080 or 8000.
+    volumes:
+      - wedding-data:/data
+      - "/share/main/wedding/하객사진:/photo-export"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+
+  wedding-proxy:
+    # Use the installed proxy and current settings; do not rebuild this image.
+    image: maharex-wedding-proxy:2.11.7-20261026
+    pull_policy: never
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        cat > /tmp/wedding-Caddyfile <<'WEDDING_CADDY_CONFIG'
+        {
+            admin off
+            persist_config off
+            https_port 8443
+            auto_https disable_redirects
+            servers {
+                protocols h1 h2
+                timeouts {
+                    read_header 15s
+                    read_body 5m
+                    write 0
+                    idle 2m
+                }
+            }
+        }
+        wedding-api.maharex.com {
+            tls {
+                issuer acme https://acme-v02.api.letsencrypt.org/directory {
+                    disable_http_challenge
+                    alt_tlsalpn_port 8443
+                }
+            }
+            @wedding path /api/* /media/*
+            handle @wedding {
+                request_body {
+                    max_size 16MiB
+                }
+                reverse_proxy wedding-storage:8000 {
+                    header_up X-Forwarded-For {remote_host}
+                    header_up X-Forwarded-Proto https
+                    header_up -Forwarded
+                    transport http {
+                        dial_timeout 5s
+                        response_header_timeout 180s
+                        read_timeout 5m
+                        write_timeout 5m
+                    }
+                }
+            }
+            handle {
+                respond "Not found" 404
+            }
+        }
+        WEDDING_CADDY_CONFIG
+        exec caddy run --config /tmp/wedding-Caddyfile --adapter caddyfile
+    restart: unless-stopped
+    depends_on:
+      - wedding-storage
+    user: "10001:10001"
+    ports:
+      - "8443:8443/tcp"
+    volumes:
+      - wedding-tls-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /config:size=4m,mode=0700,uid=10001,gid=10001
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+
+volumes:
+  wedding-data:
+    external: true
+    name: maharex-wedding-data
+  wedding-tls-data:
+    external: true
+    name: maharex-wedding-tls-data

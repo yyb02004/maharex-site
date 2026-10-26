@@ -1,4 +1,4 @@
-.env
+.env*
 data
 .test-deps
 .venv
@@ -6,3 +6,10 @@ __pycache__
 tests
 *.sqlite3*
 README.md
+# NAS photo copies live inside this build context; never send them to a build.
+하객사진/
+# Deployment settings and private access files are not program source.
+compose*.yaml
+management-password.hash
+*접속키.txt
+*.zip
