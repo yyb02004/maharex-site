@@ -2,7 +2,7 @@ import Image from "next/image";
 import BackgroundMusic from "./BackgroundMusic";
 import styles from "./cover.module.css";
 
-export default function InvitationCover({ guestsEnabled = false }: { guestsEnabled?: boolean }) {
+export default function InvitationCover({ guestsEnabled = false, rsvpEnabled = false }: { guestsEnabled?: boolean; rsvpEnabled?: boolean }) {
   return (
     <header className={styles.cover}>
       <div className={styles.scene}>
@@ -17,7 +17,7 @@ export default function InvitationCover({ guestsEnabled = false }: { guestsEnabl
         <div className={styles.shade} aria-hidden="true" />
 
         <div className={styles.topline}>
-          <p className={styles.eyebrow}>THE WEDDING DAY<span>06 MARCH 2027</span></p>
+          <p className={styles.eyebrow}>A NEW SPRING, WITH YOU<span>06 MARCH 2027</span></p>
           <div className={styles.musicControl}><BackgroundMusic /></div>
         </div>
 
@@ -28,7 +28,9 @@ export default function InvitationCover({ guestsEnabled = false }: { guestsEnabl
           </p>
 
           <div className={styles.details}>
-            <h1 className={styles.koreanNames}>박상혁 <span aria-hidden="true">&amp;</span><span className={styles.srOnly}>그리고</span> 최은정</h1>
+            <p className={styles.springLine}>우리의 봄이 시작되는 날</p>
+            <h1 className={styles.weddingTitle}>저희, 결혼합니다<span className={styles.srOnly}> — 박상혁 그리고 최은정</span></h1>
+            <p className={styles.koreanNames}>박상혁 <span aria-hidden="true">&amp;</span><span className={styles.srOnly}>그리고</span> 최은정</p>
             <div className={styles.hairline} aria-hidden="true" />
             <p className={styles.date}><time dateTime="2027-03-06T11:00:00+09:00">2027년 3월 6일 토요일 · 오전 11시</time></p>
             <p className={styles.venue}>기흥 ICT밸리 컨벤션<span>A동 B1 그랑데홀</span></p>
@@ -47,6 +49,7 @@ export default function InvitationCover({ guestsEnabled = false }: { guestsEnabl
         <a href="#gallery">사진</a>
         <a href="#location">오시는 길</a>
         <a href="#gifts">마음 전하기</a>
+        {rsvpEnabled && <a href="#rsvp">참석 여부</a>}
         {guestsEnabled && <a href="#guestbook">방명록</a>}
       </nav>
     </header>

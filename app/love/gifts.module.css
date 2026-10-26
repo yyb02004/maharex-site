@@ -92,6 +92,85 @@
   list-style: none;
 }
 
+.contactSection {
+  width: 100%;
+  max-width: 340px;
+  margin: 36px auto 0;
+  text-align: left;
+}
+
+.contactAccordion {
+  border-color: #e3ded5;
+}
+
+.contactSummary {
+  justify-content: center;
+  gap: 14px;
+  min-height: 54px;
+  padding: 14px 8px;
+  color: #707363;
+  font-size: 12px;
+}
+
+.contactBody {
+  padding: 12px 0 18px;
+}
+
+.contactList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 62px;
+}
+
+.contactPerson {
+  display: grid;
+  gap: 1px;
+}
+
+.contactActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.contactActions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 58px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #e3ded5;
+  color: #626d5d;
+  font-size: 11px;
+  text-decoration: none;
+  touch-action: manipulation;
+}
+
+.contactActions a:focus-visible {
+  outline: 2px solid #5e6c59;
+  outline-offset: 3px;
+}
+
+.contactBody .parentsLabel {
+  margin: 14px 0 8px;
+  padding-top: 20px;
+  border-top: 1px solid #e9e5df;
+  color: #888475;
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+}
+
 .role {
   color: #666e63;
   font-size: 11px;
@@ -212,6 +291,10 @@
   }
 
   .copyButton:hover {
+    background: #eeefe9;
+  }
+
+  .contactActions a:hover {
     background: #eeefe9;
   }
 }

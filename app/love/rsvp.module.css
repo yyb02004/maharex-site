@@ -1,0 +1,44 @@
+.section { padding: 76px 32px; background: #f4f1eb; color: #343e33; text-align: center; scroll-margin-top: 24px; }
+.eyebrow { margin: 0 0 15px; color: #7b806e; font: 10px/1.6 Arial, sans-serif; letter-spacing: 0.2em; }
+.title { margin: 0; font-size: 23px; font-weight: 400; line-height: 1.7; letter-spacing: -0.05em; }
+.intro { margin: 22px 0 33px; color: #73786b; font-size: 12px; line-height: 2.2; word-break: keep-all; }
+.composer { border-top: 1px solid #dcdcd1; border-bottom: 1px solid #dcdcd1; text-align: left; }
+.summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 60px; padding: 14px 0; color: #59634f; font-size: 13px; list-style: none; cursor: pointer; }
+.summary::-webkit-details-marker { display: none; }
+.summary::marker { content: ""; }
+.summary > span { font: 21px/1 Arial, sans-serif; transition: transform 180ms ease; }
+.composer[open] > .summary { border-bottom: 1px solid #dcdcd1; }
+.composer[open] > .summary > span { transform: rotate(45deg); }
+.form { padding: 26px 0 24px; }
+.formFields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.label, .choiceGroup legend { display: block; width: 100%; margin: 0 0 10px; padding: 0; color: #535e4c; font-size: 12px; line-height: 1.7; }
+.label:not(:first-child) { margin-top: 26px; }
+.note { padding-left: 5px; color: #848879; font-size: 10px; }
+.textInput { display: block; width: 100%; min-width: 0; min-height: 48px; box-sizing: border-box; padding: 11px 13px; border: 1px solid #d8d9cc; border-radius: 0; background: #fffdf8; color: #343e33; font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; user-select: text; -webkit-user-select: text; }
+.textInput::placeholder { color: #969b8c; font-size: 13px; }
+.choiceGroup { min-width: 0; margin: 26px 0 0; padding: 0; border: 0; }
+.twoChoices, .threeChoices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.threeChoices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.choice { position: relative; display: block; cursor: pointer; }
+.choice input { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; opacity: 0; }
+.choice span { display: flex; align-items: center; justify-content: center; box-sizing: border-box; min-height: 48px; padding: 9px 5px; border: 1px solid #d8d9cc; background: transparent; color: #747c69; font-size: 11px; line-height: 1.7; text-align: center; word-break: keep-all; }
+.choice input:checked + span { border-color: #788468; background: #e4e7dc; color: #424f37; }
+.choice input:focus-visible + span { outline: 2px solid #788468; outline-offset: 3px; }
+.countField { position: relative; width: 116px; }
+.countField .textInput { padding-right: 32px; }
+.countField > span { position: absolute; top: 50%; right: 16px; color: #747c69; font-size: 12px; transform: translateY(-50%); pointer-events: none; }
+.consent { display: flex; align-items: flex-start; gap: 10px; margin: 27px 0 22px; color: #73786b; font-size: 11px; line-height: 1.9; cursor: pointer; word-break: keep-all; }
+.consent input { flex: 0 0 18px; width: 18px; height: 18px; margin: 2px 0 0; accent-color: #6f7c60; }
+.submitButton { display: flex; justify-content: center; align-items: center; gap: 15px; box-sizing: border-box; width: 100%; min-height: 50px; padding: 13px 16px; border: 1px solid #667357; border-radius: 0; background: #667357; color: #fffdf8; font: inherit; font-size: 12px; line-height: 1.7; cursor: pointer; touch-action: manipulation; }
+.submitButton:disabled { opacity: 0.6; cursor: wait; }
+.formFields:disabled { opacity: 0.7; }
+.error { margin: 12px 0 20px; color: #9c594d; font-size: 12px; line-height: 1.9; }
+.section :where(input, button, summary):focus-visible { outline: 2px solid #788468; outline-offset: 3px; }
+.receipt { padding: 35px 10px 32px; text-align: center; }
+.receiptMark { display: grid; place-items: center; width: 33px; height: 33px; margin: 0 auto 20px; border: 1px solid #cbd2be; border-radius: 50%; color: #728261; font: 17px/1 Arial, sans-serif; }
+.receipt h3 { margin: 0; font-size: 14px; font-weight: 400; line-height: 1.9; overflow-wrap: anywhere; }
+.receipt p { margin: 14px 0 24px; color: #73786b; font-size: 12px; line-height: 2; }
+.receipt small { color: #848879; font-size: 10px; line-height: 1.9; }
+@media (hover: hover) { .submitButton:hover:not(:disabled) { background: #556448; } .choice:hover span { border-color: #aab49a; } }
+@media (max-width: 360px) { .section { padding-inline: 24px; } .title { font-size: 21px; } .threeChoices { gap: 5px; } .choice span { font-size: 10px; padding-inline: 4px; } }
+@media (prefers-reduced-motion: reduce) { .summary > span { transition: none; } }

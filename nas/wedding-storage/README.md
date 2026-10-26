@@ -1,6 +1,8 @@
 # 청첩장 NAS 저장 서버
 
-`maharex.com/love`의 방명록과 공개 게스트 사진만 저장하는 별도 서비스입니다. 청첩장 본체는 Vercel에 유지하고 사진은 방문자 브라우저에서 NAS의 HTTPS 주소로 직접 업로드합니다.
+`maharex.com/love`의 방명록, 공개 게스트 사진과 비공개 참석 응답을 저장하는 별도 서비스입니다. 청첩장 본체는 Vercel에 유지하고 사진은 방문자 브라우저에서 NAS의 HTTPS 주소로 직접 업로드합니다.
+
+**참석 여부 기능은 NAS 업데이트 후 활성화됩니다.** [RSVP_SETUP_KO.md](RSVP_SETUP_KO.md)에 기존 앱 업데이트와 비공개 명단 확인 방법이 있습니다. `RSVP_VIEW_TOKEN`이 비어 있으면 참석 응답을 수집하지 않으며, 프런트엔드도 해당 입력란을 숨깁니다. 별도 열람 키로 명단과 CSV만 조회할 수 있고 카카오톡 자동 알림은 아직 연결하지 않았습니다.
 
 **현재 운영 API는 `https://wedding-api.maharex.com`입니다.** QNAP의 기존 **`composeqnap`** 애플리케이션에서 `compose.qnap.https.yaml`을 사용합니다. 변경할 때는 [GUI_SETUP_KO.md](GUI_SETUP_KO.md)의 **Recreate** 절차를 따릅니다. [HTTPS_SETUP_KO.md](HTTPS_SETUP_KO.md)에 실제 포트와 DNS 연결이 정리되어 있습니다.
 

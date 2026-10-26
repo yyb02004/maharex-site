@@ -26,7 +26,7 @@ export function Countdown() {
           <div key={label}><strong>{value === null ? "—" : String(value).padStart(2, "0")}</strong><span>{label}</span></div>
         ))}
       </div>
-      <p>{days === null || days > 0 ? "소중한 분들과 함께할 그날을 기다립니다." : days === 0 ? "오늘, 저희 결혼합니다." : "함께해 주신 모든 분께 감사드립니다."}</p>
+      <p>{days === null || days > 0 ? "우리의 봄날까지, 이만큼 가까워졌어요." : days === 0 ? "오늘, 저희의 첫 봄이 시작됩니다." : "함께 웃었던 그날, 오래도록 기억할게요."}</p>
     </div>
   );
 }

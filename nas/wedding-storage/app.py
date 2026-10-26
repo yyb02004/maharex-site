@@ -5,6 +5,9 @@ from __future__ import annotations
 import hashlib
 import hmac
 import io
+import base64
+import csv
+import json
 import os
 from pathlib import Path
 import re
@@ -70,6 +73,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         DATA_DIR=os.getenv("DATA_DIR", str(Path(__file__).parent / "data")),
         ALLOWED_ORIGINS=os.getenv("ALLOWED_ORIGINS", "https://maharex.com,https://www.maharex.com"),
         ADMIN_TOKEN=os.getenv("ADMIN_TOKEN", ""),
+        RSVP_VIEW_TOKEN=os.getenv("RSVP_VIEW_TOKEN", ""),
         TRUST_PROXY_HOPS=positive_int("TRUST_PROXY_HOPS", 0, 0),
         MAX_UPLOAD_BYTES=positive_int("MAX_UPLOAD_BYTES", 15 * 1024 * 1024),
         MAX_IMAGE_PIXELS=positive_int("MAX_IMAGE_PIXELS", 40_000_000),
@@ -78,6 +82,8 @@ def create_app(test_config: dict | None = None) -> Flask:
         MIN_FREE_DISK_BYTES=positive_int("MIN_FREE_DISK_BYTES", 512 * 1024**2, 0),
         MAX_GUESTBOOK_COUNT=positive_int("MAX_GUESTBOOK_COUNT", 5000),
         GUESTBOOK_RATE_PER_HOUR=positive_int("GUESTBOOK_RATE_PER_HOUR", 20),
+        RSVP_RATE_PER_HOUR=positive_int("RSVP_RATE_PER_HOUR", 20),
+        MAX_RSVP_COUNT=positive_int("MAX_RSVP_COUNT", 5000),
         PHOTO_RATE_PER_HOUR=positive_int("PHOTO_RATE_PER_HOUR", 60),
         DELETE_RATE_PER_TEN_MINUTES=positive_int("DELETE_RATE_PER_TEN_MINUTES", 10),
         MAX_FORM_MEMORY_SIZE=512 * 1024,
@@ -92,6 +98,8 @@ def create_app(test_config: dict | None = None) -> Flask:
     app.config["ALLOWED_ORIGINS"] = origins
     if app.config["ADMIN_TOKEN"] and len(app.config["ADMIN_TOKEN"]) < 32:
         raise ValueError("ADMIN_TOKEN must be empty or at least 32 characters")
+    if app.config["RSVP_VIEW_TOKEN"] and len(app.config["RSVP_VIEW_TOKEN"]) < 32:
+        raise ValueError("RSVP_VIEW_TOKEN must be empty or at least 32 characters")
     app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_UPLOAD_BYTES"] + 64 * 1024
     proxy_hops = app.config["TRUST_PROXY_HOPS"]
     if proxy_hops:
@@ -208,6 +216,19 @@ def create_app(test_config: dict | None = None) -> Flask:
         provided = request.headers.get("Authorization", "")
         return bool(token and hmac.compare_digest(provided.encode(), f"Bearer {token}".encode()))
 
+    def require_rsvp_viewer():
+        token = app.config["RSVP_VIEW_TOKEN"]
+        provided = request.headers.get("Authorization", "")
+        if not token or not hmac.compare_digest(provided.encode(), f"Bearer {token}".encode()):
+            raise ApiError("참석 명단을 확인할 수 있는 열람 키가 필요합니다.", 401)
+
+    def private_rsvp(row) -> dict:
+        return {
+            "id": row["id"], "name": row["name"], "side": row["side"],
+            "attendance": row["attendance"], "partyCount": row["party_count"],
+            "meal": row["meal"], "createdAt": row["created_at"],
+        }
+
     def rate_limit(scope: str, maximum: int, seconds: int = 3600):
         now = int(time.time())
         window = now // seconds
@@ -292,12 +313,104 @@ def create_app(test_config: dict | None = None) -> Flask:
     @app.get("/api/health")
     def health():
         db().execute("SELECT 1").fetchone()
-        return jsonify(ok=True, limits={
+        return jsonify(ok=True, features={"rsvp": bool(app.config["RSVP_VIEW_TOKEN"])}, limits={
             "maxUploadBytes": app.config["MAX_UPLOAD_BYTES"], "maxFilesPerBatch": 10,
             "maxPhotoCount": app.config["MAX_PHOTO_COUNT"], "maxStorageBytes": app.config["MAX_STORAGE_BYTES"],
             "maxImagePixels": app.config["MAX_IMAGE_PIXELS"], "maxNameLength": 40,
             "maxMessageLength": 500, "maxCaptionLength": 200,
         })
+
+    @app.post("/api/rsvp")
+    def add_rsvp():
+        # Do not collect responses until the couple has a private retrieval key.
+        if not app.config["RSVP_VIEW_TOKEN"]:
+            raise ApiError("참석 여부 전달을 준비하고 있어요. 잠시 후 다시 찾아와 주세요.", 503)
+        rate_limit("rsvp", app.config["RSVP_RATE_PER_HOUR"])
+        data = json_body()
+        if set(data) - {"requestId", "name", "side", "attendance", "partyCount", "meal", "consent"}:
+            raise ApiError("참석 여부에 필요한 항목만 보내 주세요.")
+        entry_id = data.get("requestId")
+        if not isinstance(entry_id, str) or not ID_PATTERN.fullmatch(entry_id):
+            raise ApiError("전달 요청을 새로 만들어 다시 시도해 주세요.")
+        name = text_field(data, "name", 40, 1)
+        side, attendance, meal = data.get("side"), data.get("attendance"), data.get("meal", "undecided")
+        count = data.get("partyCount")
+        if side not in ("groom", "bride") or attendance not in ("yes", "no", "undecided"):
+            raise ApiError("신랑·신부측과 참석 여부를 선택해 주세요.")
+        if not isinstance(count, int) or isinstance(count, bool):
+            raise ApiError("참석 인원을 확인해 주세요.")
+        if attendance == "yes":
+            if not 1 <= count <= 10 or meal not in ("yes", "no", "undecided"):
+                raise ApiError("참석 인원은 본인을 포함해 1~10명으로, 식사 여부는 선택 항목에서 골라 주세요.")
+        elif count != 0 or meal != "undecided":
+            raise ApiError("불참 또는 미정인 경우 참석 인원과 식사 항목을 비워 주세요.")
+        if data.get("consent") is not True:
+            raise ApiError("이름과 참석 정보를 두 사람에게 전달하는 데 동의해 주세요.")
+        request_hash = hashlib.sha256(json.dumps({
+            "name": name, "side": side, "attendance": attendance, "partyCount": count, "meal": meal,
+        }, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        conn = db()
+        created, repeated = timestamp(), False
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            previous = conn.execute("SELECT request_hash,created_at FROM rsvps WHERE id=?", (entry_id,)).fetchone()
+            if previous:
+                if not hmac.compare_digest(previous["request_hash"], request_hash):
+                    raise ApiError("이미 전달된 요청과 내용이 달라요. 새 요청으로 다시 알려 주세요.", 409)
+                created, repeated = previous["created_at"], True
+            else:
+                if conn.execute("SELECT COUNT(*) FROM rsvps").fetchone()[0] >= app.config["MAX_RSVP_COUNT"]:
+                    raise ApiError("참석 명단이 가득 찼어요. 두 사람에게 직접 알려 주세요.", 507)
+                conn.execute(
+                    "INSERT INTO rsvps(id,request_hash,name,side,attendance,party_count,meal,created_at) VALUES (?,?,?,?,?,?,?,?)",
+                    (entry_id, request_hash, name, side, attendance, count, meal, created),
+                )
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        return jsonify(ok=True, id=entry_id, createdAt=created), 200 if repeated else 201
+
+    @app.get("/api/rsvp")
+    def list_rsvps():
+        require_rsvp_viewer()
+        rows, cursor = page_rows("rsvps", 50)
+        totals = db().execute(
+            "SELECT COUNT(*) AS responses, COALESCE(SUM(party_count),0) AS guests, "
+            "COALESCE(SUM(CASE WHEN attendance='yes' AND meal='yes' THEN party_count ELSE 0 END),0) AS meals, "
+            "COALESCE(SUM(CASE WHEN attendance='undecided' THEN 1 ELSE 0 END),0) AS undecided FROM rsvps"
+        ).fetchone()
+        return jsonify(items=[private_rsvp(row) for row in rows], nextCursor=cursor, summary=dict(totals))
+
+    @app.get("/api/rsvp/export")
+    def export_rsvps():
+        require_rsvp_viewer()
+        stream = io.StringIO(newline="")
+        writer = csv.writer(stream)
+        writer.writerow(["접수일", "이름", "구분", "참석 여부", "참석 인원(본인 포함)", "일행 식사 여부"])
+        labels = {"groom": "신랑측", "bride": "신부측", "yes": "예", "no": "아니요", "undecided": "미정"}
+        for row in db().execute("SELECT * FROM rsvps ORDER BY seq DESC"):
+            # Quote alone does not prevent spreadsheet formulas; prefix suspicious cells.
+            name = row["name"]
+            if name.lstrip().startswith(("=", "+", "-", "@")) or any(c in name for c in "\t\r\n"):
+                name = "'" + name
+            writer.writerow([row["created_at"], name, labels[row["side"]], labels[row["attendance"]], row["party_count"], labels[row["meal"]]])
+        return send_file(io.BytesIO(stream.getvalue().encode("utf-8-sig")), mimetype="text/csv; charset=utf-8", as_attachment=True, download_name="wedding-rsvp.csv")
+
+    @app.get("/api/rsvp-admin")
+    def rsvp_admin():
+        html = (Path(__file__).parent / "rsvp-admin.html").read_text(encoding="utf-8")
+        # The page holds the view key only in this tab's memory and makes same-origin requests.
+        sources = {}
+        for tag in ("script", "style"):
+            sources[tag] = " ".join("'sha256-" + base64.b64encode(hashlib.sha256(value.encode()).digest()).decode() + "'" for value in re.findall(f"<{tag}>(.*?)</{tag}>", html, re.S))
+        response = app.make_response(html)
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; "
+            f"script-src {sources['script']}; style-src {sources['style']}"
+        )
+        response.headers["X-Frame-Options"] = "DENY"
+        return response
 
     @app.get("/api/guestbook")
     def list_guestbook():

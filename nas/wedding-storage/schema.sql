@@ -30,4 +30,15 @@ CREATE TABLE IF NOT EXISTS rate_limits (
     count INTEGER NOT NULL,
     PRIMARY KEY (scope, client, window)
 );
+CREATE TABLE IF NOT EXISTS rsvps (
+    seq INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT NOT NULL UNIQUE,
+    request_hash TEXT NOT NULL,
+    name TEXT NOT NULL,
+    side TEXT NOT NULL CHECK(side IN ('groom', 'bride')),
+    attendance TEXT NOT NULL CHECK(attendance IN ('yes', 'no', 'undecided')),
+    party_count INTEGER NOT NULL CHECK(party_count BETWEEN 0 AND 10),
+    meal TEXT NOT NULL CHECK(meal IN ('yes', 'no', 'undecided')),
+    created_at TEXT NOT NULL
+);
 PRAGMA user_version = 1;

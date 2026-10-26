@@ -5,7 +5,9 @@ import PhotoGallery from "./PhotoGallery";
 import InvitationCover from "./InvitationCover";
 import FlowerGuide from "./FlowerGuide";
 import VenueMap from "./VenueMap";
-import GiftSection from "./ContactAndGifts";
+import GiftSection, { ContactSection } from "./ContactAndGifts";
+import SpringPetals from "./SpringPetals";
+import RsvpSection from "./RsvpSection";
 import { CopyAddress, Countdown, ShareInvitation } from "./InvitationTools";
 import { getWeddingStorageOrigin } from "./storage-config";
 import styles from "./love.module.css";
@@ -42,6 +44,7 @@ export default function LovePage() {
     <div className={styles.backdrop}>
       <aside className={styles.desktopNote} aria-hidden="true"><span>A DAY TO REMEMBER</span><p>S <i>&</i> E</p><div /><small>MARCH 6, 2027</small><span>우리의 시작에 초대합니다.</span></aside>
       <main className={styles.invitation} id="top">
+        <SpringPetals />
         <a className={styles.skipLink} href="#wedding-day">예식 안내로 바로가기</a>
         <InvitationCover guestsEnabled={Boolean(storageOrigin)} />
 
@@ -49,13 +52,14 @@ export default function LovePage() {
           <p className={styles.letterLead} aria-hidden="true">A lifetime,<br /><i>together.</i></p>
           <SectionHeading eyebrow="INVITATION">저희, 결혼합니다</SectionHeading>
           <div className={styles.letterText}>
-            <p>서로 다른 취향도, 다른 속도도<br />이제는 제법 잘 맞춰가며<br />꽤 괜찮은 한 팀이 된 저희,<br />평생을 함께해 보려 합니다.</p>
-            <p>귀한 걸음으로 오셔서<br />저희의 시작을 응원해 주시고<br />축복해 주세요.</p>
+            <p>서로 다른 계절을 걷던 두 사람이<br />같은 봄을 맞이하려 합니다.<br />마주 앉아 웃던 작은 순간들이 모여<br />이제, 평생을 함께할 약속이 되었습니다.</p>
+            <p>꽃이 피기 시작하는 3월,<br />저희의 첫 봄날에 함께해 주세요.<br />반가운 얼굴로 마주할 그날을<br />설레는 마음으로 기다릴게요.</p>
           </div>
           <div className={styles.family}>
             <p><span><small>故</small> 박종신 · 김명순</span><span className={styles.relation}>의 장남</span><strong>상혁</strong></p>
             <p><span>최준호 · 조은희</span><span className={styles.relation}>의 차녀</span><strong>은정</strong></p>
           </div>
+          <ContactSection />
         </section>
 
         <figure className={styles.storyPhoto}>
@@ -83,7 +87,7 @@ export default function LovePage() {
 
         <section className={`${styles.section} ${styles.gallerySection}`} id="gallery">
           <SectionHeading eyebrow="MOMENTS OF US">함께한 순간들</SectionHeading>
-          <p className={styles.sectionCaption}>사진 속 웃음처럼, 오래도록 함께하겠습니다.</p>
+          <p className={styles.sectionCaption}>같은 곳을 바라보고, 함께 웃었던 날들.<br />그 순간들을 살며시 꺼내 놓습니다.</p>
           <PhotoGallery />
         </section>
 
@@ -111,11 +115,11 @@ export default function LovePage() {
 
         <section className={`${styles.section} ${styles.giftsSection}`} id="gifts"><GiftSection /><FlowerGuide /></section>
 
-        {storageOrigin ? <GuestMemories apiBaseUrl={storageOrigin} /> : null}
+        {storageOrigin ? <><RsvpSection apiBaseUrl={storageOrigin} /><GuestMemories apiBaseUrl={storageOrigin} /></> : null}
 
         <footer>
-          <div className={styles.closingPhoto}><Image src="/love/photos/photo-08.webp" alt="꽃으로 둘러싸인 문 앞에 함께 앉은 두 사람" width={1800} height={1200} sizes="(max-width: 480px) 100vw, 480px" /><p>가장 예쁜 날,<br />소중한 분들을 초대합니다.</p></div>
-          <div className={styles.closing}><p className={styles.closingScript}>With love, always.</p><p>보내주시는 따뜻한 마음,<br />오래도록 간직하며 잘 살겠습니다.</p><span>상혁 <i>&</i> 은정</span><ShareInvitation /><small>SangHyeok & EunJung · 2027. 03. 06</small></div>
+          <div className={styles.closingPhoto}><Image src="/love/photos/photo-08.webp" alt="꽃으로 둘러싸인 문 앞에 함께 앉은 두 사람" width={1800} height={1200} sizes="(max-width: 480px) 100vw, 480px" /><p>봄이 시작되는 날,<br />우리의 이야기도 새로 시작됩니다.</p></div>
+          <div className={styles.closing}><p className={styles.closingScript}>With love, always.</p><p>그날의 웃음과 봄의 온기를<br />오래오래 꺼내 보며 살겠습니다.<br />저희의 봄에 함께해 주셔서 고맙습니다.</p><span>상혁 <i>&</i> 은정</span><ShareInvitation /><small>SangHyeok & EunJung · 2027. 03. 06</small></div>
         </footer>
       </main>
     </div>
