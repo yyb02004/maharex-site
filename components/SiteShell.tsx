@@ -8,12 +8,13 @@ export function SiteShell({ locale, children }: { locale: Locale; children: Reac
   const productMenu = products.map((product) => [product[locale].name, product.slug] as const);
 
   return (
-    <div className="min-h-screen bg-[#f4f6f6] text-graphite">
+    <div className="site-shell min-h-screen bg-[#f4f6f6] text-graphite">
+      <a href="#site-main" className="sr-only z-[60] bg-white p-4 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">본문 바로가기</a>
       <header className="sticky top-0 z-50 border-b border-black/10 bg-white/94 backdrop-blur">
-        <div className="container flex h-20 items-center justify-between gap-5">
+        <div className="container flex h-16 items-center justify-between gap-2 lg:h-20 lg:gap-5">
           <div className="flex min-w-0 items-center gap-8">
             <Link href={`/${locale}`} className="flex shrink-0 items-center" aria-label="Maharex home">
-              <Image src="/maharex-logo-transparent.png" alt="마하렉스" width={178} height={94} priority sizes="178px" className="h-12 w-auto object-contain" />
+              <Image src="/maharex-logo-transparent.png" alt="마하렉스" width={178} height={94} priority sizes="(max-width: 1023px) 85px, 92px" className="h-11 w-auto object-contain lg:h-12" />
             </Link>
 
             <nav className="hidden items-center gap-7 text-[15px] font-black text-graphite lg:flex">
@@ -66,8 +67,8 @@ export function SiteShell({ locale, children }: { locale: Locale; children: Reac
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link href={`/${locale}/contact`} className="hidden bg-signal px-5 py-3 text-sm font-black text-white transition hover:bg-graphite sm:inline-flex">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+            <Link href={`/${locale}/contact`} className="inline-flex min-h-11 items-center bg-signal px-3 py-3 text-xs font-black text-white transition hover:bg-graphite sm:px-5 sm:text-sm">
               {c.rfq}
             </Link>
             <MobileMenu locale={locale} aboutMenu={aboutMenu} productMenu={productMenu} qualityMenu={qualityMenu} />
@@ -75,7 +76,7 @@ export function SiteShell({ locale, children }: { locale: Locale; children: Reac
         </div>
       </header>
 
-      <main>{children}</main>
+      <main id="site-main">{children}</main>
 
       <footer className="border-t border-white/10 bg-graphite py-7 text-white">
         <div className="container grid gap-6 md:grid-cols-[1fr_1.35fr_0.65fr] md:items-start">
@@ -89,8 +90,8 @@ export function SiteShell({ locale, children }: { locale: Locale; children: Reac
             <p className="mt-2">상호명 : ㈜마하렉스</p>
             <p>사업자등록번호 : 125-81-78072</p>
             <p>주소 : 경기도 안성시 양성면 한내로 534</p>
-            <p>대표 이메일 : maharex@naver.com</p>
-            <p>Tel. 031-673-5888&nbsp;&nbsp; Fax. 031-673-5288</p>
+            <p>대표 이메일 : <a href="mailto:maharex@naver.com" className="inline-block py-1 hover:text-white">maharex@naver.com</a></p>
+            <p><a href="tel:0316735888" className="inline-block py-1 hover:text-white">Tel. 031-673-5888</a>&nbsp;&nbsp; Fax. 031-673-5288</p>
           </div>
 
           <div className="text-sm leading-7 text-white/68">
@@ -99,7 +100,7 @@ export function SiteShell({ locale, children }: { locale: Locale; children: Reac
               제품
             </Link>
             <Link href={`/${locale}/contact`} className="block hover:text-signal">
-              문의/RFQ
+              제작·견적 문의
             </Link>
             <Link href={`/${locale}/privacy`} className="block font-bold text-white hover:text-signal">
               개인정보처리방침
@@ -119,7 +120,7 @@ export function SiteShell({ locale, children }: { locale: Locale; children: Reac
 
 function DesktopDropdown({ children }: { children: React.ReactNode }) {
   return (
-    <div className="invisible absolute left-0 top-full w-56 translate-y-2 border border-black/10 bg-white py-3 opacity-0 shadow-industrial transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+    <div className="invisible absolute left-0 top-full w-56 translate-y-2 border border-black/10 bg-white py-3 opacity-0 shadow-industrial transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
       {children}
     </div>
   );

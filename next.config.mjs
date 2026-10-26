@@ -4,6 +4,9 @@ const nextConfig = {
   poweredByHeader: false,
   outputFileTracingIncludes: {
     "/[locale]/admin/models/[viewer]": [
+      "./private/models/conical-dryer/conical_dryer_viewer.html.br",
+      "./private/models/conical-dryer/conical_dryer_manifest.json",
+      "./private/models/conical-dryer/conical_dryer-data-*.json.br",
       "./private/models/tvd-2/installation_viewer.html.br",
       "./private/models/tvd-2/installation_manifest.json",
       "./private/models/tvd-2/installation-data-*.json.br",

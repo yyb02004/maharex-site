@@ -27,19 +27,19 @@ export default function EngineeringPage() {
 
   return (
     <>
-      <section className="bg-graphite py-24 text-white">
+      <section className="bg-graphite py-10 text-white sm:py-16 lg:py-20">
         <div className="container">
           <p className="text-sm font-black uppercase tracking-[0.28em] text-signal">Quality Management</p>
-          <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight md:text-6xl">품질관리 프로세스</h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-white/70">
+          <h1 className="mt-4 max-w-4xl text-3xl font-black leading-tight md:text-5xl">품질관리 프로세스</h1>
+          <p className="mt-5 max-w-3xl text-base leading-8 text-white/75 sm:text-lg">
             설계 검토부터 제작, 검사, 출하, 사후 개선까지 이어지는 품질관리 체계로 신뢰할 수 있는 산업 설비를 제작합니다.
           </p>
         </div>
       </section>
 
-      <section className="py-20">
+      <section className="py-10 sm:py-16 lg:py-20">
         <div className="container">
-          <div className="grid gap-5 md:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {policies.map(([title, text], index) => (
               <div key={title} className="border border-black/10 bg-white p-7 shadow-sm">
                 <span className="text-sm font-black text-signal">0{index + 1}</span>
@@ -51,13 +51,13 @@ export default function EngineeringPage() {
         </div>
       </section>
 
-      <section className="bg-white py-24">
+      <section className="bg-white py-10 sm:py-16 lg:py-20">
         <div className="container">
           <div className="mb-12">
             <p className="text-sm font-black uppercase tracking-[0.24em] text-signal">Process</p>
             <h2 className="mt-3 text-3xl font-black md:text-4xl">품질관리 흐름</h2>
           </div>
-          <div className="grid gap-4 lg:grid-cols-6">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {process.map(([number, title, text]) => (
               <div key={number} className="border-t-4 border-signal bg-[#f5f6f4] p-6">
                 <span className="text-3xl font-black text-cobalt">{number}</span>
@@ -69,7 +69,7 @@ export default function EngineeringPage() {
         </div>
       </section>
 
-      <section className="py-20">
+      <section className="py-10 sm:py-16 lg:py-20">
         <div className="container grid gap-10 lg:grid-cols-[0.72fr_1fr] lg:items-start">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-signal">Control Points</p>

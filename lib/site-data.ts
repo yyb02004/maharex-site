@@ -8,7 +8,7 @@ export const nav = {
     ["제품", "/ko/products"],
     ["납품실적", "/ko/references"],
     ["품질관리", "/ko/engineering"],
-    ["문의/RFQ", "/ko/contact"]
+    ["제작·견적 문의", "/ko/contact"]
   ],
   en: [
     ["About", "/en/about"],
@@ -103,11 +103,11 @@ export const copy = {
     heroText:
       "Maharex는 반응기, 트레이 진공 건조기, 로터리 드라이어, 필터, 분쇄기를 공정 조건에 맞춰 설계·제작하는 한국 제조사입니다.",
     viewProducts: "제품 보기",
-    rfq: "문의/RFQ",
+    rfq: "제작·견적 문의",
     productsTitle: "주요 제품",
     referencesTitle: "납품실적",
     engineeringTitle: "품질관리",
-    contactTitle: "문의/RFQ"
+    contactTitle: "제작·견적 문의"
   },
   en: {
     heroTitle: "Process Equipment for Reaction, Drying and Filtration",
@@ -196,33 +196,33 @@ export const products = [
     ko: {
       category: "Rotary Dryer",
       name: "로터리 드라이어",
-      summary: "연속 대량 건조와 냉각 공정에 적합한 견고한 회전식 건조기.",
+      summary: "재킷 간접 가열과 교반을 조합한 배치식 진공건조 설비. 수평형부터 Conical Dryer까지 공정에 맞춰 검토합니다.",
       details:
-        "로터리 건조기는 수평 회전식 건조기로 구조가 간단하고 기계적 트러블 발생이 적어 다양한 제품 건조에 적합합니다. 고속 기류에 의한 열풍 건조뿐 아니라 간접열 건조까지 가능해 슬러지 형태의 제품을 건조하여 분말화하는 공정에 효과적입니다. 점성이 높아지거나 고형화 현상 등 변화가 많은 제품 건조에도 안정적으로 사용할 수 있으며, STS304, STS316L, Hastelloy 재질 검토가 가능합니다.",
+        "마하렉스의 로터리 드라이어 제품군은 재킷을 통한 간접 가열과 내부 교반을 조합하는 배치식 진공건조 설비입니다. 연속 열풍식 회전 드럼 건조기와 구분하여 원료의 부착성, 점도 변화, 열 민감성, 용매 회수와 배출 조건을 검토합니다. 수평형 리본 교반식과 원뿔형 Conical Dryer 등 공정에 맞는 구조를 협의하고, 응축기·리시버·진공 계통을 함께 구성할 수 있습니다.",
       specs: [
-        "열풍 건조에 의한 전열면적 최대화",
-        "부착성이 있는 원료의 건조 가능",
-        "패들에 의한 파쇄 효과",
-        "내부 고정판을 통한 충분한 체류시간 확보",
-        "열풍 공급 및 회전 속도 조절로 건조량 제어"
+        "진공 조건과 재킷 간접 가열 조합",
+        "원료 특성에 맞춘 리본·교반부 구조 검토",
+        "수평형 및 원뿔형 Conical Dryer 구성",
+        "응축기·리시버를 통한 용매 회수 계통 협의",
+        "접액부 재질·씰·세척·배출 조건 맞춤 검토"
       ],
-      applications: ["광물 원료", "농업 재료", "재활용 공정", "광석 원료", "카본 블랙"],
+      applications: ["정밀화학", "제약 원료", "2차전지 소재", "기능성 분말", "화학 중간체"],
       engineering: [
-        "석회석, 점토, 규석, 석고, 경석 등의 원료 건조",
-        "배토, 비료 등 농업용 재료 건조",
-        "폐기물, 하수 슬러지, 소각재 등의 재활용",
-        "크롬, 망간, 니켈 등의 광석 원료 건조",
-        "카본 블랙 등의 원료 건조"
+        "여과 후 습윤 케이크의 건조 검토",
+        "열에 민감한 원료의 진공건조",
+        "교반이 필요한 분말·슬러리 공정",
+        "용매 회수와 연계한 배치 건조",
+        "배출·세척·유지보수 조건을 고려한 설비 구성"
       ]
     },
     en: {
       category: "Rotary Dryer",
       name: "Rotary Dryer",
-      summary: "Robust rotary drying equipment for continuous bulk drying.",
-      details: "Rotary dryer systems for industrial drying and cooling processes.",
-      specs: ["High heat transfer area", "Adhesive raw materials", "Crushing effect", "Residence time control", "Airflow and speed control"],
-      applications: ["Minerals", "Agriculture", "Recycling", "Ore", "Carbon black"],
-      engineering: ["Raw material drying", "Fertilizer drying", "Sludge reuse", "Ore drying", "Carbon black drying"]
+      summary: "Batch agitated vacuum dryers with indirect jacket heating, including horizontal and conical configurations.",
+      details: "Batch vacuum drying systems with internal agitation and indirect jacket heating, distinct from continuous hot-air rotary drum dryers. Agitators, materials, discharge and solvent recovery are reviewed for each process.",
+      specs: ["Vacuum and indirect heating", "Process-specific agitation", "Horizontal and Conical Dryer configurations", "Solvent recovery options", "Material, seal and cleaning review"],
+      applications: ["Fine chemical", "Pharmaceutical", "Battery materials", "Functional powders", "Chemical intermediates"],
+      engineering: ["Wet cake drying", "Heat-sensitive materials", "Agitated batch processes", "Solvent recovery", "Discharge and cleaning"]
     }
   },
   {

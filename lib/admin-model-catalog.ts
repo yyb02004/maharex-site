@@ -1,4 +1,10 @@
 export const modelViewers = {
+  "conical-dryer": {
+    directory: "conical-dryer",
+    fileName: "conical_dryer_viewer.html.br",
+    downloadName: "Conical-Dryer_full-model.html",
+    manifestFile: "conical_dryer_manifest.json"
+  },
   "tvd-installation": {
     directory: "tvd-2",
     fileName: "installation_viewer.html.br",
@@ -63,6 +69,18 @@ export const modelViewers = {
 
 export type ModelViewerKey = keyof typeof modelViewers;
 
+export const modelCategories = [
+  { key: "reactors", label: "반응기", image: "/equipment/reactor-new.jpg", models: ["rs-205"] },
+  { key: "tray-vacuum-dryers", label: "트레이진공건조기", image: "/Tray Vacuum Dryer-close.jpg", models: ["tvd-installation", "tvd-5000"] },
+  { key: "rotary-dryers", label: "로터리드라이어", image: "/equipment/rotary-dryer-new.jpg", models: ["rvd-1500", "rvd-501", "vacuum-dryer-6280", "conical-dryer"] },
+  { key: "filters", label: "필터", image: "/Nutsche Filter.jpg", models: ["nf-1200"] },
+  { key: "mills", label: "분쇄기", image: "/Pin Mill.jpg", models: ["pm12", "pm12-low-hopper", "ejm12"] }
+] as const satisfies ReadonlyArray<{ key: string; label: string; image: string; models: readonly ModelViewerKey[] }>;
+
+export function getModelCategory(key: unknown) {
+  return modelCategories.find((category) => category.key === key);
+}
+
 export const modelSets: Array<{
   key: ModelViewerKey;
   title: string;
@@ -125,6 +143,15 @@ export const modelSets: Array<{
     description: "6.28m³ 건조기, 일체형 컨덴서·리시버, 온수탱크·순환펌프, 진공펌프와 연결 배관을 함께 확인합니다.",
     partCount: "1,779개 부품",
     components: ["건조기·리본 교반기", "구동부·프레임", "컨덴서·리시버", "온수탱크·순환펌프", "진공펌프", "공정 배관"]
+  },
+  {
+    key: "conical-dryer",
+    title: "Conical Dryer 원뿔형 진공건조기",
+    revision: "REV.02 · 고정 배플 · 분말 교반 시연",
+    name: "전체모델",
+    description: "원뿔형 건조기 본체, 재킷, 교반부, 고정 배플, 구동부와 하부 배출 구조를 함께 확인합니다.",
+    partCount: "437개 부품",
+    components: ["원뿔형 본체", "재킷·단열", "교반부·배플", "구동부", "배출부", "필터·계기"]
   },
   {
     key: "nf-1200",

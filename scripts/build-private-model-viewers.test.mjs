@@ -11,6 +11,7 @@ import test from "node:test";
 const builder = fileURLToPath(new URL("./build-private-model-viewers.mjs", import.meta.url));
 
 for (const [profile, key, directory, errorsKey, statusId, sourceFile = `${key}_viewer.html`] of [
+  ["conical-dryer", "conical_dryer", "conical-dryer", "__viewerErrors", "model-status", "Conical-Vacuum-Dryer_viewer.html"],
   ["tvd-installation", "installation", "tvd-2", "__errors", "status"],
   ["tvd-5000", "tvd5000_installation", "tvd-5000", "__errors", "status", "TVD-5000_installation.html"],
   ["nf-1200", "nutsche", "nf-1200", "__nutscheErrors", "model-status"],

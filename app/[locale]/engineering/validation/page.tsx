@@ -23,17 +23,17 @@ export default function ValidationPage() {
 
   return (
     <>
-      <section className="bg-graphite py-24 text-white">
+      <section className="bg-graphite py-10 text-white sm:py-16 lg:py-20">
         <div className="container">
           <p className="text-sm font-black uppercase tracking-[0.28em] text-signal">Validation Flow</p>
-          <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">적격성평가 / Validation</h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-white/72">
+          <h1 className="mt-4 text-3xl font-black leading-tight md:text-5xl">적격성평가 / Validation</h1>
+          <p className="mt-5 max-w-3xl text-base leading-8 text-white/75 sm:text-lg">
             설계, 제작, 설치, 운전 단계에서 장비가 사용 목적과 품질 요구사항에 맞게 작동하는지 확인하고 문서화합니다.
           </p>
         </div>
       </section>
 
-      <section className="py-20">
+      <section className="py-10 sm:py-16 lg:py-20">
         <div className="container">
           <div className="mb-10 border-2 border-cobalt/25 bg-white p-7 shadow-sm md:p-9">
             <p className="text-xs font-black uppercase tracking-[0.24em] text-signal">Validation 이란</p>
@@ -43,7 +43,7 @@ export default function ValidationPage() {
             </div>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {flow.map(([abbr, title, text], index) => (
               <div key={abbr} className="relative border border-black/10 bg-white p-6 shadow-sm">
                 <div className="flex items-start justify-between gap-4">
@@ -58,7 +58,7 @@ export default function ValidationPage() {
         </div>
       </section>
 
-      <section className="bg-white py-20">
+      <section className="bg-white py-10 sm:py-16 lg:py-20">
         <div className="container grid gap-10 lg:grid-cols-[0.72fr_1fr]">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-signal">Validation Scope</p>

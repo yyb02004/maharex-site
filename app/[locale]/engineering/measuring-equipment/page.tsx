@@ -21,17 +21,17 @@ export default function MeasuringEquipmentPage() {
 
   return (
     <>
-      <section className="bg-graphite py-24 text-white">
+      <section className="bg-graphite py-10 text-white sm:py-16 lg:py-20">
         <div className="container">
           <p className="text-sm font-black uppercase tracking-[0.28em] text-signal">Measuring Instrument</p>
-          <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">측정용 장비</h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-white/72">
+          <h1 className="mt-4 text-3xl font-black leading-tight md:text-5xl">측정용 장비</h1>
+          <p className="mt-5 max-w-3xl text-base leading-8 text-white/75 sm:text-lg">
             장비 사용자의 안전, 제품 품질, 성능 확보를 위해 주요 품질관리 항목에 필요한 측정 장비를 운용합니다.
           </p>
         </div>
       </section>
 
-      <section className="py-20">
+      <section className="py-10 sm:py-16 lg:py-20">
         <div className="container grid gap-12 lg:grid-cols-[0.85fr_1fr] lg:items-start">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-signal">보유 장비</p>

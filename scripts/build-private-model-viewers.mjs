@@ -8,6 +8,11 @@ const compress = promisify(brotliCompress);
 const sourceRoot = process.argv[2];
 if (!sourceRoot) throw new Error("Pass the model outputs directory as the first argument.");
 const profiles = {
+  "conical-dryer": {
+    directory: "conical-dryer", key: "conical_dryer", statusId: "model-status", errorsKey: "__viewerErrors",
+    sourceFile: "Conical-Vacuum-Dryer_viewer.html",
+    title: "MAHAREX · Conical Dryer 전체모델", fragmentData: true
+  },
   "tvd-installation": {
     directory: "tvd-2", key: "installation", statusId: "status", errorsKey: "__errors",
     title: "MAHAREX · TVD-2.0 전체설비", fragmentData: false
