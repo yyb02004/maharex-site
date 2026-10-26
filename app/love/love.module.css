@@ -52,7 +52,7 @@
 .letterText p + p { margin-top: 26px; }
 .family { margin-top: 39px; padding-top: 5px; }
 .family p { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin: 9px 0; font-size: 13px; white-space: nowrap; }
-.family p > span:first-child { min-width: 131px; text-align: right; }
+.family p > span:first-child { text-align: center; }
 .family small { font-size: 9px; margin-right: 3px; }
 .family .relation { font-size: 11px; color: var(--muted); }
 .family strong { margin-left: 9px; font-size: 17px; font-weight: 400; letter-spacing: .09em; }
@@ -76,7 +76,9 @@
 .calendar td { height: 43px; font: 12px/1.4 Arial, sans-serif; }
 .calendar th:first-child, .calendar td:first-child { color: #8a5d55; }
 .calendar td > span { display: inline-flex; align-items: center; justify-content: center; height: 33px; width: 33px; }
-.calendar .weddingDate { background: var(--accent); color: white; border-radius: 50%; }
+.calendar .weddingDate { position: relative; width: 38px; height: 36px; color: #a06f70; }
+.weddingDate > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.weddingDate > span { position: relative; color: #fff; padding-bottom: 3px; }
 .countdown { padding: 28px 0 23px; }
 .countdownNumbers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .countdownNumbers > div { position: relative; display: flex; flex-direction: column; min-width: 0; }
@@ -106,6 +108,13 @@
 .mapHeader strong { font-size: 13px; font-weight: 500; color: var(--ink); }
 .mapHeader span { font-size: 10px; color: var(--muted); }
 .mapFrame { display: block; width: 100%; height: 340px; border: 0; background: #eef0e9; }
+.mapCanvas { position: relative; }
+.mapStatus { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; background: #eef0e9; text-align: center; font-size: 12px; color: var(--muted); }
+.mapStatus a { text-decoration: underline; text-underline-offset: 5px; color: var(--accent); }
+.venueMarker { position: relative; width: 166px; padding: 10px 8px; background: var(--paper); border: 1px solid var(--accent); box-shadow: 0 3px 12px #29352626; text-align: center; color: var(--ink); }
+.venueMarker span { display: block; font-size: 12px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+.venueMarker small { display: block; font-size: 10px; line-height: 1.7; color: var(--muted); }
+.venueMarker i { position: absolute; bottom: -6px; left: calc(50% - 5px); width: 10px; height: 10px; transform: rotate(45deg); border-right: 1px solid var(--accent); border-bottom: 1px solid var(--accent); background: var(--paper); }
 .mapCaption { display: flex; justify-content: center; align-items: center; gap: 12px; min-height: 48px; font-size: 11px; color: var(--accent); background: #f4f5ef; }
 .officialMap { border-top: 1px solid var(--line); }
 .officialMap summary { display: flex; align-items: center; justify-content: space-between; padding: 0 18px; min-height: 50px; font-size: 11px; cursor: pointer; list-style: none; }
@@ -114,12 +123,14 @@
 .officialMap a { display: block; padding: 4px 8px 16px; text-align: center; }
 .officialMap img { width: 100%; height: auto; }
 .officialMap a > span { font-size: 10px; color: var(--muted); }
-.mapButtons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
-.mapButtons a { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; border: 1px solid var(--line); font-size: 11px; }
+.mapButtons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.mapButtons a { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 46px; border: 1px solid var(--line); font-size: 11px; white-space: nowrap; }
 .mapButtons a:hover { background: #f1f3eb; }
-.naverDot, .kakaoDot { display: flex; align-items: center; justify-content: center; width: 17px; height: 17px; font: bold 10px/1 Arial, sans-serif; }
+.naverDot, .kakaoDot, .tmapDot { display: flex; align-items: center; justify-content: center; width: 15px; height: 17px; font: bold 10px/1 Arial, sans-serif; }
 .naverDot { color: #37854a; }
 .kakaoDot { color: #8b793c; }
+.tmapDot { color: #426778; }
+.mapHint { margin-top: 10px; font-size: 10px; color: var(--muted); text-align: center; }
 .directions { margin-top: 37px; text-align: left; }
 .directions > div { display: flex; gap: 18px; margin-bottom: 27px; }
 .directionIcon { flex: 0 0 22px; color: #7d8a71; font: italic 22px/1.5 var(--display); letter-spacing: 0; }
@@ -170,7 +181,6 @@
   .section { padding-inline: 24px; }
   .letterText { font-size: 13px; }
   .family p { font-size: 12px; gap: 4px; }
-  .family p > span:first-child { min-width: 120px; }
   .family .relation { font-size: 10px; }
   .family strong { font-size: 16px; margin-left: 5px; }
   .storyPhoto { margin-inline: 24px; }

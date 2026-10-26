@@ -5,7 +5,7 @@ import PhotoGallery from "./PhotoGallery";
 import InvitationCover from "./InvitationCover";
 import FlowerGuide from "./FlowerGuide";
 import VenueMap from "./VenueMap";
-import GiftSection, { ContactSection } from "./ContactAndGifts";
+import GiftSection from "./ContactAndGifts";
 import { CopyAddress, Countdown, ShareInvitation } from "./InvitationTools";
 import { getWeddingStorageOrigin } from "./storage-config";
 import styles from "./love.module.css";
@@ -16,6 +16,7 @@ const title = "상혁 그리고 은정, 결혼합니다";
 const description = "2027년 3월 6일 토요일 오전 11시 · 기흥 ICT밸리 컨벤션 A동 B1 그랑데홀. 가장 예쁜 날, 소중한 분들을 초대합니다.";
 
 const kakaoMap = "https://map.kakao.com/link/map/641722539";
+const tmapDirections = `https://www.tmap.co.kr/tmap2/mobile/route.jsp?goalx=127.11936204753891&goaly=37.280228777533445&goalname=${encodeURIComponent("기흥 ICT밸리 컨벤션")}`;
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -55,7 +56,6 @@ export default function LovePage() {
             <p><span><small>故</small> 박종신 · 김명순</span><span className={styles.relation}>의 장남</span><strong>상혁</strong></p>
             <p><span>최준호 · 조은희</span><span className={styles.relation}>의 차녀</span><strong>은정</strong></p>
           </div>
-          <ContactSection />
         </section>
 
         <figure className={styles.storyPhoto}>
@@ -73,7 +73,7 @@ export default function LovePage() {
               <thead><tr>{["일", "월", "화", "수", "목", "금", "토"].map((day) => <th key={day} scope="col">{day}</th>)}</tr></thead>
               <tbody>{Array.from({ length: 5 }, (_, week) => <tr key={week}>{Array.from({ length: 7 }, (_, day) => {
                 const date = week * 7 + day;
-                return <td key={day}>{date >= 1 && date <= 31 ? date === 6 ? <span className={styles.weddingDate} aria-label="6일, 결혼식">6</span> : <span>{date}</span> : null}</td>;
+                return <td key={day}>{date >= 1 && date <= 31 ? date === 6 ? <span className={styles.weddingDate} aria-label="6일, 결혼식"><svg viewBox="0 0 40 38" aria-hidden="true"><path d="M20 35S2 24 2 12A10 10 0 0 1 20 6a10 10 0 0 1 18 6c0 12-18 23-18 23Z" fill="currentColor" /></svg><span>6</span></span> : <span>{date}</span> : null}</td>;
               })}</tr>)}</tbody>
             </table>
           </div>
@@ -97,7 +97,9 @@ export default function LovePage() {
           <div className={styles.mapButtons}>
             <a href="https://map.naver.com/v5/entry/place/1211919556" target="_blank" rel="noreferrer"><span className={styles.naverDot}>N</span> 네이버지도</a>
             <a href={kakaoMap} target="_blank" rel="noreferrer"><span className={styles.kakaoDot} aria-hidden="true">●</span> 카카오맵</a>
+            <a href={tmapDirections} target="_blank" rel="noreferrer" aria-label="티맵으로 기흥 ICT밸리 컨벤션 길찾기"><span className={styles.tmapDot} aria-hidden="true">T</span> 티맵 길찾기</a>
           </div>
+          <p className={styles.mapHint}>티맵 길찾기는 휴대폰의 티맵 앱으로 연결됩니다.</p>
           <div className={styles.directions}>
             <div><span className={styles.directionIcon} aria-hidden="true">01</span><div><h3>지하철</h3><p>수인분당선 · 에버라인 <strong>기흥역</strong> 하차<br />2번 출구에서 도보 400m</p></div></div>
             <div><span className={styles.directionIcon} aria-hidden="true">02</span><div><h3>셔틀버스</h3><p>기흥역 <strong>1번 출구</strong>에서 승차<br /><strong>15분 간격</strong>으로 운행합니다.</p></div></div>

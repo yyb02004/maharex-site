@@ -1,5 +1,4 @@
-.section,
-.contactSection {
+.section {
   background: transparent;
   color: #222a26;
   text-align: left;
@@ -7,10 +6,6 @@
 
 .section {
   padding: 0;
-}
-
-.contactSection {
-  padding-top: 28px;
 }
 
 .inner {
@@ -91,49 +86,10 @@
   transform: rotate(180deg);
 }
 
-.contactPanel {
-  padding: 0 0 12px;
-}
-
-.familyContacts + .familyContacts {
-  border-top: 1px solid #dfdfd7;
-}
-
-.familyHeading {
-  margin: 24px 0 5px;
-  color: #5e6c59;
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.6;
-  letter-spacing: 0.055em;
-}
-
-.contactList,
 .accountList {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.contactRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 17px 0;
-}
-
-.contactRow + .contactRow {
-  border-top: 1px solid #e7e7e0;
-}
-
-.contactPerson {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: baseline;
-  column-gap: 8px;
-  row-gap: 6px;
-  min-width: 0;
 }
 
 .role {
@@ -148,31 +104,6 @@
   font-weight: 400;
   line-height: 1.6;
   letter-spacing: 0.025em;
-}
-
-.phoneNumber {
-  grid-column: 1 / -1;
-  color: #60695e;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  line-height: 1.6;
-  letter-spacing: 0.025em;
-}
-
-.contactActions {
-  display: flex;
-  flex-shrink: 0;
-  gap: 4px;
-}
-
-.contactLink {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  background: transparent;
-  color: #5e6c59;
-  touch-action: manipulation;
 }
 
 .giftAccordions {
@@ -248,7 +179,6 @@
 }
 
 .summary:focus-visible,
-.contactLink:focus-visible,
 .copyButton:focus-visible,
 .accountNumber:focus-visible {
   outline: 2px solid #5e6c59;
@@ -281,7 +211,6 @@
     color: #222a26;
   }
 
-  .contactLink:hover,
   .copyButton:hover {
     background: #eeefe9;
   }
@@ -291,14 +220,6 @@
   .summary {
     gap: 8px;
     font-size: 12px;
-  }
-
-  .contactRow {
-    gap: 8px;
-  }
-
-  .contactActions {
-    gap: 0;
   }
 }
 
