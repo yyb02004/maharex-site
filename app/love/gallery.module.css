@@ -306,7 +306,12 @@
   }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 600px) {
+  .slideButton {
+    aspect-ratio: auto;
+    height: 660px;
+    height: clamp(360px, 72svh, 720px);
+  }
   .thumbnailStrip {
     gap: 8px;
   }

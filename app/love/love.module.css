@@ -20,6 +20,7 @@
   --line: #dfdfd7;
   --love-serif: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --display: "Love Cormorant", "Times New Roman", serif;
+  --invitation-width: 480px;
   min-height: 100vh;
   background: #e9ebe5;
   color: var(--ink);
@@ -30,15 +31,18 @@
   letter-spacing: -.025em;
   -webkit-font-smoothing: antialiased;
   color-scheme: light;
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
-.invitation { position: relative; width: 100%; max-width: 480px; margin: 0 auto; background: var(--paper); overflow: clip; }
+.invitation { position: relative; width: 100%; max-width: var(--invitation-width); margin: 0 auto; background: var(--paper); overflow: clip; }
 .invitation :where(button, a, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .invitation :where(button, summary) { -webkit-tap-highlight-color: transparent; }
 .invitation :where(section[id]) { scroll-margin-top: 24px; }
 .skipLink { position: absolute; top: -90px; left: 20px; z-index: 10; background: var(--paper); padding: 10px; }
 .skipLink:focus { top: 10px; }
 .eyebrow { font: 9px/1.6 Arial, sans-serif; letter-spacing: .19em; color: var(--accent); }
-.section { padding: 82px 32px; text-align: left; }
+.section { padding: 82px var(--content-inset, 32px); text-align: left; }
 .sectionHeading { margin-bottom: 29px; text-align: center; }
 .sectionHeading > p { margin-bottom: 15px; font: 9px/1.6 Arial, sans-serif; letter-spacing: .2em; color: var(--accent); }
 .sectionHeading h2 { font-family: var(--love-serif); font-size: 25px; font-weight: 400; line-height: 1.6; letter-spacing: -.045em; }
@@ -158,7 +162,7 @@
 .closingPhoto img { width: 100%; height: auto; display: block; }
 .closingPhoto::after { position: absolute; content: ""; inset: 0; background: linear-gradient(transparent 38%, #1419137a); }
 .closingPhoto p { position: absolute; left: 20px; right: 20px; bottom: 25px; z-index: 1; color: #fffdf6; text-align: center; font-size: 13px; line-height: 2; letter-spacing: .02em; }
-.closing { padding: 59px 32px max(29px, env(safe-area-inset-bottom)); text-align: center; }
+.closing { padding: 59px var(--content-inset, 32px) max(29px, env(safe-area-inset-bottom)); text-align: center; }
 .closing > .closingScript { font: italic 40px/1.2 var(--display); letter-spacing: -.025em; margin-bottom: 27px; color: var(--accent); }
 .closing > p { font-size: 12px; line-height: 2.1; color: var(--muted); }
 .closing > span { display: block; margin-top: 23px; font-size: 16px; letter-spacing: .1em; }
@@ -177,7 +181,15 @@
 .desktopNote > div { height: 37px; width: 1px; margin: 25px auto; background: #bdc5b4; }
 .desktopNote small { display: block; font: 9px/1.6 Arial, sans-serif; letter-spacing: .17em; }
 .desktopNote > span:last-child { display: block; margin-top: 15px; font-size: 10px; color: #77816e; }
-@media (min-width: 1100px) { .desktopNote { display: block; } }
+@media (min-width: 600px) {
+  .backdrop { --invitation-width: 760px; --content-inset: max(36px, calc((100% - 480px) / 2)); padding: 24px max(24px, env(safe-area-inset-right)) 24px max(24px, env(safe-area-inset-left)); }
+  .invitation { box-shadow: 0 12px 60px rgb(34 42 38 / 6%); }
+  .storyPhoto { width: calc(100% - 72px); max-width: 560px; margin-inline: auto; }
+  .calendarSection { padding-inline: max(36px, calc((100% - 440px) / 2)); }
+  .gallerySection { padding-inline: 36px; }
+  .mapFrame { height: 360px; }
+}
+@media (min-width: 1440px) { .desktopNote { display: block; left: calc(50% - 640px); width: 210px; } }
 @media (max-width: 360px) {
   .section { padding-inline: 24px; }
   .letterText { font-size: 13px; }

@@ -1,4 +1,4 @@
-.section { padding: 76px 32px; background: #f4f1eb; color: #343e33; text-align: center; scroll-margin-top: 24px; }
+.section { padding: 76px var(--content-inset, 32px); background: #f4f1eb; color: #343e33; text-align: center; scroll-margin-top: 24px; }
 .eyebrow { margin: 0 0 15px; color: #7b806e; font: 10px/1.6 Arial, sans-serif; letter-spacing: 0.2em; }
 .title { margin: 0; font-size: 23px; font-weight: 400; line-height: 1.7; letter-spacing: -0.05em; }
 .intro { margin: 22px 0 33px; color: #73786b; font-size: 12px; line-height: 2.2; word-break: keep-all; }

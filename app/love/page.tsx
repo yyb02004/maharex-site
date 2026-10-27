@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   icons: { icon: "/love/icon.svg", apple: "/love/apple-icon.png" },
 };
 
-export const viewport: Viewport = { themeColor: "#fdfcf9", colorScheme: "light" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#fdfcf9", colorScheme: "light" };
 
 function SectionHeading({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
   return <div className={styles.sectionHeading}><p>{eyebrow}</p><h2>{children}</h2></div>;
@@ -64,7 +64,7 @@ export default function LovePage() {
         </section>
 
         <figure className={styles.storyPhoto}>
-          <Image src="/love/photos/photo-19.webp" alt="햇살이 들어오는 창가의 정원에 함께 앉아 있는 두 사람" width={1200} height={1800} sizes="(max-width: 480px) 86vw, 416px" />
+          <Image src="/love/photos/photo-19.webp" alt="햇살이 들어오는 창가의 정원에 함께 앉아 있는 두 사람" width={1200} height={1800} sizes="(min-width: 600px) 560px, (max-width: 480px) 86vw, 416px" />
           <figcaption><span>OUR PROMISE</span><p>서로의 가장 다정한 편이 되어</p></figcaption>
         </figure>
 
@@ -121,7 +121,7 @@ export default function LovePage() {
         {storageOrigin ? <><RsvpSection apiBaseUrl={storageOrigin} /><GuestMemories apiBaseUrl={storageOrigin} /></> : null}
 
         <footer>
-          <div className={styles.closingPhoto}><Image src="/love/photos/photo-08.webp" alt="꽃으로 둘러싸인 문 앞에 함께 앉은 두 사람" width={1800} height={1200} sizes="(max-width: 480px) 100vw, 480px" /><p>봄이 시작되는 날,<br />우리의 이야기도 새로 시작됩니다.</p></div>
+          <div className={styles.closingPhoto}><Image src="/love/photos/photo-08.webp" alt="꽃으로 둘러싸인 문 앞에 함께 앉은 두 사람" width={1800} height={1200} sizes="(min-width: 600px) 760px, (max-width: 480px) 100vw, 480px" /><p>봄이 시작되는 날,<br />우리의 이야기도 새로 시작됩니다.</p></div>
           <div className={styles.closing}><p className={styles.closingScript}>With love, always.</p><p>그날의 웃음과 봄의 온기를<br />오래오래 꺼내 보며 살겠습니다.<br />저희의 봄에 함께해 주셔서 고맙습니다.</p><span>상혁 <i>&</i> 은정</span><ShareInvitation /><small>SangHyeok & EunJung · 2027. 03. 06</small></div>
         </footer>
       </main>

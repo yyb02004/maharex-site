@@ -1,4 +1,4 @@
-.section { padding: 72px 32px 66px; background: #f7f4ee; color: var(--ink); }
+.section { padding: 72px var(--content-inset, 32px) 66px; background: #f7f4ee; color: var(--ink); }
 .heading { margin-bottom: 38px; text-align: center; }
 .heading > p { margin-bottom: 15px; font: 9px/1.6 Arial, sans-serif; letter-spacing: .2em; color: var(--accent); }
 .heading h2 { font-size: 25px; font-weight: 400; line-height: 1.6; letter-spacing: -.045em; }

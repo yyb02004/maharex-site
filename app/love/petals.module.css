@@ -4,7 +4,7 @@
   bottom: 0;
   left: 50%;
   z-index: 4;
-  width: min(100%, 480px);
+  width: min(100%, var(--invitation-width, 480px));
   overflow: hidden;
   transform: translateX(-50%);
   pointer-events: none;
@@ -58,4 +58,8 @@
 @media (prefers-reduced-motion: reduce) {
   .petals { display: none; }
   .falling, .swaying { animation: none; }
+}
+
+@media (min-width: 600px) {
+  .petals { width: min(calc(100% - 48px), var(--invitation-width)); }
 }

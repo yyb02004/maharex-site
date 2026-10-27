@@ -6,15 +6,17 @@ export default function InvitationCover({ guestsEnabled = false, rsvpEnabled = f
   return (
     <header className={styles.cover}>
       <div className={styles.scene}>
-        <Image
-          className={styles.photo}
-          src="/love/photos/photo-20.webp"
-          alt="함께 웃고 있는 신랑 박상혁과 신부 최은정"
-          fill
-          priority
-          sizes="(max-width: 480px) 100vw, 480px"
-        />
-        <div className={styles.shade} aria-hidden="true" />
+        <div className={styles.portrait}>
+          <Image
+            className={styles.photo}
+            src="/love/photos/photo-20.webp"
+            alt="함께 웃고 있는 신랑 박상혁과 신부 최은정"
+            fill
+            priority
+            sizes="(min-width: 600px) 410px, (max-width: 480px) 100vw, 480px"
+          />
+          <div className={styles.shade} aria-hidden="true" />
+        </div>
 
         <div className={styles.topline}>
           <p className={styles.eyebrow}>A NEW SPRING, WITH YOU<span>06 MARCH 2027</span></p>
