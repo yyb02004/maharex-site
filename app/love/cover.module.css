@@ -255,8 +255,8 @@
   .navigation a { font-size: 9px; }
 }
 
-/* An open foldable becomes a two-page invitation, while a cover screen stays vertical. */
-@media (min-width: 600px) {
+/* Use the two-page cover only when the viewport has room in landscape. */
+@media (min-width: 600px) and (orientation: landscape) {
   .scene {
     display: grid;
     grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
@@ -284,12 +284,16 @@
   .navigation a { font-size: 12px; min-height: 60px; }
 }
 
-@media (min-width: 600px) and (max-height: 600px) {
+@media (min-width: 600px) and (orientation: landscape) and (max-height: 600px) {
   .portrait { min-height: 480px; }
   .caption { padding-block: 24px; }
   .englishNames { margin-bottom: 24px; }
   .hairline { margin-block: 14px; }
   .scrollLink { margin-top: 12px; }
+}
+
+@media (min-width: 600px) and (orientation: portrait) {
+  .scene { height: calc(100svh - 48px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

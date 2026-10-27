@@ -13,7 +13,7 @@ export default function InvitationCover({ guestsEnabled = false, rsvpEnabled = f
             alt="함께 웃고 있는 신랑 박상혁과 신부 최은정"
             fill
             priority
-            sizes="(min-width: 600px) 410px, (max-width: 480px) 100vw, 480px"
+            sizes="(min-width: 600px) and (orientation: landscape) 410px, (min-width: 600px) 560px, (max-width: 480px) 100vw, 480px"
           />
           <div className={styles.shade} aria-hidden="true" />
         </div>
