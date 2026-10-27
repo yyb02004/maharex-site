@@ -4,7 +4,7 @@ Only the authenticated admin model route serves these files. Do not copy them to
 `public/`. Each catalog entry opens the full equipment set, with detail controls
 inside its viewer.
 
-## Source snapshot (Conical added 2026-10-26; existing imports unchanged)
+## Source snapshot (Conical updated 2026-10-27; other imports unchanged)
 
 Source paths are relative to the adjacent `3D Model` workspace.
 
@@ -16,7 +16,7 @@ Source paths are relative to the adjacent `3D Model` workspace.
 | `rvd-1500` | `RVD-1500/outputs` | 4, door hose connections | 838 |
 | `rvd-501` | `RVD-501/outputs` | 3.2, sight glasses and detachable door piping | 1,780 |
 | `vacuum-dryer-6280` | `Vacuum-Dryer-6.28M3/outputs` | 2, full installation, process demo and independent agitator rotation | 1,779 |
-| `conical-dryer` | `Conical-Vacuum-Dryer/outputs` | 2, fixed baffles and powder agitation demonstration | 437 |
+| `conical-dryer` | `Conical-Vacuum-Dryer/outputs` | 5, granular powder flow and two-material mixing demonstration | 437 |
 | `nf-1200` | `CMDL-Nutsche/outputs` | 4 | 444 |
 | `pm12` | `PinMill-PM12/outputs` | 2, standard high hopper | 722 |
 | `pm12-low-hopper` | `PinMill-PM12-LowHopper-REV05/outputs` | 5, low hopper | 903 |
@@ -27,14 +27,18 @@ Each category opens its model list using a `category` query parameter. The rotar
 category includes RVD-1500, RVD-501, the 6.28 m3 vacuum dryer and Conical Dryer.
 Pin mills and the jet mill share the mills category. Viewer URLs remain unchanged.
 
-Conical REV02 includes the dryer body, jacket, agitator, fixed baffles, drive,
+Conical REV05 includes the dryer body, jacket, agitator, fixed baffles, drive,
 discharge, filter and instruments. It does not include a separate condenser,
 receiver or vacuum pump set. The powder demonstration is illustrative, not a
-validated process simulation. Its source is unchanged and remains private.
+validated process simulation. REV05 preserves the CAD geometry and adds granular
+powder loading, ribbon-driven flow, baffle scattering, and two-material mixing.
+The source's section view, 60-second demonstration, continue-mixing and reset
+controls are preserved. Particle colors and identities remain fixed. The imported
+viewer matches the source delivery manifest and remains private.
 
 PM12 standard and low-hopper are distinct configurations. Low-hopper REV03/REV04
 and backup folders are superseded snapshots, not additional equipment sets.
-Existing model imports are unchanged in this update. TVD-5.0 uses the complete
+Other model imports are unchanged in this update. TVD-5.0 uses the complete
 `TVD-5000_installation.html` source, not the standalone dryer viewer. Its source
 JSON has no revision field; REV04 is recorded in the source README and catalog,
 and its manifest identifies the exact source HTML by SHA-256. The standalone
