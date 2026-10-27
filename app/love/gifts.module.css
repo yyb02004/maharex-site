@@ -26,19 +26,20 @@
   margin: 0;
   color: #222a26;
   font-family: var(--love-serif, "Noto Serif KR"), "AppleMyungjo", Batang, serif;
-  font-size: 25px;
+  font-size: 26px;
   font-weight: 400;
   line-height: 1.6;
-  letter-spacing: -0.025em;
+  letter-spacing: 0.025em;
 }
 
 .description {
   text-align: center;
   margin: 20px 0 34px;
   color: #60695e;
-  font-size: 13px;
-  line-height: 1.95;
-  letter-spacing: -0.015em;
+  font-family: var(--love-serif);
+  font-size: 14px;
+  line-height: 2.1;
+  letter-spacing: 0.005em;
 }
 
 .accordion {

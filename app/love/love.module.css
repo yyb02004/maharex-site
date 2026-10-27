@@ -1,4 +1,11 @@
 @font-face {
+  font-family: "Love Gowun Batang";
+  src: url("/love/fonts/GowunBatang-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
   font-family: "Love Cormorant";
   src: url("/love/fonts/CormorantGaramond-Regular.woff2") format("woff2");
   font-style: normal;
@@ -18,7 +25,7 @@
   --accent: #5e6c59;
   --muted: #687066;
   --line: #dfdfd7;
-  --love-serif: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --love-serif: "Love Gowun Batang", "AppleMyungjo", Batang, serif;
   --display: "Love Cormorant", "Times New Roman", serif;
   --invitation-width: 480px;
   min-height: 100vh;
@@ -45,16 +52,16 @@
 .section { padding: 82px var(--content-inset, 32px); text-align: left; }
 .sectionHeading { margin-bottom: 29px; text-align: center; }
 .sectionHeading > p { margin-bottom: 15px; font: 9px/1.6 Arial, sans-serif; letter-spacing: .2em; color: var(--accent); }
-.sectionHeading h2 { font-family: var(--love-serif); font-size: 25px; font-weight: 400; line-height: 1.6; letter-spacing: -.045em; }
+.sectionHeading h2 { font-family: var(--love-serif); font-size: 26px; font-weight: 400; line-height: 1.6; letter-spacing: .025em; }
 .letter { padding-top: 91px; padding-bottom: 66px; text-align: center; }
 .letterLead { font: 400 59px/.95 var(--display); letter-spacing: -.025em; margin-bottom: 46px; }
 .letterLead i { color: var(--accent); }
 .letter .sectionHeading { margin-bottom: 30px; }
 .letter .sectionHeading > p { font-size: 8px; margin-bottom: 14px; }
-.letter .sectionHeading h2 { font-size: 22px; }
-.letterText { font-size: 14px; line-height: 2.4; letter-spacing: -.02em; color: #4f584e; }
+.letter .sectionHeading h2 { font-size: 25px; }
+.letterText { font-family: var(--love-serif); font-size: 15px; line-height: 2.4; letter-spacing: .005em; color: #4f584e; }
 .letterText p + p { margin-top: 26px; }
-.family { display: table; width: max-content; max-width: 100%; margin: 39px auto 0; padding-top: 5px; }
+.family { display: table; width: max-content; max-width: 100%; margin: 39px auto 0; padding-top: 5px; font-family: var(--love-serif); letter-spacing: 0; }
 .family p { display: table-row; font-size: 13px; white-space: nowrap; }
 .family p > span, .familyName { display: table-cell; vertical-align: baseline; padding-block: 4px; }
 .familyParents { text-align: right; }
@@ -65,10 +72,10 @@
 .storyPhoto img { display: block; width: 100%; height: auto; }
 .storyPhoto figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 16px; }
 .storyPhoto figcaption > span { font: 8px/1.6 Arial, sans-serif; letter-spacing: .14em; color: var(--accent); }
-.storyPhoto figcaption > p { font-size: 10px; color: var(--muted); }
+.storyPhoto figcaption > p { font-family: var(--love-serif); font-size: 11px; letter-spacing: .01em; color: var(--muted); }
 .calendarSection { background: #f1f2ed; text-align: center; padding-top: 68px; padding-bottom: 63px; }
 .calendarSection .sectionHeading { margin-bottom: 22px; }
-.calendarSection .sectionHeading h2 { font-size: 22px; }
+.calendarSection .sectionHeading h2 { font-size: 25px; }
 .dateDisplay { font: 400 79px/1.2 var(--display); letter-spacing: -.04em; }
 .dateDisplay i { font-size: .67em; color: #9fa795; font-weight: 400; margin-inline: 3px; }
 .dateLine { margin-top: 14px; font-size: 13px; line-height: 1.9; }
@@ -93,7 +100,7 @@
 .countdown p { font-size: 11px; color: var(--muted); margin-top: 23px; }
 .outlineButton { min-height: 46px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 1px solid #ced3c7; padding: 10px 26px; font-size: 11px; }
 .outlineButton:hover { background: #e7eae1; }
-.sectionCaption { color: var(--muted); font-size: 12px; margin: -16px 0 28px; line-height: 1.9; text-align: center; }
+.sectionCaption { color: var(--muted); font-family: var(--love-serif); font-size: 13px; letter-spacing: .005em; margin: -16px 0 28px; line-height: 2; text-align: center; }
 .gallerySection { padding-inline: 24px; }
 .gallerySection > .sectionHeading, .gallerySection > .sectionCaption { margin-left: 8px; margin-right: 8px; }
 .locationSection { border-top: 1px solid var(--line); }
@@ -161,11 +168,11 @@
 .closingPhoto { position: relative; }
 .closingPhoto img { width: 100%; height: auto; display: block; }
 .closingPhoto::after { position: absolute; content: ""; inset: 0; background: linear-gradient(transparent 38%, #1419137a); }
-.closingPhoto p { position: absolute; left: 20px; right: 20px; bottom: 25px; z-index: 1; color: #fffdf6; text-align: center; font-size: 13px; line-height: 2; letter-spacing: .02em; }
+.closingPhoto p { position: absolute; left: 20px; right: 20px; bottom: 25px; z-index: 1; color: #fffdf6; text-align: center; font-family: var(--love-serif); font-size: 15px; line-height: 2; letter-spacing: .025em; }
 .closing { padding: 59px var(--content-inset, 32px) max(29px, env(safe-area-inset-bottom)); text-align: center; }
 .closing > .closingScript { font: italic 40px/1.2 var(--display); letter-spacing: -.025em; margin-bottom: 27px; color: var(--accent); }
-.closing > p { font-size: 12px; line-height: 2.1; color: var(--muted); }
-.closing > span { display: block; margin-top: 23px; font-size: 16px; letter-spacing: .1em; }
+.closing > p { font-family: var(--love-serif); font-size: 14px; line-height: 2.3; letter-spacing: .01em; color: var(--muted); }
+.closing > span { display: block; margin-top: 23px; font-family: var(--love-serif); font-size: 17px; letter-spacing: .12em; }
 .closing > span > i { font: italic 24px/1 var(--display); color: var(--accent); margin-inline: 7px; }
 .closing > small { font: 8px/1.8 Arial, sans-serif; letter-spacing: .12em; color: var(--muted); }
 .share { margin: 35px 0 15px; }
@@ -195,7 +202,7 @@
 @media (min-width: 1440px) { .desktopNote { display: block; left: calc(50% - 640px); width: 210px; } }
 @media (max-width: 360px) {
   .section { padding-inline: 24px; }
-  .letterText { font-size: 13px; }
+  .letterText { font-size: 14px; }
   .family p { font-size: 12px; }
   .family .relation { font-size: 10px; padding-inline: 4px 9px; }
   .familyName { font-size: 16px; }

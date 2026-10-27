@@ -1,8 +1,8 @@
 .section { padding: 72px var(--content-inset, 32px) 66px; background: #f7f4ee; color: var(--ink); }
 .heading { margin-bottom: 38px; text-align: center; }
 .heading > p { margin-bottom: 15px; font: 9px/1.6 Arial, sans-serif; letter-spacing: .2em; color: var(--accent); }
-.heading h2 { font-size: 25px; font-weight: 400; line-height: 1.6; letter-spacing: -.045em; }
-.heading > div { margin-top: 16px; color: var(--muted); font-size: 13px; line-height: 2; }
+.heading h2 { font-family: var(--love-serif); font-size: 26px; font-weight: 400; line-height: 1.6; letter-spacing: .025em; }
+.heading > div { margin-top: 16px; color: var(--muted); font-family: var(--love-serif); font-size: 14px; line-height: 2; letter-spacing: .005em; }
 .section h3 { font-size: 15px; font-weight: 500; line-height: 1.8; }
 .place { display: flex; gap: 18px; align-items: center; }
 .floor { flex: 0 0 43px; color: var(--accent); font: italic 35px/1.2 var(--display); letter-spacing: -.03em; }
@@ -23,7 +23,7 @@
 .ticketList small { display: block; margin-top: 3px; font-size: 11px; line-height: 1.8; color: var(--muted); }
 .atm { margin-top: 15px; padding-top: 27px; border-top: 1px solid var(--line); }
 .atm > .copy { margin-top: 15px; }
-.closing { margin-top: 38px; color: var(--accent); font-size: 12px; line-height: 2; text-align: center; }
+.closing { margin-top: 38px; color: var(--accent); font-family: var(--love-serif); font-size: 13px; line-height: 2; letter-spacing: .005em; text-align: center; }
 @media (max-width: 360px) {
   .section { padding-inline: 24px; }
   .heading h2 { font-size: 23px; }

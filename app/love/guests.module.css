@@ -2,8 +2,8 @@
 .section { padding: 76px var(--content-inset, 32px) 68px; background: #fdfcf9; text-align: center; scroll-margin-top: 24px; }
 .snapsSection { background: #f1f2ed; }
 .eyebrow { margin: 0 0 15px; color: #5e6c59; font: 11px/1.5 Arial, sans-serif; letter-spacing: 0.22em; }
-.title { margin: 0; font-size: 24px; font-weight: 400; line-height: 1.6; letter-spacing: -0.05em; }
-.intro { margin: 22px 0 33px; color: #687066; font-size: 12px; line-height: 2.1; }
+.title { margin: 0; font-family: var(--love-serif); font-size: 25px; font-weight: 400; line-height: 1.6; letter-spacing: .01em; }
+.intro { margin: 22px 0 33px; color: #687066; font-family: var(--love-serif); font-size: 13px; line-height: 2.1; letter-spacing: .005em; }
 .composer { border-top: 1px solid #dfdfd7; border-bottom: 1px solid #dfdfd7; text-align: left; }
 .summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 15px 0; color: #43513e; font-size: 13px; list-style: none; cursor: pointer; }
 .summary::-webkit-details-marker { display: none; }

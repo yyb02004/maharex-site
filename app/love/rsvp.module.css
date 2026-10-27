@@ -1,7 +1,7 @@
 .section { padding: 76px var(--content-inset, 32px); background: #f4f1eb; color: #343e33; text-align: center; scroll-margin-top: 24px; }
 .eyebrow { margin: 0 0 15px; color: #7b806e; font: 10px/1.6 Arial, sans-serif; letter-spacing: 0.2em; }
-.title { margin: 0; font-size: 23px; font-weight: 400; line-height: 1.7; letter-spacing: -0.05em; }
-.intro { margin: 22px 0 33px; color: #73786b; font-size: 12px; line-height: 2.2; word-break: keep-all; }
+.title { margin: 0; font-family: var(--love-serif); font-size: 24px; font-weight: 400; line-height: 1.7; letter-spacing: .01em; }
+.intro { margin: 22px 0 33px; color: #73786b; font-family: var(--love-serif); font-size: 13px; line-height: 2.2; letter-spacing: .005em; word-break: keep-all; }
 .composer { border-top: 1px solid #dcdcd1; border-bottom: 1px solid #dcdcd1; text-align: left; }
 .summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 60px; padding: 14px 0; color: #59634f; font-size: 13px; list-style: none; cursor: pointer; }
 .summary::-webkit-details-marker { display: none; }

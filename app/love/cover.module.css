@@ -123,23 +123,26 @@
 .springLine {
   margin: 0 0 6px;
   color: #8d6969;
-  font-size: 10px;
+  font-family: var(--love-serif);
+  font-size: 12px;
   line-height: 1.8;
   letter-spacing: 0.075em;
 }
 
 .weddingTitle {
   margin: 0 0 14px;
-  font-size: 25px;
+  font-family: var(--love-serif);
+  font-size: 27px;
   font-weight: 400;
   line-height: 1.6;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.055em;
   word-break: keep-all;
 }
 
 .koreanNames {
   margin: 0;
-  font-size: 16px;
+  font-family: var(--love-serif);
+  font-size: 17px;
   font-weight: 400;
   line-height: 1.65;
   letter-spacing: 0.1em;
