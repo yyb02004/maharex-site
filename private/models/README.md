@@ -16,7 +16,7 @@ Source paths are relative to the adjacent `3D Model` workspace.
 | `rvd-1500` | `RVD-1500/outputs` | 4, door hose connections | 838 |
 | `rvd-501` | `RVD-501/outputs` | 3.2, sight glasses and detachable door piping | 1,780 |
 | `vacuum-dryer-6280` | `Vacuum-Dryer-6.28M3/outputs` | 2, full installation, process demo and independent agitator rotation | 1,779 |
-| `conical-dryer` | `Conical-Vacuum-Dryer/outputs` | 5, granular powder flow and two-material mixing demonstration | 437 |
+| `conical-dryer` | `Conical-Vacuum-Dryer/outputs` | 6, repositioned baffles and ribbon-scrape mixing demonstration | 437 |
 | `nf-1200` | `CMDL-Nutsche/outputs` | 4 | 444 |
 | `pm12` | `PinMill-PM12/outputs` | 2, standard high hopper | 722 |
 | `pm12-low-hopper` | `PinMill-PM12-LowHopper-REV05/outputs` | 5, low hopper | 903 |
@@ -27,11 +27,15 @@ Each category opens its model list using a `category` query parameter. The rotar
 category includes RVD-1500, RVD-501, the 6.28 m3 vacuum dryer and Conical Dryer.
 Pin mills and the jet mill share the mills category. Viewer URLs remain unchanged.
 
-Conical REV05 includes the dryer body, jacket, agitator, fixed baffles, drive,
+Conical REV06 includes the dryer body, jacket, agitator, fixed baffles, drive,
 discharge, filter and instruments. It does not include a separate condenser,
 receiver or vacuum pump set. The powder demonstration is illustrative, not a
-validated process simulation. REV05 preserves the CAD geometry and adds granular
-powder loading, ribbon-driven flow, baffle scattering, and two-material mixing.
+validated process simulation. REV06 lowers the two fixed baffles by about
+132.75 mm and moves the baffles and their support rods outward by 100 mm.
+Powder follows the ribbon to the baffle underside and then falls, replacing the
+previous unsupported upward connection. Other equipment geometry is unchanged.
+The source marks this baffle arrangement as a mixing review layout, distinct from
+the original drawing dimensions. Granular loading and two-material mixing remain.
 The source's section view, 60-second demonstration, continue-mixing and reset
 controls are preserved. Particle colors and identities remain fixed. The imported
 viewer matches the source delivery manifest and remains private.

@@ -147,7 +147,7 @@ export const modelSets: Array<{
   {
     key: "conical-dryer",
     title: "Conical Dryer 원뿔형 진공건조기",
-    revision: "REV.05 · 분말 적재·유동 · 두 원료 혼합 시연",
+    revision: "REV.06 · 배플 위치 조정 · 리본·배플 접촉 혼합 시연",
     name: "전체모델",
     description: "원뿔형 건조기 본체, 재킷, 교반부, 고정 배플, 구동부와 하부 배출 구조를 함께 확인합니다.",
     partCount: "437개 부품",
