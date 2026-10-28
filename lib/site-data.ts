@@ -46,7 +46,7 @@ export const productImages = {
   filter: "/Nutsche Filter.jpg",
   pinMill: "/Pin Mill.jpg",
   jetMill: "/Jet Mill.jpg",
-  mills: "/Pin Mill.jpg"
+  mills: "/Jet Mill.jpg"
 } as const;
 
 export const aboutSections = {
@@ -252,7 +252,7 @@ export const products = [
   {
     slug: "mills",
     image: productImages.mills,
-    gallery: [productImages.pinMill, productImages.jetMill],
+    gallery: [productImages.jetMill, productImages.pinMill],
     ko: {
       category: "Mill",
       name: "분쇄기",

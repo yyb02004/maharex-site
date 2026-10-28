@@ -185,25 +185,36 @@ export default async function AboutSubPage({
 
   if (slug === "history") {
     const companyHistory = [
-      ["1995.03", "경기도 안성시 양성면에서 창업"],
-      ["1996.09", "공장 등록"],
-      ["2006.05", "신축 공장 건축 및 이전"],
-      ["2006.07", "DQ, IQ, OQ, Validation 장비 완비 및 업무 수행"],
-      ["2014.02", "벤처기업 인증"],
-      ["2016.03", "기술연구 전담부서 설립"],
-      ["2018.03", "생산공장 증설"]
+      ["1995.03", "경기도 용인시 천리 687-3 소재지에서 창업", ""],
+      ["1996.09", "공장 등록증 교부", ""],
+      ["1997.02", "열사용기 자재 제조업 등록증 교부(에너지 관리공단)", ""],
+      ["2000.11", "㈜동우신테크 음성공장 감사패 수여", "KGMP관련 의약품 원료 합성 제조 설비 Turnkey Base 시공"],
+      ["2001.09", "FA Bank 식품원료 저온 농축기술 성공", ""],
+      ["2006.05", "현 소재지에 신축 공장 건축 및 이전", ""],
+      ["2006.07", "DQ, IQ, OQ, Validation 장비 완비 및 업무 수행", ""],
+      ["2006.12", "㈜ACT 음성공장 감사패 수여", "KGMP관련 화장품 원료, 생약원료 생산시설 Turnkey Base 시공"],
+      ["2008.11", "해동프랜트에서 ㈜마하렉스로 상호 변경", ""],
+      ["2014.02", "벤쳐기업 인증", ""],
+      ["2014.09", "㈜천보 충주공장 감사패 수여", "생산시설 Turnkey Base 시공"],
+      ["2016.03", "기술연구 전담반 설립", ""],
+      ["2016.11", "중소기업 인증 - 중소기업청장", ""],
+      ["2017.01", "경쟁입찰 참가자격 등록증", ""],
+      ["2018.03", "생산공장 증설 - 2공장", ""]
     ] as const;
 
     return (
       <Section eyebrow="History" title="주요 연혁">
-        <div className="overflow-hidden border-y border-black/10 bg-white shadow-sm">
-          {companyHistory.map(([date, text]) => (
-            <div key={date} className="grid gap-5 border-b border-black/10 px-5 py-7 last:border-b-0 md:grid-cols-[140px_1fr] md:px-8">
-              <div className="text-2xl font-black text-signal md:text-3xl">{date}</div>
-              <div className="flex items-center text-lg font-black leading-8 text-graphite">{text}</div>
-            </div>
+        <ol className="border-y border-black/10 bg-white">
+          {companyHistory.map(([date, text, detail]) => (
+            <li key={date} className="grid gap-2 border-b border-black/10 px-5 py-6 last:border-b-0 md:grid-cols-[140px_1fr] md:gap-5 md:px-8 md:py-7">
+              <time dateTime={date.replace(".", "-")} className="text-2xl font-black leading-8 text-signal md:text-3xl">{date}</time>
+              <div className="min-w-0 break-keep [overflow-wrap:anywhere]">
+                <p className="text-base font-black leading-8 text-graphite sm:text-lg">{text}</p>
+                {detail && <p className="mt-2 text-sm leading-7 text-steel sm:text-base">- {detail}</p>}
+              </div>
+            </li>
           ))}
-        </div>
+        </ol>
       </Section>
     );
   }
