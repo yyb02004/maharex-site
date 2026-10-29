@@ -5,7 +5,7 @@ import type { KeyboardEvent, MouseEvent, TouchEvent, UIEvent } from "react";
 import photoManifest from "@/public/love/photos/manifest.json";
 import styles from "./gallery.module.css";
 
-const photoOrder = [20, 15, 19, 12, 16, 11, 4, 8, 18, 21, 17, 23, 5, 3, 2, 22, 6, 7, 9, 10, 14, 1, 13];
+const photoOrder = [20, 15, 19, 12, 16, 11, 4, 8, 18, 21, 17, 23, 5, 24, 3, 2, 22, 6, 7, 9, 10, 14, 1, 13];
 const photos = photoOrder.map((id) => {
   const photo = photoManifest.find((item) => item.id === id);
   if (!photo) throw new Error(`Wedding photograph ${id} is missing.`);
@@ -238,7 +238,7 @@ export default function PhotoGallery() {
             >
               <img
                 src={photo.src}
-                alt={`두 사람의 웨딩 사진 ${index + 1}`}
+                alt={photo.alt ?? `웨딩 사진 ${index + 1}`}
                 width={photo.width}
                 height={photo.height}
                 loading="lazy"
@@ -324,7 +324,7 @@ export default function PhotoGallery() {
               <img
                 className={styles.fullImage}
                 src={photoPath(activePhoto)}
-                alt={`웨딩 사진 ${activePhoto}`}
+                alt={photoManifest.find((photo) => photo.id === activePhoto)?.alt ?? `웨딩 사진 ${activePhoto}`}
                 decoding="async"
                 draggable="false"
               />
