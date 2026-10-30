@@ -43,6 +43,8 @@
   text-size-adjust: 100%;
 }
 .invitation { position: relative; width: 100%; max-width: var(--invitation-width); margin: 0 auto; background: var(--paper); overflow: clip; }
+.invitation [data-reveal-state="pending"] { opacity: 0; }
+.invitation [data-reveal-state="pending"]:focus-within { opacity: 1; }
 .invitation :where(button, a, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .invitation :where(button, summary) { -webkit-tap-highlight-color: transparent; }
 .invitation :where(section[id]) { scroll-margin-top: 24px; }
@@ -213,6 +215,10 @@
   .closing { padding-inline: 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .invitation [data-reveal] { opacity: 1 !important; transform: none !important; }
   :global(html):has(.backdrop) { scroll-behavior: auto !important; }
   .invitation, .invitation * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+@media print {
+  .invitation [data-reveal] { opacity: 1 !important; transform: none !important; }
 }
