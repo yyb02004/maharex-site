@@ -213,6 +213,7 @@ export default function PhotoGallery() {
       <div
         ref={trackRef}
         className={styles.track}
+        data-reveal
         id={galleryId}
         tabIndex={0}
         aria-label="사진 슬라이드. 좌우 방향키로 사진을 넘길 수 있습니다."
@@ -250,7 +251,7 @@ export default function PhotoGallery() {
         ))}
       </div>
 
-      <div className={styles.carouselControls}>
+      <div className={styles.carouselControls} data-reveal>
         <button type="button" className={styles.carouselButton} aria-label="이전 슬라이드" aria-controls={galleryId} disabled={slideIndex === 0} onClick={() => goToSlide(slideIndex - 1)}>
           <Arrow direction="left" />
         </button>
@@ -266,7 +267,7 @@ export default function PhotoGallery() {
         </button>
       </div>
 
-      <div ref={stripRef} className={styles.thumbnailStrip} aria-label="사진 선택">
+      <div ref={stripRef} className={styles.thumbnailStrip} aria-label="사진 선택" data-reveal>
         {photos.map((photo, index) => (
           <button
             key={photo.id}

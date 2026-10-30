@@ -304,9 +304,9 @@ export default function GuestMemories({ apiBaseUrl }: { apiBaseUrl: string }) {
   return (
     <div ref={sectionRef} className={styles.memories}>
       <section id="guestbook" className={styles.section} aria-labelledby={`${prefix}-book-title`}>
-        <p className={styles.eyebrow}>WITH LOVE</p>
-        <h2 id={`${prefix}-book-title`} className={styles.title}>우리에게 보내는 편지</h2>
-        <p className={styles.intro}>두 사람에게 들려주고 싶은 말을 남겨 주세요.<br />문득 오늘이 그리워지는 날,<br />한 줄 한 줄 다시 펼쳐 볼게요.</p>
+        <p className={styles.eyebrow} data-reveal>WITH LOVE</p>
+        <h2 id={`${prefix}-book-title`} className={styles.title} data-reveal>우리에게 보내는 편지</h2>
+        <p className={styles.intro} data-reveal>두 사람에게 들려주고 싶은 말을 남겨 주세요.<br />문득 오늘이 그리워지는 날,<br />한 줄 한 줄 다시 펼쳐 볼게요.</p>
         <details className={styles.composer}>
           <summary className={styles.summary}>축하 글 남기기 <span aria-hidden="true">＋</span></summary>
           <form className={styles.form} onSubmit={writeMessage} aria-busy={writing}>
@@ -339,9 +339,9 @@ export default function GuestMemories({ apiBaseUrl }: { apiBaseUrl: string }) {
       </section>
 
       <section id="guest-snaps" className={`${styles.section} ${styles.snapsSection}`} aria-labelledby={`${prefix}-snaps-title`}>
-        <p className={styles.eyebrow}>THROUGH YOUR EYES</p>
-        <h2 id={`${prefix}-snaps-title`} className={styles.title}>당신이 담은 우리의 날</h2>
-        <p className={styles.intro}>그날, 여러분의 눈에 담긴 저희는 어떤 모습일까요?<br />웃음 가득한 순간을 함께 남겨 주세요.<br />모두의 시선이 모여 우리의 하루가 완성됩니다.</p>
+        <p className={styles.eyebrow} data-reveal>THROUGH YOUR EYES</p>
+        <h2 id={`${prefix}-snaps-title`} className={styles.title} data-reveal>당신이 담은 우리의 날</h2>
+        <p className={styles.intro} data-reveal>그날, 여러분의 눈에 담긴 저희는 어떤 모습일까요?<br />웃음 가득한 순간을 함께 남겨 주세요.<br />모두의 시선이 모여 우리의 하루가 완성됩니다.</p>
         <details className={styles.composer}>
           <summary className={styles.summary}>사진 함께 나누기 <span aria-hidden="true">＋</span></summary>
           <form className={styles.form} onSubmit={uploadPhotos} aria-busy={uploading}>

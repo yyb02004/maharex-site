@@ -65,7 +65,7 @@
 .family p { display: table-row; font-size: 13px; white-space: nowrap; }
 .family p > span, .familyName { display: table-cell; vertical-align: baseline; padding-block: 4px; }
 .familyParents { text-align: right; }
-.memorialFlower { display: inline-block; width: 16px; height: 16px; margin-right: 3px; vertical-align: -2px; }
+.memorialFlower { display: inline-block; width: 22px; height: 22px; margin-right: 4px; vertical-align: -5px; }
 .family .relation { padding-inline: 5px 14px; font-size: 11px; color: var(--muted); }
 .familyName { text-align: right; font-size: 17px; font-weight: 400; letter-spacing: .09em; }
 .storyPhoto { margin: 0 32px 74px; }

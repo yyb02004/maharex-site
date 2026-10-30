@@ -206,9 +206,9 @@ export default function RsvpSection({ apiBaseUrl, onReady }: Props) {
   if (!enabled) return null;
 
   return <section id="rsvp" className={styles.section} aria-labelledby={`${id}-title`}>
-    <p className={styles.eyebrow}>A SEAT FOR YOU</p>
-    <h2 id={`${id}-title`} className={styles.title}>함께할 봄날을 알려주세요</h2>
-    <p className={styles.intro}>반가운 얼굴들을 떠올리며<br />한 자리, 한 자리 정성껏 준비하고 있어요.<br />함께하실 수 있는지 살짝 알려 주세요.</p>
+    <p className={styles.eyebrow} data-reveal>A SEAT FOR YOU</p>
+    <h2 id={`${id}-title`} className={styles.title} data-reveal>함께할 봄날을 알려주세요</h2>
+    <p className={styles.intro} data-reveal>반가운 얼굴들을 떠올리며<br />한 자리, 한 자리 정성껏 준비하고 있어요.<br />함께하실 수 있는지 살짝 알려 주세요.</p>
     <button className={styles.submitButton} type="button" aria-haspopup="dialog" onClick={(event) => openForm(event.currentTarget)}>참석 여부 전하기 <span aria-hidden="true">↗</span></button>
     <dialog ref={dialogRef} className={styles.dialog} aria-labelledby={`${id}-popup-title`} onClose={() => { if (!dialogRef.current?.open) setIsOpen(false); }}>
       <div className={styles.dialogShell}>

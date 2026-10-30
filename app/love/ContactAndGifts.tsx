@@ -138,7 +138,7 @@ export default function GiftSection() {
 
   return (
     <section className={styles.section} aria-labelledby={titleId}>
-      <div className={styles.inner}>
+      <div className={styles.inner} data-reveal>
         <p className={styles.eyebrow}>WITH GRATITUDE</p>
         <h2 className={styles.heading} id={titleId}>마음 전하실 곳</h2>
         <p className={styles.description}>저희의 봄을 함께 기뻐해 주셔서 고맙습니다.<br />보내주신 마음은 두 사람의 일상에<br />오래도록 따뜻한 햇살로 남을 거예요.</p>
