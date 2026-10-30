@@ -9,6 +9,7 @@
 .dialogHeader { display: flex; flex: 0 0 auto; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 22px 16px 18px 24px; border-bottom: 1px solid #e6e3d9; }
 .dialogHeader .eyebrow { margin-bottom: 8px; font-size: 9px; }
 .dialogTitle { margin: 0; font-family: var(--love-serif); font-size: 21px; font-weight: 400; line-height: 1.7; word-break: keep-all; }
+.dialogTitle:focus, .receipt h3:focus { outline: none; }
 .closeButton { display: grid; flex: 0 0 44px; place-items: center; width: 44px; height: 44px; margin-top: -9px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #727c65; font: 27px/1 Arial, sans-serif; cursor: pointer; touch-action: manipulation; }
 .dialogBody { flex: 1 1 auto; min-height: 0; padding: 0 24px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .dialogFooter { display: grid; flex: 0 0 auto; grid-template-columns: 1fr 90px; padding-bottom: env(safe-area-inset-bottom, 0px); border-top: 1px solid #e6e3d9; background: #f3f0e9; }
