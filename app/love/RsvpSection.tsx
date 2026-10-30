@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { RSVP_POPUP_COMPLETED_MS, RSVP_POPUP_DAY_MS, shouldShowRsvpPopup, suppressRsvpPopup } from "./rsvp-popup";
 import styles from "./rsvp.module.css";
 
 type Choice = "yes" | "no" | "undecided";
@@ -10,6 +11,11 @@ type Receipt = { name: string; attendance: Choice };
 type Props = { apiBaseUrl: string; onReady?: (ready: boolean) => void };
 
 class RsvpError extends Error {}
+
+function popupStorage() {
+  try { return window.localStorage; }
+  catch { return null; }
+}
 
 function endpoint(base: string, path: string) {
   return new URL(path, `${base.replace(/\/$/, "")}/`).href;
@@ -39,6 +45,15 @@ export default function RsvpSection({ apiBaseUrl, onReady }: Props) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [suppressionSaved, setSuppressionSaved] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const receiptRef = useRef<HTMLHeadingElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
+  const autoPrompted = useRef(false);
   const requestIdentity = useRef<{ fingerprint: string; requestId: string } | null>(null);
   const submission = useRef<AbortController | null>(null);
   const busy = useRef(false);
@@ -78,6 +93,64 @@ export default function RsvpSection({ apiBaseUrl, onReady }: Props) {
     return () => { current = false; window.clearTimeout(timer); controller.abort(); };
   }, [apiBaseUrl]);
 
+  useEffect(() => {
+    if (!enabled || autoPrompted.current) return;
+    const timer = window.setTimeout(() => {
+      if (autoPrompted.current) return;
+      autoPrompted.current = true;
+      if (!shouldShowRsvpPopup(popupStorage()) || document.querySelector("dialog[open]")) return;
+      previousFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      setIsOpen(true);
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [enabled]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+    const previousStyles = { overflow: body.style.overflow, position: body.style.position, top: body.style.top, left: body.style.left, width: body.style.width, paddingRight: body.style.paddingRight };
+    const gap = window.innerWidth - document.documentElement.clientWidth;
+    const padding = Number.parseFloat(getComputedStyle(body).paddingRight) || 0;
+    Object.assign(body.style, { overflow: "hidden", position: "fixed", top: `-${scrollY}px`, left: `-${scrollX}px`, width: "100%" });
+    if (gap > 0) body.style.paddingRight = `${padding + gap}px`;
+    if (!dialog.open) dialog.showModal();
+    headingRef.current?.focus({ preventScroll: true });
+    return () => {
+      if (dialog.open) dialog.close();
+      Object.assign(body.style, previousStyles);
+      const root = document.documentElement;
+      const behavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = "auto";
+      window.scrollTo(scrollX, scrollY);
+      root.style.scrollBehavior = behavior;
+      if (previousFocus.current?.isConnected) previousFocus.current.focus({ preventScroll: true });
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && receipt) receiptRef.current?.focus({ preventScroll: true });
+  }, [isOpen, receipt]);
+
+  useEffect(() => {
+    if (isOpen && showForm && !receipt) nameInputRef.current?.focus({ preventScroll: true });
+  }, [isOpen, showForm, receipt]);
+
+  function openForm(trigger: HTMLElement) {
+    autoPrompted.current = true;
+    previousFocus.current = trigger;
+    setShowForm(true);
+    setIsOpen(true);
+  }
+
+  function closePopup(hideForDay = false) {
+    if (hideForDay) suppressRsvpPopup(popupStorage(), RSVP_POPUP_DAY_MS);
+    dialogRef.current?.close();
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current) return;
@@ -112,6 +185,7 @@ export default function RsvpSection({ apiBaseUrl, onReady }: Props) {
         throw new RsvpError("아직 전달을 확인하지 못했어요. 다시 눌러 주시면 같은 요청을 확인할게요.");
       }
       if (!mounted.current) return;
+      setSuppressionSaved(suppressRsvpPopup(popupStorage(), RSVP_POPUP_COMPLETED_MS));
       setReceipt({ name: trimmedName, attendance });
       setName(""); setSide("groom"); setAttendance("yes"); setPartyCount("1"); setMeal("undecided"); setConsent(false);
       requestIdentity.current = null;
@@ -135,17 +209,30 @@ export default function RsvpSection({ apiBaseUrl, onReady }: Props) {
     <p className={styles.eyebrow}>A SEAT FOR YOU</p>
     <h2 id={`${id}-title`} className={styles.title}>함께할 봄날을 알려주세요</h2>
     <p className={styles.intro}>반가운 얼굴들을 떠올리며<br />한 자리, 한 자리 정성껏 준비하고 있어요.<br />함께하실 수 있는지 살짝 알려 주세요.</p>
-    <details className={styles.composer}>
-      <summary className={styles.summary}>참석 여부 전하기 <span aria-hidden="true">＋</span></summary>
+    <button className={styles.submitButton} type="button" aria-haspopup="dialog" onClick={(event) => openForm(event.currentTarget)}>참석 여부 전하기 <span aria-hidden="true">↗</span></button>
+    <dialog ref={dialogRef} className={styles.dialog} aria-labelledby={`${id}-popup-title`} onClose={() => { if (!dialogRef.current?.open) setIsOpen(false); }}>
+      <div className={styles.dialogShell}>
+        <div className={styles.dialogHeader}>
+          <div><p className={styles.eyebrow}>A SEAT FOR YOU</p><h2 id={`${id}-popup-title`} className={styles.dialogTitle} ref={headingRef} tabIndex={-1}>우리의 봄날에 함께해 주세요</h2></div>
+          <button className={styles.closeButton} type="button" aria-label="참석 여부 팝업 닫기" onClick={() => closePopup()}><span aria-hidden="true">×</span></button>
+        </div>
+        <div className={styles.dialogBody}>
       {receipt ? <div className={styles.receipt} role="status" aria-live="polite">
         <span className={styles.receiptMark} aria-hidden="true">✓</span>
-        <h3>{receipt.name}님, 소식 전해 주셔서 고맙습니다.</h3>
+        <h3 ref={receiptRef} tabIndex={-1}>{receipt.name}님, 소식 전해 주셔서 고맙습니다.</h3>
         <p>{receipt.attendance === "yes" ? <>봄날의 약속에서<br />반가운 얼굴로 만나요.</> : <>어디에 계시든, 보내주신 마음과 함께<br />저희의 봄을 맞이할게요.</>}</p>
-        <small>참석 정보가 신랑·신부에게 비공개로 저장되었습니다.</small>
+        <small>참석 정보가 신랑·신부에게 비공개로 저장되었습니다.{suppressionSaved ? <><br />이 창은 7일 동안 자동으로 열리지 않아요.</> : null}</small>
+      </div> : !showForm ? <div className={styles.welcome}>
+        <span className={styles.welcomeFlower} aria-hidden="true">❀</span>
+        <p className={styles.welcomeNames}>상혁 <span>&amp;</span> 은정</p>
+        <p className={styles.welcomeDate}>2027년 3월 6일 토요일 · 오전 11시<br />기흥 ICT밸리 컨벤션 · B1 그랑데홀</p>
+        <p className={styles.welcomeMessage}>소중한 분들을 기다리며<br />한 자리, 한 자리 마음을 담아 준비하고 있어요.<br />함께하실 수 있는지 살짝 알려 주실래요?</p>
+        <button className={styles.submitButton} type="button" onClick={() => setShowForm(true)}>참석 여부 전하기 <span aria-hidden="true">↗</span></button>
+        <p className={styles.laterNote}>아직 정하지 못하셨다면 나중에 전해 주셔도 괜찮아요.</p>
       </div> : <form className={styles.form} onSubmit={submit} aria-busy={sending}>
         <fieldset className={styles.formFields} disabled={sending}>
           <label className={styles.label} htmlFor={`${id}-name`}>성함</label>
-          <input id={`${id}-name`} className={styles.textInput} name="name" autoComplete="name" maxLength={40} value={name} onChange={(event) => setName(event.target.value)} placeholder="성함을 적어 주세요" required />
+          <input ref={nameInputRef} id={`${id}-name`} className={styles.textInput} name="name" autoComplete="name" maxLength={40} value={name} onChange={(event) => setName(event.target.value)} placeholder="성함을 적어 주세요" required />
 
           <fieldset className={styles.choiceGroup}>
             <legend>어느 쪽 손님이신가요?</legend>
@@ -177,6 +264,12 @@ export default function RsvpSection({ apiBaseUrl, onReady }: Props) {
           <button className={styles.submitButton} type="submit" disabled={sending}>{sending ? "소식을 전하고 있어요…" : "참석 여부 전하기"}<span aria-hidden="true">↗</span></button>
         </fieldset>
       </form>}
-    </details>
+        </div>
+        <div className={styles.dialogFooter}>
+          <button type="button" onClick={() => closePopup(true)}>하루 동안 보지 않기</button>
+          <button type="button" onClick={() => closePopup()}>닫기</button>
+        </div>
+      </div>
+    </dialog>
   </section>;
 }
