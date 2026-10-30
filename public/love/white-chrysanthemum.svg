@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <g fill="#ffffff" stroke="#aeb7a8" stroke-width="1.1">
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(0 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(22.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(45 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(67.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(90 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(112.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(135 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(157.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(180 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(202.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(225 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(247.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(270 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(292.5 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(315 32 32)"/>
+    <ellipse cx="32" cy="19" rx="4.5" ry="16" transform="rotate(337.5 32 32)"/>
+  </g>
+  <g fill="#ffffff" stroke="#bdc5b8" stroke-width="0.9">
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(15 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(45 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(75 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(105 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(135 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(165 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(195 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(225 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(255 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(285 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(315 32 32)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="10" transform="rotate(345 32 32)"/>
+  </g>
+  <g fill="#f8faf5" stroke="#bac4b2" stroke-width="0.8">
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(0 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(45 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(90 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(135 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(180 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(225 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(270 32 32)"/>
+    <ellipse cx="32" cy="28.5" rx="2.5" ry="5" transform="rotate(315 32 32)"/>
+  </g>
+  <circle cx="32" cy="32" r="2.5" fill="#e8eddf"/>
+</svg>
