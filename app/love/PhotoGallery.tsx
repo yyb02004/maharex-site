@@ -5,7 +5,7 @@ import type { KeyboardEvent, MouseEvent, TouchEvent, UIEvent } from "react";
 import photoManifest from "@/public/love/photos/manifest.json";
 import styles from "./gallery.module.css";
 
-const photoOrder = [20, 15, 19, 12, 16, 11, 4, 8, 18, 21, 17, 23, 5, 24, 3, 2, 22, 6, 7, 9, 10, 14, 1, 13];
+const photoOrder = [20, 15, 19, 12, 16, 11, 4, 8, 18, 21, 17, 23, 5, 27, 28, 29, 24, 3, 2, 26, 25, 30, 22, 6, 7, 9, 10, 14, 1, 13];
 const photos = photoOrder.map((id) => {
   const photo = photoManifest.find((item) => item.id === id);
   if (!photo) throw new Error(`Wedding photograph ${id} is missing.`);
