@@ -3,10 +3,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { copy, products } from "@/lib/site-data";
-import { rotaryDryerSpecifications, rotaryDryerTypes } from "@/lib/rotary-dryer-data";
+import { copy, productImages, products } from "@/lib/site-data";
+import { dryerSelectionGuide, rotaryDryerSpecifications } from "@/lib/rotary-dryer-data";
 
 export const dynamicParams = false;
+
+const dryerPhotoCaptions: Record<string, string | undefined> = {
+  [productImages.trayDryer]: "트레이 진공 건조기 · 정면",
+  [productImages.trayDryerOpen]: "트레이 진공 건조기 · 도어 개방 상태",
+  [productImages.rotaryDryer]: "수평형 로터리 드라이어 · 정면"
+};
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -25,16 +31,38 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!product) notFound();
   const p = product.ko;
   const contactHref = `/ko/contact?product=${product.slug}`;
+  const isDryer = slug === "tray-vacuum-dryers" || slug === "rotary-dryers";
 
   return (
     <>
       <section className="border-b border-black/10 bg-white">
         <div className="container py-7 sm:py-10 lg:py-12">
           <Link href="/ko/products" className="inline-flex min-h-11 items-center gap-1 text-sm font-bold text-steel"><ChevronLeft size={17} aria-hidden="true" />전체 제품</Link>
-          <p className="mt-4 text-xs font-black text-signal">{p.category}</p>
-          <h1 className="mt-2 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">{p.name}</h1>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-steel sm:text-lg sm:leading-8">{p.summary}</p>
-          <Link href={contactHref} className="mt-6 inline-flex min-h-12 items-center gap-3 bg-signal px-5 py-3 text-sm font-black text-white hover:bg-graphite">{copy.ko.rfq}<ArrowRight size={18} aria-hidden="true" /></Link>
+          <div className={isDryer ? "mt-4 grid items-start gap-8 lg:grid-cols-2 lg:gap-12" : "mt-4"}>
+            <div>
+              <p className="text-xs font-black text-signal">{p.category}</p>
+              <h1 className="mt-2 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">{p.name}</h1>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-steel sm:text-lg sm:leading-8">{p.summary}</p>
+              <Link href={contactHref} className="mt-6 inline-flex min-h-12 items-center gap-3 bg-signal px-5 py-3 text-sm font-black text-white hover:bg-graphite">{copy.ko.rfq}<ArrowRight size={18} aria-hidden="true" /></Link>
+            </div>
+            {isDryer && (
+              <section aria-labelledby="dryer-selection" className="min-w-0">
+                <p className="text-xs font-black text-cobalt">DRYER SELECTION</p>
+                <h2 id="dryer-selection" className="mt-2 border-b-2 border-graphite pb-3 text-xl font-black">건조기 형식별 선택 기준</h2>
+                <dl className="divide-y divide-black/10 border-b border-black/10">
+                  {dryerSelectionGuide.map((type) => (
+                    <div key={type.englishName} className="grid gap-2 py-3 sm:grid-cols-[10rem_1fr] sm:gap-5">
+                      <dt className="text-sm font-black">{type.name}<span lang="en" className="mt-1 block text-xs font-medium text-steel">{type.englishName}</span></dt>
+                      <dd className="break-keep text-sm leading-6 text-steel">{type.description}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <Link href={slug === "rotary-dryers" ? "/ko/products/tray-vacuum-dryers" : "/ko/products/rotary-dryers"} className="mt-1 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-cobalt hover:underline">
+                  {slug === "rotary-dryers" ? "트레이 진공 건조기 상세 보기" : "로터리 드라이어 상세 보기"}<ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </section>
+            )}
+          </div>
         </div>
       </section>
 
@@ -44,8 +72,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {product.gallery.map((src, index) => (
               <figure key={src}>
                 <div className="relative aspect-[4/3] bg-[#e9eeee]">
-                  <Image src={src} alt={`${p.name} 제품 사진 ${index + 1}`} fill priority={index === 0} sizes="(max-width: 1023px) 100vw, 50vw" className="object-contain" />
+                  <Image src={src} alt={dryerPhotoCaptions[src] ?? `${p.name} 제품 사진 ${index + 1}`} fill priority={index === 0} sizes="(max-width: 1023px) 100vw, 50vw" className="object-contain" />
                 </div>
+                {dryerPhotoCaptions[src] && <figcaption className="mt-2 text-sm font-medium text-steel">{dryerPhotoCaptions[src]}</figcaption>}
               </figure>
             ))}
           </div>
@@ -66,16 +95,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       {slug === "rotary-dryers" && (
         <section className="border-y border-black/10 bg-white py-10 sm:py-16">
           <div className="container">
-            <p className="text-xs font-black text-cobalt">DRYER CONFIGURATIONS</p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">원료와 공정에 맞는 건조기 구성</h2>
-            <div className="mt-8 grid gap-8 md:grid-cols-2">
-              {rotaryDryerTypes.map((type) => <article key={type.name} className="border-t-2 border-signal pt-5">
-                <p className="text-sm font-bold text-cobalt">{type.englishName}</p>
-                <h3 className="mt-2 text-xl font-black">{type.name}</h3>
-                <p className="mt-3 text-base leading-8 text-steel">{type.description}</p>
-              </article>)}
-            </div>
-            <h3 className="mt-12 text-xl font-black">설계 검토 사양</h3>
+            <p className="text-xs font-black text-cobalt">DESIGN SPECIFICATIONS</p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">설계 검토 사양</h2>
             <dl className="mt-4 border-t-2 border-graphite">
               {rotaryDryerSpecifications.map(([label, value]) => <div key={label} className="grid gap-2 border-b border-black/10 py-4 sm:grid-cols-[150px_1fr] sm:gap-6">
                 <dt className="text-sm font-black">{label}</dt><dd className="text-sm leading-7 text-steel">{value}</dd>

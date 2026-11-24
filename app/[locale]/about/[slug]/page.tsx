@@ -156,7 +156,6 @@ export default async function AboutSubPage({
 
   if (slug === "organization") {
     const departments = [
-      ["연구개발부", "공정 검토, 설비 개선, 기술 자료 관리"],
       ["경영지원부", "구매, 자재, 회계, 납기 지원"],
       ["설계영업부", "RFQ 검토, 도면, 고객 커뮤니케이션"],
       ["제작부", "제관, 용접, 조립, 검사, 출하"]
@@ -170,7 +169,7 @@ export default async function AboutSubPage({
             <h2 className="mt-2 text-3xl font-black">대표</h2>
           </div>
           <div className="mx-auto h-12 w-px bg-cobalt/30" />
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-3">
             {departments.map(([name, text]) => (
               <div key={name} className="border border-black/10 bg-white p-6 text-center shadow-sm">
                 <h3 className="text-xl font-black text-cobalt">{name}</h3>
@@ -196,7 +195,6 @@ export default async function AboutSubPage({
       ["2008.11", "해동프랜트에서 ㈜마하렉스로 상호 변경", ""],
       ["2014.02", "벤쳐기업 인증", ""],
       ["2014.09", "㈜천보 충주공장 감사패 수여", "생산시설 Turnkey Base 시공"],
-      ["2016.03", "기술연구 전담반 설립", ""],
       ["2016.11", "중소기업 인증 - 중소기업청장", ""],
       ["2017.01", "경쟁입찰 참가자격 등록증", ""],
       ["2018.03", "생산공장 증설 - 2공장", ""]

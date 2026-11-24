@@ -15,7 +15,7 @@
     "@vercel/analytics": "2.0.1",
     "autoprefixer": "latest",
     "lucide-react": "^1.61.0",
-    "next": "latest",
+    "next": "16.4.6",
     "pdf-to-img": "^6.0.0",
     "postcss": "latest",
     "react": "latest",

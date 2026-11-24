@@ -1,13 +1,18 @@
-export const rotaryDryerTypes = [
+export const dryerSelectionGuide = [
   {
-    name: "수평형 교반식 진공건조기",
-    englishName: "Horizontal Agitated Vacuum Dryer",
-    description: "수평 용기 내부의 리본 교반부와 재킷 가열을 조합합니다. 원료의 부착성, 혼합 상태와 배출 구조를 함께 검토합니다."
+    name: "트레이 진공 건조기",
+    englishName: "Tray Vacuum Dryer",
+    description: "열에 민감한 분말·과립을 트레이에 얇게 펼쳐, 젓지 않고 저온에서 건조할 때."
   },
   {
-    name: "원뿔형 진공건조기",
+    name: "수평형 로터리 드라이어",
+    englishName: "Horizontal Agitated Vacuum Dryer",
+    description: "여과 후 수분이 남은 케이크나 분말을 리본 교반기로 섞으면서 건조할 때."
+  },
+  {
+    name: "코니컬 드라이어",
     englishName: "Conical Dryer",
-    description: "원뿔형 용기와 교반부를 조합하는 진공건조 설비입니다. 원료의 순환, 잔류물, 하부 배출과 세척 조건에 맞춰 검토합니다."
+    description: "원뿔형 용기 안에서 원료를 순환시키고 하부로 배출하는 구조가 필요할 때. 배출 후 잔류량과 세척 조건을 함께 검토합니다."
   }
 ] as const;
 
